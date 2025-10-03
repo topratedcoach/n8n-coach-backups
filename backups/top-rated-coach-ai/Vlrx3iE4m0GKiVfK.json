@@ -1,0 +1,366 @@
+{
+  "createdAt": "2025-08-14T20:16:00.083Z",
+  "updatedAt": "2025-08-26T09:43:40.000Z",
+  "id": "Vlrx3iE4m0GKiVfK",
+  "name": "Backup Workflows TopRatedCoachAI",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://referrizer.app.n8n.cloud/api/v1/workflows",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "tags",
+              "value": "TopRatedCoachAI"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-API-KEY",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmE1YjQxMy01OWI2LTRkMzAtYWQ0Yi03NTc2M2NkM2EzNzQiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzU2MjAxNDAxLCJleHAiOjE3NTg3NzI4MDB9.N2yI535hHDiULcSDIU-U-hQj-y5dEdIouDObIbDWcO8"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f0362b15-a9e2-4792-81c9-4e40a5f16db0",
+      "name": "Get All Workflows",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        512,
+        96
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        96
+      ],
+      "id": "ed16ff8b-917f-48f8-adbf-1b4cdfb29883",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "topratedcoach",
+          "mode": "list",
+          "cachedResultName": "topratedcoach",
+          "cachedResultUrl": "https://github.com/topratedcoach"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n_workflows",
+          "mode": "list",
+          "cachedResultName": "n8n_workflows",
+          "cachedResultUrl": "https://github.com/topratedcoach/n8n_workflows"
+        },
+        "filePath": "={{ $('Code').item.json.path }}",
+        "binaryData": true,
+        "commitMessage": "={{ $('Code').item.json.message}}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        192
+      ],
+      "id": "0fe15683-8c82-4fb6-9e4f-82a61883cbe1",
+      "name": "Create a file",
+      "webhookId": "730e810b-bd2d-4225-92ee-a0a53c755021",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $json.data.map(workflow => {\n  const content = JSON.stringify(workflow, null, 2);\n  return {\n    binary: {\n      data: {\n        data: Buffer.from(content).toString('base64'),\n        mimeType: 'application/json'\n      }\n    },\n    json: {\n      path: `workflows/${workflow.name.replace(/[^a-z0-9_\\-]/gi, '_')}.json`,\n      message: `${workflow.name}`\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        96
+      ],
+      "id": "ff66303f-3625-48c9-8d80-c43ba6669e35",
+      "name": "Code",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "topratedcoach",
+          "mode": "list",
+          "cachedResultName": "topratedcoach",
+          "cachedResultUrl": "https://github.com/topratedcoach"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n_workflows",
+          "mode": "list",
+          "cachedResultName": "n8n_workflows",
+          "cachedResultUrl": "https://github.com/topratedcoach/n8n_workflows"
+        },
+        "filePath": "=workflows/"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        96
+      ],
+      "id": "da01b8d1-1a56-480c-b295-b4feb0dadac7",
+      "name": "List files",
+      "webhookId": "730e810b-bd2d-4225-92ee-a0a53c755021",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "topratedcoach",
+          "mode": "list",
+          "cachedResultName": "topratedcoach",
+          "cachedResultUrl": "https://github.com/topratedcoach"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n_workflows",
+          "mode": "list",
+          "cachedResultName": "n8n_workflows",
+          "cachedResultUrl": "https://github.com/topratedcoach/n8n_workflows"
+        },
+        "filePath": "={{ $('Code').item.json.path }}",
+        "binaryData": true,
+        "commitMessage": "={{ $('Code').item.json.message}}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "2652de19-3c77-4f3e-ab98-98676466a98a",
+      "name": "Edit a file",
+      "webhookId": "d3f73690-22bb-436e-8245-c63e57161cb0",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9b6fc1b1-22ca-4ef1-bc23-1631ed78aaf5",
+              "leftValue": "={{ $('List files').all().map(item => item.json.path) }}",
+              "rightValue": "={{ $('Code').item.json.path }}",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        96
+      ],
+      "id": "7a770e3d-c73f-4127-b5d3-fd270610223f",
+      "name": "If already exists"
+    },
+    {
+      "parameters": {
+        "content": "## Workflow Purpose\n\nThis workflow **backs up all workflows from an n8n instance to a GitHub repo (`n8n_workflows`)** in JSON format.\nIt ensures:\n\n1. **If the workflow file already exists in GitHub** → It updates it (using the file’s SHA).\n2. **If it doesn’t exist** → It creates a new file.\n\n---\n\n## **Step-by-Step Flow**\n\n### **1. Manual Trigger** → `When clicking 'Execute workflow'`\n\n* Starts the workflow manually when you hit \"Execute\".\n* Good for on-demand backups.\n* Could later be swapped with a **Cron** trigger for automation.\n\n---\n\n### **2. List Files** → `List files` (GitHub node)\n\n* Operation: `list` → lists all files in `workflows/` directory of your `n8n_workflows` repo.\n* Owner: `topratedcoach`\n* Repository: `n8n_workflows`\n* **Purpose:** To check if each workflow’s `.json` file already exists.\n* Output: Array of file objects, each with `.path` and `.sha` (needed for updates).\n\n---\n\n### **3. Get All Workflows** → `HTTP Request` node\n\n* **GET** request to your n8n instance API:\n\n  ```\n  https://referrizer.app.n8n.cloud/api/v1/workflows\n  ```\n* Adds query parameter: `tags=TopRatedCoachAI` → filters only workflows with this tag.\n* Sends API Key via `X-N8N-API-KEY` header.\n* **Purpose:** Pulls all workflows you want to back up.\n* Returns JSON array under `data`.\n\n---\n\n### **4. Code** → `Code` (Function node)\n\n* Maps through `data` array and:\n\n  1. Converts each workflow object to **formatted JSON string**.\n  2. Encodes it as **Base64** (GitHub API requires this for file content).\n  3. Generates a **safe file path**:\n\n     ```\n     workflows/<workflow_name>.json\n     ```\n\n     (Sanitizes names: replaces non-alphanumeric/`_`/`-` with `_`.)\n  4. Creates commit message from workflow name.\n* Output for each workflow:\n\n  ```json\n  {\n    \"binary\": { \"data\": { \"data\": \"<base64>\", \"mimeType\": \"application/json\" } },\n    \"json\": { \"path\": \"workflows/NAME.json\", \"message\": \"NAME\" }\n  }\n  ```\n\n---\n\n### **5. If already exists** → `If` node\n\n* **Condition:**\n\n  * Left: All `.path` values from `List files`.\n  * Right: Current workflow `.path` from `Code`.\n  * Checks if right is contained in left array.\n* If **true** → File exists → update it.\n* If **false** → File doesn’t exist → create it.\n\n---\n\n### **6. Edit a file** → `Edit a file` (GitHub node)\n\n* Operation: `edit` (update existing file).\n* **Inputs:**\n\n  * `filePath`: Path from `Code` node.\n  * Binary data: The Base64 JSON from `Code`.\n  * Commit message: From `Code`.\n  * **IMPORTANT:** GitHub API requires `sha` when editing — n8n’s Edit node usually handles this automatically *if* it can match the path from the List Files output.\n    If it fails, you’d have to explicitly pass the `sha` from the `List files` result.\n* Auth: OAuth2 via your GitHub account.\n\n---\n\n### **7. Create a file** → `Create a file` (GitHub node)\n\n* Operation: `create` (for new files).\n* Same input mapping as Edit.\n* Skips `sha` (only needed for updates)",
+        "height": 2240,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1184,
+        -896
+      ],
+      "typeVersion": 1,
+      "id": "ec135e77-7206-4277-89e6-273682585af4",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Get All Workflows": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "List files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If already exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files": {
+      "main": [
+        [
+          {
+            "node": "Get All Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If already exists": {
+      "main": [
+        [
+          {
+            "node": "Edit a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b99df7dc-2358-45ef-8ed6-41b1e02f99f0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-08-14T20:16:00.089Z",
+      "updatedAt": "2025-08-14T20:16:00.089Z",
+      "role": "workflow:owner",
+      "workflowId": "Vlrx3iE4m0GKiVfK",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
