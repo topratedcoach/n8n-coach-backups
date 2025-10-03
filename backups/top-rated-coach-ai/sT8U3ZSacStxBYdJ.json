@@ -1,0 +1,745 @@
+{
+  "createdAt": "2025-09-25T14:55:53.036Z",
+  "updatedAt": "2025-10-02T09:39:02.000Z",
+  "id": "sT8U3ZSacStxBYdJ",
+  "name": "Delete Template Business (DANGER)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -16
+      ],
+      "id": "91da02f0-b960-4bc4-8cd7-58a34ce64f40",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.Bruh Bruh"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        -16
+      ],
+      "id": "70ab1e8e-13c3-4dcb-8328-3854ae4f293d",
+      "name": "GET Businesses",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        -16
+      ],
+      "id": "52fe3e91-ff58-44d8-9038-5ef5837020f4",
+      "name": "GET Calls",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1808,
+        -16
+      ],
+      "id": "817d3d4a-ec6d-4868-aff3-5efa0f41482e",
+      "name": "Delete GeneratedCallReports",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        -16
+      ],
+      "id": "c4390695-894d-4422-896c-061c810d5f64",
+      "name": "Delete TaskGroups",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "5a5196fa-a404-43c1-acac-10401fe3eaf7",
+      "name": "Get GeneratedCallReports",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2032,
+        -16
+      ],
+      "id": "8faeb19f-a4ab-440b-a10e-29975ad7f41a",
+      "name": "Get TaskGroups",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        -16
+      ],
+      "id": "2d06cc92-a4fe-4c1b-b2b9-16c389b78ea2",
+      "name": "Delete Calls",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "=eq.{{ $('GET Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        -16
+      ],
+      "id": "2e66b2c3-ca05-4491-9a48-f204eb0f052f",
+      "name": "Delete Call Transcripts",
+      "alwaysOutputData": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2928,
+        -16
+      ],
+      "id": "acfb160f-3916-4265-8928-cb68e3fe6407",
+      "name": "Delete Audits",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get GeneratedCallReports').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        -16
+      ],
+      "id": "b15b1bad-654b-4083-b2a1-e0e58bb65bfb",
+      "name": "Delete Questionaires",
+      "alwaysOutputData": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Get TaskGroups').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2256,
+        -16
+      ],
+      "id": "c72bc4d3-eee5-469d-a6bd-c15b7237dc62",
+      "name": "Delete MicroTasks",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('GET Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "current_audit_id",
+              "value": "={{ null }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2704,
+        -16
+      ],
+      "id": "b137b36e-104c-4215-a2b2-8cef7d09dbd2",
+      "name": "Remove Audit ID of Businesses",
+      "executeOnce": false
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "GET Businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Businesses": {
+      "main": [
+        [
+          {
+            "node": "Get GeneratedCallReports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Calls": {
+      "main": [
+        [
+          {
+            "node": "Delete Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete GeneratedCallReports": {
+      "main": [
+        [
+          {
+            "node": "Get TaskGroups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete TaskGroups": {
+      "main": [
+        [
+          {
+            "node": "Remove Audit ID of Businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GeneratedCallReports": {
+      "main": [
+        [
+          {
+            "node": "Delete Questionaires",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get TaskGroups": {
+      "main": [
+        [
+          {
+            "node": "Delete MicroTasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Calls": {
+      "main": [
+        [
+          {
+            "node": "Delete Call Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Call Transcripts": {
+      "main": [
+        [
+          {
+            "node": "Delete GeneratedCallReports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Audits": {
+      "main": [
+        []
+      ]
+    },
+    "Delete Questionaires": {
+      "main": [
+        [
+          {
+            "node": "GET Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete MicroTasks": {
+      "main": [
+        [
+          {
+            "node": "Delete TaskGroups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Audit ID of Businesses": {
+      "main": [
+        [
+          {
+            "node": "Delete Audits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "GET Businesses": [
+      {
+        "json": {
+          "id": "Bruh Bruh",
+          "business_name": "Bruh Fitness",
+          "website": "https://www.crunch.com/",
+          "phone_number": "+19547993801",
+          "email": "fuzailsohail40@gmail.com",
+          "address": "801 University Dr",
+          "latitude": 26.243696,
+          "longitude": -80.252073,
+          "formatted_address": "801 N University Dr, Coral Springs, FL 33071",
+          "street_number": "801",
+          "street_name": "University Dr",
+          "city": "Coral Springs",
+          "state_province": "Florida",
+          "postal_code": "33071",
+          "country": "USA",
+          "country_code": "US",
+          "plus_code": null,
+          "timezone": "America/New_York",
+          "location_metadata": {},
+          "google_maps_url": "https://maps.app.goo.gl/ZVjmzEw2DcJQEYVDA",
+          "facebook_handle": null,
+          "instagram_handle": null,
+          "linkedin_handle": null,
+          "twitter_handle": null,
+          "youtube_channel": null,
+          "owner_id": "ac222d33-8c35-4411-8655-c4027bd34198",
+          "created_at": "2025-10-02T09:30:30.376926+00:00",
+          "updated_at": "2025-10-02T09:32:29.157401+00:00",
+          "current_audit_id": "50f4bce2-3d6c-4233-b74c-b3b61c5f2e3f",
+          "last_audited_at": "2025-10-02T09:32:29.157401+00:00",
+          "is_claimed": true,
+          "logo": null,
+          "business_category": [
+            "gym"
+          ]
+        }
+      }
+    ],
+    "Get GeneratedCallReports": [
+      {
+        "json": {}
+      }
+    ],
+    "GET Calls": [
+      {
+        "json": {}
+      }
+    ],
+    "Delete Calls": [
+      {
+        "json": {}
+      }
+    ]
+  },
+  "versionId": "2af7e44f-0ef7-431b-80ad-0de7fb5192d4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-25T14:55:53.040Z",
+      "updatedAt": "2025-09-25T14:55:53.040Z",
+      "role": "workflow:owner",
+      "workflowId": "sT8U3ZSacStxBYdJ",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
