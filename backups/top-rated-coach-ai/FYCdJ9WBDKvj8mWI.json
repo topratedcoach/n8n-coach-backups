@@ -1,0 +1,1480 @@
+{
+  "createdAt": "2025-06-20T09:51:03.701Z",
+  "updatedAt": "2025-09-10T09:44:37.000Z",
+  "id": "FYCdJ9WBDKvj8mWI",
+  "name": "Agent: Inbound Call Processor (Fuzail)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Agent Name: Inbound Call Processor\n\nThis workflow processes follow-up inbound calls from businesses. It:\n\n1. Receives POST requests from the calling agent with raw call data and transcript\n2. Identifies the relevant business and task group from Supabase\n3. Marks related audit/task as \"in_progress\"\n4. Retrieves Twilio call status for precise timing and call metadata\n5. Calculates AI interaction metrics (TTFB, latency, RAG usage, token usage, etc.)\n6. Saves:\n   - Call details in `calls`\n   - Transcript in `call_transcripts`\n7. Sends formatted transcript + context from previous outbound call to GPT-4.1 for analysis\n8. Parses the AI's structured JSON report\n9. Stores the AI report in `generated_call_reports`\n10. Splits and saves question/answer evaluations in `call_report_evaluations`\n11. Links the final report back to the original call record\n12. Marks task group and microtask as \"completed\"\n",
+        "height": 480,
+        "width": 640,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1920,
+        -2256
+      ],
+      "typeVersion": 1,
+      "id": "7985b9fb-7a51-41d4-92fe-75c6f5c71c64",
+      "name": "Workflow Overview1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1056,
+        -1216
+      ],
+      "id": "7ed88e4a-72e8-4107-91fc-097c6d2f51dc",
+      "name": "CHATGPT",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Generate Questionaire json and add in Call_Report_Evaluations in DB",
+        "height": 400,
+        "width": 880,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        -1568
+      ],
+      "typeVersion": 1,
+      "id": "5d680fda-da0d-4608-9291-f6ed1af349a5",
+      "name": "Workflow Overview13"
+    },
+    {
+      "parameters": {
+        "content": "## Save AI GENERATED REPORT to Supabase",
+        "height": 460,
+        "width": 1080,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1200,
+        -1568
+      ],
+      "typeVersion": 1,
+      "id": "5f7c9552-9953-4441-9b07-5aebfe76ed58",
+      "name": "Workflow Overview14"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $('Call Analysis AI').first().json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -784,
+        -1440
+      ],
+      "id": "4046202d-e3c2-4e0e-bbad-d7554572236d",
+      "name": "Parse AI Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert customer experience auditor. This is a follow-up inbound call between a customer (our AI agent) and a business. The customer had previously spoken with the same business in an outbound call.\n\nBelow is the detailed audit report of that previous outbound call for context:\n{{ JSON.stringify($('Combine').item.json) }}\n\nNow, you will be provided with the transcript of the follow-up inbound call.\n\nYour job is to objectively audit the business representative’s performance in this inbound call, comparing it where helpful to the prior outbound interaction. You are evaluating how the business treated the customer, not the customer’s behavior.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\n\nInstructions:\n- Do NOT wrap your output in any object like \"output\": or brackets [].\n- Start your output with { and end with } (no Markdown, no quotes around the whole output, no extra notes).\n- Keep the structure exactly as specified below.\n- Only use information from the transcript and the prior outbound report. Do not assume or invent anything.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or empty array [].\n- Be objective, concise, and actionable.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the business representative’s responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the customer’s questions?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive toward the customer?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the representative polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the customer\",\n      \"answer\": \"Response from the business representative\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags in the representative’s behavior (e.g., rude tone, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments from the representative\"\n  ],\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n\"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n\"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building — e.g., introduction, friendliness, rapport, empathy, use of customer’s name.\n    - Product/Service Knowledge and Education — e.g., clear, accurate, and detailed service info.\n    - Answering Questions — e.g., professionalism, thorough answers, asking if a customer needs further help.\n    - Ability to Upsell and Cross-Sell — e.g., mentioning/promoting relevant services.\n    - Closing for Appointment and Call to Action — e.g., next steps, follow-up request, securing a commitment.\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').first().json) }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        -1440
+      ],
+      "id": "2c58d1b7-0189-4b3e-b401-bfcc12587cc8",
+      "name": "Call Analysis AI"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone_number",
+              "value": "=eq.{{ $('Get Call Details').item.json.body.data.metadata.phone_call.external_number }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2496,
+        -1600
+      ],
+      "id": "df08639a-d681-4057-824d-d252fec91d8d",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "content": "## Update  the TaskGroup status to in progress and Audit status to inprogress\n",
+        "height": 400,
+        "width": 1320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2560,
+        -1760
+      ],
+      "typeVersion": 1,
+      "id": "0b33fc97-bbf1-4b09-a027-0894ebfa1d95",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n{\n  \"task_group_id\": \"{{ $('If Call was Expected from this Business').item.json.id }}\",\n  \"task_type\": \"ai_analysis\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n}\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1840,
+        -1600
+      ],
+      "id": "494b0cff-cff0-4747-bb15-8856d949b368",
+      "name": "Create AI Agent Micro Tasks"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get a Inbound Call Analysis Task Group').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"in_progress\",\n  \"started_at\": \"{{ new Date().toISOString() }}\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n\"result_data\": {{ JSON.stringify($('Get Call Details').item.json.body || {}) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1616,
+        -1600
+      ],
+      "id": "dccfcb74-878e-4bf3-94f2-9b5ba3edde6f",
+      "name": "Updating TaskGroups Row To In-Progress",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('Get a Inbound Call Analysis Task Group').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"in_progress\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1408,
+        -1600
+      ],
+      "id": "19b5f44d-4b01-477b-b798-1280fbc88ff6",
+      "name": "Update Audit Status to in_progress and Started AT Time",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'ai_analysis')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"retry_count\":0,\n  \"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        -1808
+      ],
+      "id": "38d48ed4-9547-4239-8e3c-2fbb314e0067",
+      "name": "Start AI Analysis Task in DB"
+    },
+    {
+      "parameters": {
+        "jsCode": "const call = $('Twilio Call Status').first().json;\n\n// Parse timestamps\nconst dateCreated = new Date(call.date_created);\nconst queueTimeSec = parseInt(call.queue_time || \"0\", 10);\nconst startTime = new Date(call.start_time);\n\n// Calculate actual ringing start time\nconst ringingStartTime = new Date(dateCreated.getTime() + queueTimeSec * 1000);\n\n\nconst conv = $('Get Call Details').first().json.body.data;\nconst { metadata, analysis, transcript, conversation_initiation_client_data } = conv;\nconst { phone_call, charging, termination_reason, call_duration_secs } = metadata;\n\n// Performance metrics calculation\nlet ragCount = 0, totalTTFB = 0, totalTTF = 0, totalRAGLatency = 0, interruptions = 0;\nconst ragDistances = [];\n\ntranscript.forEach(turn => {\n  // Process latency metrics\n  const metrics = turn.conversation_turn_metrics?.metrics;\n  if (metrics) {\n    totalTTFB += metrics.convai_llm_service_ttfb?.elapsed_time || 0;\n    totalTTF += metrics.convai_llm_service_ttf_sentence?.elapsed_time || 0;\n  }\n  \n  // Process RAG metrics\n  const ragInfo = turn.rag_retrieval_info;\n  if (ragInfo) {\n    ragCount++;\n    totalRAGLatency += ragInfo.rag_latency_secs;\n    ragInfo.chunks.forEach(chunk => ragDistances.push(chunk.vector_distance));\n  }\n  \n  // Track interruptions\n  if (turn.interrupted) interruptions++;\n});\n\n// Calculate averages safely\nconst calcAverage = (sum, count) => count > 0 ? parseFloat((sum / count).toFixed(3)) : 0;\nconst ragDistanceStats = ragDistances.length > 0 ? {\n  min: parseFloat(Math.min(...ragDistances).toFixed(3)),\n  max: parseFloat(Math.max(...ragDistances).toFixed(3))\n} : { min: 0, max: 0 };\n\n// Extract LLM data safely\nconst llmTokens = charging?.llm_usage?.irreversible_generation?.model_usage?.[\"gpt-4.1\"] || {};\nconst llmCost = charging?.llm_price || 0;\n\nreturn [{\n  json: {\n    // Metadata\n    conversation_id: conversation_initiation_client_data.dynamic_variables.system__conversation_id,\n    call_duration_sec: call_duration_secs,\n    eventTime: new Date(metadata.start_time_unix_secs * 1000).toISOString(),\n    callInitiateTime: ringingStartTime.toISOString(),\n    callAcceptedTime: startTime.toISOString(),\n    direction: phone_call.direction,\n    from_number: phone_call.external_number,\n    to_number: phone_call.agent_number,\n    \n    // Performance metrics\n    performance: {\n      avg_ttfb_sec: calcAverage(totalTTFB, ragCount),\n      avg_ttf_sec: calcAverage(totalTTF, ragCount),\n      rag_retrievals: ragCount,\n      rag_avg_latency_sec: calcAverage(totalRAGLatency, ragCount),\n      rag_min_distance: ragDistanceStats.min,\n      rag_max_distance: ragDistanceStats.max,\n      llm_cost: parseFloat(llmCost.toFixed(6)),\n      llm_input_tokens: llmTokens.input?.tokens || 0,\n      llm_output_tokens: llmTokens.output_total?.tokens || 0\n    },\n    \n    // Quality indicators\n    quality: {\n      termination_reason,\n      call_successful: analysis.call_successful,\n      interruptions\n    },\n    \n    // Content analysis\n    summary: analysis.transcript_summary,\n    gym_name: conversation_initiation_client_data.dynamic_variables.gym_name,\n\n    \n    // Transcript (optimized format)\n    transcript: transcript.map(({ role, message, time_in_call_secs }) => ({\n      role,\n      message,\n      timestamp_sec: time_in_call_secs\n    }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -1808
+      ],
+      "id": "05d35429-4ab0-4093-9f7d-d23d8df7db51",
+      "name": "Create JSON with metadata"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"conv_id\": \"{{ $('Create JSON with metadata').item.json.conversation_id }}\",\n  \"direction\": \"{{ $('Create JSON with metadata').item.json.direction }}\",\n  \"call_sid\": \"{{ $('Get Call Details').item.json.body.data.metadata.phone_call.call_sid }}\",\n  \"business_id\": \"{{ $('Get a specific business').item.json.id }}\",\n  \"task_group_id\": \"{{ $('Get a Inbound Call Analysis Task Group').item.json.id }}\",\n  \"created_at\": \"{{ new Date().toISOString() }}\",\n  \"call_initiate_time\": \"{{ $('Create JSON with metadata').item.json.callInitiateTime }}\",\n  \"call_accepted_time\": \"{{ $('Create JSON with metadata').item.json.callAcceptedTime }}\",\n  \"to_number\": \"{{ $('Create JSON with metadata').item.json.to_number }}\",\n  \"from_number\": \"{{ $('Create JSON with metadata').item.json.from_number }}\",\n  \"agent_id\": \"{{ $('Get Call Details').item.json.body.data.agent_id }}\",\n  \"metadata\": {{ JSON.stringify($('Create JSON with metadata').item.json.performance) }},\n  \"summary\": {{ JSON.stringify($('Create JSON with metadata').item.json.summary.trim()) }},\n  \"call_duration\": {{ $('Create JSON with metadata').item.json.call_duration_sec }},\n  \"interruptions\": {{ $('Create JSON with metadata').item.json.quality.interruptions }},\n  \"termination_reason\": \"{{ $('Create JSON with metadata').item.json.quality.termination_reason }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -736,
+        -1808
+      ],
+      "id": "1f1844d8-a1bc-457f-9f7c-282afb25bfae",
+      "name": "Create Call Entry In DB"
+    },
+    {
+      "parameters": {
+        "content": "## Cost Needs to be added\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -768,
+        -2128
+      ],
+      "typeVersion": 1,
+      "id": "88336939-96dc-4d24-9201-8c69138d4d2a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"call_id\": \"{{ $('Create Call Entry In DB').item.json.id }}\",\n  \"transcript\": {{ JSON.stringify($('Create JSON with metadata').item.json.transcript) }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -528,
+        -1808
+      ],
+      "id": "68e673fd-0072-4255-8869-cb5c46393a87",
+      "name": "Create Call Transcripts Entry In DB"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = { ...$('Create JSON with metadata').item.json };\ndelete data.performance;\n\nreturn [\n  {\n    json: \n      (data)\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        -1808
+      ],
+      "id": "636d7f68-8ca1-4c28-8baa-7ddad7dff5ba",
+      "name": "Convert Transcript Object into AI Friendly"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').first()?.json?.business_id || '' }}\",\n  \"audit_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').first()?.json?.id || '' }}\",\n  \"task_group_id\": \"{{ $('Updating TaskGroups Row To In-Progress').first()?.json?.id || '' }}\",\n  \"overall_summary\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.overall_summary || '' }}\",\n  \"engagement_level\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_level || '' }}\",\n  \"professionalism\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.professionalism || '' }}\",\n  \"script_adherence\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.script_adherence || '' }}\",\n  \"issues_detected\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.issues_detected || '' }}\",\n  \"positive_highlight\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.positive_highlights || '' }}\",\n  \"engagement_and_relationship_building_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Parse AI Analysis Output into JSON').item?.json?.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.improvement_ideas || []) }},\n  \"agent_name\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.agent_name || '' }}\",\n   \"appointment_booked\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.appointment_booked || false }}\",\n  \"initial_wait_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.initial_wait_time || '' }}\",\n  \"on_hold_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.on_hold_time || '' }}\",\n  \"representative_tone\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.representative_tone || '' }}\",\n  \"tone_consistency\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.tone_consistency || '' }}\",\n  \"clarity\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.clarity || '' }}\",\n  \"accuracy\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.accuracy || '' }}\",\n  \"helpfulness\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.helpfulness || '' }}\",\n  \"call_opening\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.call_opening || '' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -1440
+      ],
+      "id": "b27ff15c-a84b-4f3f-aa4d-96b6ded94bbf",
+      "name": "Create Generated Reports Entry In DB"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=question_handling",
+        "options": {}
+      },
+      "id": "829dc3c3-8fe6-4d2b-933a-e3a2a8787f1b",
+      "name": "Split Question Handling",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -1440
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    question_handling: $('Parse AI Analysis Output into JSON').first().json.question_handling\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        -1440
+      ],
+      "id": "19b2e323-1dd1-4d2c-b8c7-fea186706445",
+      "name": "Parse question handling",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff8a64b-82a7-48cf-be01-989fbfbf0cd3",
+              "name": "report_id",
+              "value": "={{ $('Create Generated Reports Entry In DB').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -1440
+      ],
+      "id": "424b9be1-4557-42d6-b6e3-69200715f4b0",
+      "name": "Attach report_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Attach report_id').item.json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        -1440
+      ],
+      "id": "73d8ce27-900c-4435-968c-c6f1f673fa9c",
+      "name": "Create Call Report Evaluations Entry In DB"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('Get a specific business').item.json.id }}"
+            },
+            {
+              "name": "task_name",
+              "value": "=eq.{{ $vars.InboundAnalysisDbKEY }}"
+            },
+            {
+              "name": "status",
+              "value": "eq.pending"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2288,
+        -1600
+      ],
+      "id": "37faff2b-499f-4166-b1f9-af6ab25caf09",
+      "name": "Get a Inbound Call Analysis Task Group"
+    },
+    {
+      "parameters": {
+        "content": "## think of a scenario where the taskgroup doesnt exists for that call and company called anyways on the agent's number",
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2496,
+        -1936
+      ],
+      "typeVersion": 1,
+      "id": "8f29148e-d3f4-4b09-90e5-ebd17b92e7fa",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "393279b9-294d-4ef9-9043-e87bcbb458d5",
+              "leftValue": "={{ $('Get a Inbound Call Analysis Task Group').item.json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2064,
+        -1600
+      ],
+      "id": "2ec8a1e4-df79-4d57-8726-8beb37224814",
+      "name": "If Call was Expected from this Business"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{$vars.TWILIO_ACCOUNT_SID}}/Calls/{{ $('Get Call Details').item.json.body.data.conversation_initiation_client_data.dynamic_variables.system__call_sid }}.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1136,
+        -1808
+      ],
+      "id": "f79efeca-c11a-4323-a8ba-7238d8d82357",
+      "name": "Twilio Call Status",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "PdHyrjcfDMihAzEn",
+          "name": "TwilioAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Update Audit Status to in_progress and Started AT Time').item.json.id }}"
+            },
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('Get a specific business').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -1808
+      ],
+      "id": "9827c26e-a1db-4e19-b8dd-52f1992b03df",
+      "name": "Get OutboundCall Report done During this Audit"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get OutboundCall Report done During this Audit').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        -1808
+      ],
+      "id": "88a2a87b-fca7-43d7-a5f9-4ce6e23c294d",
+      "name": "Get OutboundCall Questionaire done During this Audit"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'ai_analysis')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        -1440
+      ],
+      "id": "1cc14744-836f-4b49-aa57-bb647f8bc5eb",
+      "name": "End AI Analysis Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get a Inbound Call Analysis Task Group').first().json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"error_message\": \"\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        -1424
+      ],
+      "id": "beb0de0c-3e6e-40ee-af2a-4594445bcd69",
+      "name": "Updating TaskGroups Row To Completed",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('Create Call Entry In DB').first().json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"report_id\": \"{{ $('Create Generated Reports Entry In DB').item.json.id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        -1424
+      ],
+      "id": "8e6b2596-9c65-4b4c-8556-90a6b2beb99c",
+      "name": "Update Call Table With Report Id"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define keys to strip\nconst stripReportKeys = [\"id\", \"business_id\", \"audit_id\", \"task_group_id\", \"created_at\"];\nconst stripQuestionaireKeys = [\"id\", \"report_id\"];\n\n// Access report from specific node\nconst reportRaw = $('Get OutboundCall Report done During this Audit').first().json;\n\n// Access questionaire list correctly from all items\nconst questionaireItems = $('Get OutboundCall Questionaire done During this Audit').all().map(i => i.json);\n\n// Guard clauses\nif (!reportRaw) {\n  throw new Error(\"❌ Report node returned no data.\");\n}\nif (!Array.isArray(questionaireItems)) {\n  throw new Error(\"❌ Questionaire node did not return an array.\");\n}\n\n// Strip report keys\nconst report = Object.fromEntries(\n  Object.entries(reportRaw).filter(([key]) => !stripReportKeys.includes(key))\n);\n\n// Clean each questionaire item\nconst cleanedQuestionaire = questionaireItems.map(q =>\n  Object.fromEntries(Object.entries(q).filter(([key]) => !stripQuestionaireKeys.includes(key)))\n);\n\n// Merge into final output\nreport.questionaire = cleanedQuestionaire;\n\nreturn [{ json: report }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -1808
+      ],
+      "id": "d6b910e9-6c07-4179-a0cf-86e89cc85c08",
+      "name": "Combine",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "content": "## Update tables with Completed Status and report id",
+        "height": 400,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        -1568
+      ],
+      "typeVersion": 1,
+      "id": "5ba75527-c740-401f-a1d7-48470d559bfc",
+      "name": "Workflow Overview"
+    },
+    {
+      "parameters": {
+        "content": "## Get Outbound call report from DB to feed to AI as Context",
+        "height": 360,
+        "width": 860,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -1936
+      ],
+      "typeVersion": 1,
+      "id": "41c6714a-9dc8-4d3f-b50f-83693de366b0",
+      "name": "Workflow Overview15"
+    },
+    {
+      "parameters": {
+        "content": "## Get Twilio Output and Save Call Data in DB",
+        "height": 360,
+        "width": 1040,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1200,
+        -1936
+      ],
+      "typeVersion": 1,
+      "id": "7f9317a1-bd0f-4fdd-af93-f9d28367fe21",
+      "name": "Workflow Overview16"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -3200,
+        -1440
+      ],
+      "id": "168ef2a7-3618-47a4-8cdb-252827f756fe",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert AI call transcript analyzer. Your task is to determine whether the USER's messages in the transcript indicate a real human conversation or a voicemail.\nImportant Instructions:\nONLY analyze the USER’s responses. Ignore all AGENT messages.\n\n\nClassify as “voicemail” only if the USER messages contain no real human responses — for example, if they are limited to automated system messages, menu options, or silent/incomplete entries.\n\n\nClassify as “human” if the USER messages show signs of a natural human conversation, such as greetings, specific answers, questions, elaboration, or engagement.\n\n\nDo not classify as voicemail if the USER responds meaningfully after hearing an IVR or pressing keys — even if the conversation begins with an automated system.\n\n\nYour analysis should be resilient to false positives, especially in cases where the conversation starts with automation but transitions to real human interaction.\n\n\nOutput:\n Only return raw JSON in the following format:\n{\n  \"classification\": \"voicemail\" | \"human\",\n  \"reason\": \"Short explanation for classification\"\n}\n\nTranscript:\n {{ JSON.stringify($('Get Call Details').item.json.body.data.transcript )}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -3184,
+        -1616
+      ],
+      "id": "50d4368f-d55c-4726-baba-6f6ea672538c",
+      "name": "Voicemail Detector Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.item.json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2784,
+        -1728
+      ],
+      "id": "2f76b508-b9e5-4667-857b-fa8f2c8a6731",
+      "name": "Parse Voicemail Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "content": "## Detect Voicemail",
+        "height": 440,
+        "width": 660,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3248,
+        -1760
+      ],
+      "typeVersion": 1,
+      "id": "2bef7d2e-04f3-4837-8612-e863aab1cb33",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c06f78f8-db9b-432e-8687-6e358ab043e7",
+              "leftValue": "={{ $('Parse Voicemail Analysis Output into JSON').item.json.classification }}",
+              "rightValue": "voicemail",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2848,
+        -1488
+      ],
+      "id": "535f9723-42a8-407c-b283-ce94e341703f",
+      "name": "Continue if its not a voicemail"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3440,
+        -1568
+      ],
+      "id": "832f3af7-ba5a-4ce9-bf05-2ea9308fa51a",
+      "name": "Get Call Details"
+    }
+  ],
+  "connections": {
+    "CHATGPT": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Call Analysis AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "End AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analysis AI": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        [
+          {
+            "node": "Get a Inbound Call Analysis Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create AI Agent Micro Tasks": {
+      "main": [
+        [
+          {
+            "node": "Updating TaskGroups Row To In-Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating TaskGroups Row To In-Progress": {
+      "main": [
+        [
+          {
+            "node": "Update Audit Status to in_progress and Started AT Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Audit Status to in_progress and Started AT Time": {
+      "main": [
+        [
+          {
+            "node": "Twilio Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start AI Analysis Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Get OutboundCall Report done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create JSON with metadata": {
+      "main": [
+        [
+          {
+            "node": "Create Call Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Create Call Transcripts Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Transcripts Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Convert Transcript Object into AI Friendly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Transcript Object into AI Friendly": {
+      "main": [
+        [
+          {
+            "node": "Start AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Generated Reports Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Parse question handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Question Handling": {
+      "main": [
+        [
+          {
+            "node": "Attach report_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse question handling": {
+      "main": [
+        [
+          {
+            "node": "Split Question Handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach report_id": {
+      "main": [
+        [
+          {
+            "node": "Create Call Report Evaluations Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a Inbound Call Analysis Task Group": {
+      "main": [
+        [
+          {
+            "node": "If Call was Expected from this Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Call was Expected from this Business": {
+      "main": [
+        [
+          {
+            "node": "Create AI Agent Micro Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twilio Call Status": {
+      "main": [
+        [
+          {
+            "node": "Create JSON with metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OutboundCall Report done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Get OutboundCall Questionaire done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OutboundCall Questionaire done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Combine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End AI Analysis Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Create Generated Reports Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Report Evaluations Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Update Call Table With Report Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Call Table With Report Id": {
+      "main": [
+        [
+          {
+            "node": "Updating TaskGroups Row To Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine": {
+      "main": [
+        [
+          {
+            "node": "Call Analysis AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Voicemail Detector Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voicemail Detector Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Voicemail Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Voicemail Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "Continue if its not a voicemail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue if its not a voicemail": {
+      "main": [
+        [
+          {
+            "node": "Get a specific business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Details": {
+      "main": [
+        [
+          {
+            "node": "Voicemail Detector Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "11c4ce68-d9e5-4d7d-8227-42f0b918392b",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-06-20T09:51:03.705Z",
+      "updatedAt": "2025-06-20T09:51:03.705Z",
+      "role": "workflow:owner",
+      "workflowId": "FYCdJ9WBDKvj8mWI",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
