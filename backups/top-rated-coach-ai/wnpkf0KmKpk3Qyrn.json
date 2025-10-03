@@ -1,0 +1,866 @@
+{
+  "createdAt": "2025-07-09T09:28:14.851Z",
+  "updatedAt": "2025-10-02T09:37:47.000Z",
+  "id": "wnpkf0KmKpk3Qyrn",
+  "name": "Supabase APIs Testing",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/auth/v1/token",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "password"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "=fuzailsohail40@gmail.com"
+            },
+            {
+              "name": "password",
+              "value": "jajakaka1245@"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -720,
+        2224
+      ],
+      "id": "50ac813b-3101-4eb9-bfd1-d08fd61c6caf",
+      "name": "Login"
+    },
+    {
+      "parameters": {
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/businesses?id=eq.crunch-cs-001&select=*",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        656
+      ],
+      "id": "1ceae234-64c4-476e-bf6f-e8763c4d728a",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/businesses",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"id\": \"Bruh Bruh\",\n    \"business_name\": \"Bruh Fitness\",\n    \"business_category\": [\"gym\"],\n    \"website\": \"https://www.crunch.com/\",\n    \"phone_number\": \"+19547993801\",\n    \"email\": \"fuzailsohail40@gmail.com\",\n    \"address\": \"801 University Dr\",\n    \"latitude\": 26.243696,\n    \"longitude\": -80.252073,\n    \"formatted_address\": \"801 N University Dr, Coral Springs, FL 33071\",\n    \"street_number\": \"801\",\n    \"street_name\": \"University Dr\",\n    \"city\": \"Coral Springs\",\n    \"state_province\": \"Florida\",\n    \"postal_code\": \"33071\",\n    \"country\": \"USA\",\n    \"country_code\": \"US\",\n    \"timezone\": \"America/New_York\",\n    \"google_maps_url\": \"https://maps.app.goo.gl/ZVjmzEw2DcJQEYVDA\",\n    \"owner_id\": \"{{$('Login').item.json.user.id}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        1984
+      ],
+      "id": "034267bc-8678-4987-afb9-be6a7f6c37df",
+      "name": "Create a new business"
+    },
+    {
+      "parameters": {
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits?business_id=eq.brunch-bs-001&select=id,audit_type,status,created_at,started_at,completed_at,overall_score",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        1552
+      ],
+      "id": "b96dcead-a3d7-42ea-8491-2758648063a1",
+      "name": "Get audits for a business"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/auth/v1/signup",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"email\": \"vicak93732@bulmp3.com\",\n  \"password\": \"Secure_password21312@#\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        432
+      ],
+      "id": "9643e2ab-dbfa-4c47-a9ca-589b341ae47b",
+      "name": "SignUp in Supabase Auth"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/auth/v1/verify",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"vicak93732@bulmp3.com\",\n  \"token\": \"113774\",\n  \"type\": \"signup\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -720,
+        432
+      ],
+      "id": "8a4f9daa-a329-42ca-9bbc-d58de4a5320d",
+      "name": "Verify Email with OTP"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/auth/v1/otp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"email\": \"vicak93732@bulmp3.com\",\n    \"type\": \"signup\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -720,
+        1328
+      ],
+      "id": "67923f0f-d66e-43b1-ab26-1faf41e05dba",
+      "name": "Resend OTP"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "01e307d2-b361-4636-a15a-ee2bc37941d5",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "Email not confirmed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -944,
+        1328
+      ],
+      "id": "c3303e12-9298-4a1f-bd4e-b084e7599923",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "Secure_password21312@#"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        1184
+      ],
+      "typeVersion": 1,
+      "id": "7fc43010-cb5b-431a-99d9-25ff80049b88",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/users",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $json.user.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "display_name",
+              "value": "Test User"
+            },
+            {
+              "name": "phone_number",
+              "value": "+15551234567"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -496,
+        432
+      ],
+      "id": "78542946-9763-407a-8722-8b23e54b8f61",
+      "name": "Update Profile"
+    },
+    {
+      "parameters": {
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/businesses?select=id,business_name,owner_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        1104
+      ],
+      "id": "87ace8ad-2cc0-4c4d-ad40-e936c3f3403f",
+      "name": "List all businesses"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('List Last 90 Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        2224
+      ],
+      "id": "c66a785d-d594-4726-949d-bc1fbb3fb2da",
+      "name": "Create Audit for User Business"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        2224
+      ],
+      "id": "44bead32-99bc-4180-9641-810bd877d323",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.ElevenLabsBaseURL}}conversations/conv_9001k2tkw1m8ew69wawywpzcq853/audio",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "audio/mpeg"
+            },
+            {
+              "name": "xi-api-key",
+              "value": "={{$vars.ElevenLabsAPIkey}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        1776
+      ],
+      "id": "c8a96395-a9fa-427e-b59a-2428b30d9e31",
+      "name": "Get MP3",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('List businesses owned by the current user').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,merge=duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "owner_id",
+              "value": "={{null}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        912
+      ],
+      "id": "7658d0d5-1867-4218-a1f3-e8a40a915290",
+      "name": "Delete UserID from User Businesses"
+    },
+    {
+      "parameters": {
+        "content": "## DANGER\n",
+        "height": 304,
+        "width": 368,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        816
+      ],
+      "typeVersion": 1,
+      "id": "66fac435-2490-4572-a480-7c9f8f99a89b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "current_audit_id",
+              "value": "=is.null"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        2576
+      ],
+      "id": "ed22dcde-f139-495c-b4ab-58749bb1b0db",
+      "name": "List UnAudited Businesses"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('Create a new business').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -944,
+        2448
+      ],
+      "id": "33111aad-eac0-4b66-8df1-878ff36696ae",
+      "name": "Create Audit for User Business1"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "order",
+              "value": "=created_at.desc"
+            },
+            {
+              "name": "limit",
+              "value": "90"
+            },
+            {
+              "name": "select",
+              "value": "id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -496,
+        2240
+      ],
+      "id": "8e829e3e-a9d7-410f-a9f6-063f481e8e8c",
+      "name": "List Last 90 Businesses"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('List UnAudited Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        2560
+      ],
+      "id": "a724ee70-0245-4b1b-8f04-d07ce7e350db",
+      "name": "Create Audit for User Business2"
+    }
+  ],
+  "connections": {
+    "Login": {
+      "main": [
+        [
+          {
+            "node": "List UnAudited Businesses",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        []
+      ]
+    },
+    "Create a new business": {
+      "main": [
+        []
+      ]
+    },
+    "SignUp in Supabase Auth": {
+      "main": [
+        [
+          {
+            "node": "Verify Email with OTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Email with OTP": {
+      "main": [
+        [
+          {
+            "node": "Update Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resend OTP": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Resend OTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Profile": {
+      "main": [
+        []
+      ]
+    },
+    "List all businesses": {
+      "main": [
+        []
+      ]
+    },
+    "Create Audit for User Business": {
+      "main": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List UnAudited Businesses": {
+      "main": [
+        [
+          {
+            "node": "Create Audit for User Business2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Last 90 Businesses": {
+      "main": [
+        [
+          {
+            "node": "Create Audit for User Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "SignUp in Supabase Auth": [
+      {
+        "json": {
+          "id": "823580d6-fcb1-41ab-adc5-ad5a2da0604f",
+          "aud": "authenticated",
+          "role": "authenticated",
+          "email": "vicak93732@bulmp3.com",
+          "phone": "",
+          "confirmation_sent_at": "2025-07-10T10:51:04.047195134Z",
+          "app_metadata": {
+            "provider": "email",
+            "providers": [
+              "email"
+            ]
+          },
+          "user_metadata": {
+            "email": "vicak93732@bulmp3.com",
+            "email_verified": false,
+            "phone_verified": false,
+            "sub": "823580d6-fcb1-41ab-adc5-ad5a2da0604f"
+          },
+          "identities": [
+            {
+              "identity_id": "15c706b0-ad8a-468c-b942-c6eb7aa00e60",
+              "id": "823580d6-fcb1-41ab-adc5-ad5a2da0604f",
+              "user_id": "823580d6-fcb1-41ab-adc5-ad5a2da0604f",
+              "identity_data": {
+                "email": "vicak93732@bulmp3.com",
+                "email_verified": false,
+                "phone_verified": false,
+                "sub": "823580d6-fcb1-41ab-adc5-ad5a2da0604f"
+              },
+              "provider": "email",
+              "last_sign_in_at": "2025-07-10T10:51:04.041629219Z",
+              "created_at": "2025-07-10T10:51:04.041676Z",
+              "updated_at": "2025-07-10T10:51:04.041676Z",
+              "email": "vicak93732@bulmp3.com"
+            }
+          ],
+          "created_at": "2025-07-10T10:51:04.032016Z",
+          "updated_at": "2025-07-10T10:51:04.560822Z",
+          "is_anonymous": false
+        }
+      }
+    ]
+  },
+  "versionId": "cf5ee5ff-8fe4-44c8-b484-e141c11fe80d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-09T09:28:14.856Z",
+      "updatedAt": "2025-07-09T09:28:14.856Z",
+      "role": "workflow:owner",
+      "workflowId": "wnpkf0KmKpk3Qyrn",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
