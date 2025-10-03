@@ -1,0 +1,267 @@
+{
+  "createdAt": "2025-08-08T17:59:35.314Z",
+  "updatedAt": "2025-09-18T17:34:31.000Z",
+  "id": "cjKTvVQeI0J9xkV4",
+  "name": "Fail InboundAnalysis Task after 72 hour deadline (Depreciated-Shifted to Cron job Supabase)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "const now = new Date().toISOString();\nreturn [{ json: { now } }];"
+      },
+      "id": "95fc62d8-d733-44d9-9b6e-5f5b99e78064",
+      "name": "Get Now Timestamp",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_name",
+              "value": "=eq.{{ $vars.InboundAnalysisDbKEY }}"
+            },
+            {
+              "name": "scheduled_at",
+              "value": "=lte.={{$('Get Now Timestamp').item.json[\"now\"]}}"
+            },
+            {
+              "name": "status",
+              "value": "eq.pending"
+            },
+            {
+              "name": "select",
+              "value": "id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "062f362f-3e5f-4e7f-9a0c-05f72310720e",
+      "name": "Get Expired InboundCallAnalysis Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        496,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{$('Get Expired InboundCallAnalysis Tasks').item.json.id}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "failed"
+            },
+            {
+              "name": "error_message",
+              "value": "Business did not follow up within 72 hours"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "83c59ecf-2b2f-4582-8129-857b88344bd8",
+      "name": "Mark as Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        720,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Fail InboundCallAnalysis Task after the deadline\n",
+        "height": 80,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "544ee19f-fbc6-443d-a2ea-b8657f2ea0c9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "9e483a3e-b7e7-4f56-a271-781a557a1f55",
+      "name": "Run Every 10 Mins",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -208
+      ]
+    }
+  ],
+  "connections": {
+    "Get Now Timestamp": {
+      "main": [
+        [
+          {
+            "node": "Get Expired InboundCallAnalysis Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Expired InboundCallAnalysis Tasks": {
+      "main": [
+        [
+          {
+            "node": "Mark as Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Every 10 Mins": {
+      "main": [
+        [
+          {
+            "node": "Get Now Timestamp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Run Every 5 Mins": {
+      "recurrenceRules": []
+    },
+    "node:Run Every 10 Mins": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "257fb139-7b40-4f9d-8700-ec8d8b1851dd",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-08T17:59:35.318Z",
+      "updatedAt": "2025-08-08T17:59:35.318Z",
+      "role": "workflow:owner",
+      "workflowId": "cjKTvVQeI0J9xkV4",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
