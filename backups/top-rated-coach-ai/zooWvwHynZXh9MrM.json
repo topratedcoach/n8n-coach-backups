@@ -1,0 +1,1456 @@
+{
+  "createdAt": "2025-08-21T07:27:36.375Z",
+  "updatedAt": "2025-09-15T18:38:02.000Z",
+  "id": "zooWvwHynZXh9MrM",
+  "name": "Make Audit Data report sheet",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        288,
+        192
+      ],
+      "id": "1f17be5b-8fbd-4040-99f8-4c32edf71e5d",
+      "name": "Loop Over Items",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Get Outbound Task Group').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        736,
+        112
+      ],
+      "id": "624b3807-1f74-42bc-90fb-7460ae991752",
+      "name": "Get Outbound Calls",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "=eq.{{ $('Get Outbound Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1184,
+        16
+      ],
+      "id": "208819ab-9946-41dd-99b4-4f4e72683bf7",
+      "name": "Get Call Transcript",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Get Outbound Task Group').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        16
+      ],
+      "id": "cd4ad906-d5d0-4e75-8356-6ca0de5474d3",
+      "name": "Get Call Report",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.current_audit_id }}"
+            },
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.id }}"
+            },
+            {
+              "name": "task_name",
+              "value": "=eq.{{ $vars.OutboundAnalysisDbKEY }}"
+            },
+            {
+              "name": "select",
+              "value": "id,audit_id,business_id,task_name,status,error_message"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        112
+      ],
+      "id": "d08a813b-f238-4435-bf9e-c2726e440dcb",
+      "name": "Get Outbound Task Group",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "=eq.{{ $('Get Inbound Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2528,
+        208
+      ],
+      "id": "19093d4b-721f-4f31-a821-02074a29b4b1",
+      "name": "Get Call Transcript1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Get Inbound Task Group').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2752,
+        208
+      ],
+      "id": "01f92831-3fea-4497-9308-17a8adfb4429",
+      "name": "Get Call Report1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.current_audit_id }}"
+            },
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.id }}"
+            },
+            {
+              "name": "task_name",
+              "value": "=eq.{{ $vars.InboundAnalysisDbKEY }}"
+            },
+            {
+              "name": "select",
+              "value": "id,audit_id,business_id,task_name,status,error_message"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1856,
+        112
+      ],
+      "id": "fe6ca307-16dc-417f-b472-6c0612d91512",
+      "name": "Get Inbound Task Group",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Get Inbound Task Group').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2080,
+        112
+      ],
+      "id": "444b8188-011d-47fe-8318-f43021ec8f43",
+      "name": "Get Inbound Calls",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "select",
+              "value": "id,business_name,website,phone_number,email,address,street_number,city,state_province,postal_code,country,country_code,timezone,current_audit_id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        192
+      ],
+      "id": "bda54e68-0f2e-4853-8325-9a3a58078a82",
+      "name": "Get all businesses",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5ab68236-9087-40d7-88ba-de3494394c3c",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        112
+      ],
+      "id": "7b04dc66-7cf6-41ef-b03a-7ac814783b96",
+      "name": "If its not empty"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5ab68236-9087-40d7-88ba-de3494394c3c",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        112
+      ],
+      "id": "ec2b092d-6485-4821-9dee-9a0574c44258",
+      "name": "If its not empty1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
+          "mode": "list",
+          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AllDataInbound",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Loop Over Items').item.json.business_name || '' }}"
+            },
+            {
+              "column": "website",
+              "fieldValue": "={{ $('Loop Over Items').item.json.website || '' }}"
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.phone_number || '' }}"
+            },
+            {
+              "column": "address",
+              "fieldValue": "={{ $('Loop Over Items').item.json.address || '' }}"
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.street_number || '' }}"
+            },
+            {
+              "column": "city",
+              "fieldValue": "={{ $('Loop Over Items').item.json.city || ''  }}"
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "={{ $('Loop Over Items').item.json.state_province || ''  }}"
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "={{ $('Loop Over Items').item.json.postal_code || '' }}"
+            },
+            {
+              "column": "country",
+              "fieldValue": "={{ $('Loop Over Items').item.json.country || '' }}"
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "={{ $('Loop Over Items').item.json.timezone|| ''  }}"
+            },
+            {
+              "column": "status",
+              "fieldValue": "={{ $('Get Inbound Task Group').item.json.status || '' }}"
+            },
+            {
+              "column": "error_message",
+              "fieldValue": "={{ $('Get Inbound Task Group').item.json.error_message || '' }}"
+            },
+            {
+              "column": "summary",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.summary || '' }}"
+            },
+            {
+              "column": "conv_id",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.conv_id || '' }}"
+            },
+            {
+              "column": "call_duration",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.call_duration || '' }}"
+            },
+            {
+              "column": "interruptions",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.interruptions|| ''  }}"
+            },
+            {
+              "column": "termination_reason",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.termination_reason || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add Inbound Data if Call Doesnt Exist",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        2976,
+        16
+      ],
+      "id": "c40bbf41-feb0-4b0e-ae92-3dc0d1ebe074",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        208
+      ],
+      "id": "34a50eb1-9675-4757-8994-5bd65e4b9ffb",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
+          "mode": "list",
+          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AllDataOutbound",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Loop Over Items').item.json.business_name || '' }}"
+            },
+            {
+              "column": "website",
+              "fieldValue": "={{ $('Loop Over Items').item.json.website || '' }}"
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.phone_number || '' }}"
+            },
+            {
+              "column": "address",
+              "fieldValue": "={{ $('Loop Over Items').item.json.address || '' }}"
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.street_number || '' }}"
+            },
+            {
+              "column": "city",
+              "fieldValue": "={{ $('Loop Over Items').item.json.city || ''  }}"
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "={{ $('Loop Over Items').item.json.state_province || ''  }}"
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "={{ $('Loop Over Items').item.json.postal_code || '' }}"
+            },
+            {
+              "column": "country",
+              "fieldValue": "={{ $('Loop Over Items').item.json.country || '' }}"
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "={{ $('Loop Over Items').item.json.timezone|| ''  }}"
+            },
+            {
+              "column": "status",
+              "fieldValue": "={{ $('Get Outbound Task Group').item.json.status || '' }}"
+            },
+            {
+              "column": "error_message",
+              "fieldValue": "={{ $('Get Outbound Task Group').item.json.error_message || '' }}"
+            },
+            {
+              "column": "summary",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.summary || '' }}"
+            },
+            {
+              "column": "conv_id",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.conv_id || '' }}"
+            },
+            {
+              "column": "call_duration",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.call_duration || '' }}"
+            },
+            {
+              "column": "interruptions",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.interruptions|| ''  }}"
+            },
+            {
+              "column": "termination_reason",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.termination_reason || '' }}"
+            },
+            {
+              "column": "transcript",
+              "fieldValue": "={{ $('Get Call Transcript').item?.json?.transcript ?? '' }}"
+            },
+            {
+              "column": "overall_summary",
+              "fieldValue": "={{ $json?.overall_summary ?? '' }}"
+            },
+            {
+              "column": "engagement_level",
+              "fieldValue": "={{ $json?.engagement_level ??''}}"
+            },
+            {
+              "column": "professionalism",
+              "fieldValue": "={{ $json?.professionalism ??''}}"
+            },
+            {
+              "column": "script_adherence",
+              "fieldValue": "={{ $json?.script_adherence ??\"\"}}"
+            },
+            {
+              "column": "issues_detected",
+              "fieldValue": "={{ $json?.issues_detected??\"\" }}"
+            },
+            {
+              "column": "positive_highlight",
+              "fieldValue": "={{ $json?.positive_highlight ??''}}"
+            },
+            {
+              "column": "improvement_ideas",
+              "fieldValue": "={{ $json?.improvement_ideas ??\"\"}}"
+            },
+            {
+              "column": "agent_name",
+              "fieldValue": "={{ $json?.agent_name??'' }}"
+            },
+            {
+              "column": "engagement_and_relationship_building_score",
+              "fieldValue": "={{ $json?.engagement_and_relationship_building_score ??''}}"
+            },
+            {
+              "column": "product_service_knowledge_and_education_score",
+              "fieldValue": "={{ $json?.product_service_knowledge_and_education_score??'' }}"
+            },
+            {
+              "column": "answering_questions_score",
+              "fieldValue": "={{ $json?.answering_questions_score??'' }}"
+            },
+            {
+              "column": "ability_to_upsell_and_cross_sell_score",
+              "fieldValue": "={{ $json?.ability_to_upsell_and_cross_sell_score??'' }}"
+            },
+            {
+              "column": "closing_for_appointment_and_call_to_action_score",
+              "fieldValue": "={{ $json?.closing_for_appointment_and_call_to_action_score??'' }}"
+            },
+            {
+              "column": "overall_success_rate_out_of_100",
+              "fieldValue": "={{ $json?.overall_success_rate_out_of_100??'' }}"
+            },
+            {
+              "column": "initial_wait_time",
+              "fieldValue": "={{ $json?.initial_wait_time??'' }}"
+            },
+            {
+              "column": "on_hold_time",
+              "fieldValue": "={{ $json?.on_hold_time??'' }}"
+            },
+            {
+              "column": "representative_tone",
+              "fieldValue": "={{ $json?.representative_tone??'' }}"
+            },
+            {
+              "column": "tone_consistency",
+              "fieldValue": "={{ $json?.tone_consistency??'' }}"
+            },
+            {
+              "column": "clarity",
+              "fieldValue": "={{ $json?.clarity??'' }}"
+            },
+            {
+              "column": "accuracy",
+              "fieldValue": "={{ $json?.accuracy??'' }}"
+            },
+            {
+              "column": "helpfulness",
+              "fieldValue": "={{ $json?.helpfulness??'' }}"
+            },
+            {
+              "column": "call_opening",
+              "fieldValue": "={{ $json?.call_opening??'' }}"
+            },
+            {
+              "column": "appointment_booked",
+              "fieldValue": "={{ $json?.appointment_booked??'' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add Outbound Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1632,
+        16
+      ],
+      "id": "2fb160ba-ffd6-444a-9a8a-16aeaec52ad4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
+          "mode": "list",
+          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AllDataInbound",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Loop Over Items').item.json.business_name || '' }}"
+            },
+            {
+              "column": "website",
+              "fieldValue": "={{ $('Loop Over Items').item.json.website || '' }}"
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.phone_number || '' }}"
+            },
+            {
+              "column": "address",
+              "fieldValue": "={{ $('Loop Over Items').item.json.address || '' }}"
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.street_number || '' }}"
+            },
+            {
+              "column": "city",
+              "fieldValue": "={{ $('Loop Over Items').item.json.city || ''  }}"
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "={{ $('Loop Over Items').item.json.state_province || ''  }}"
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "={{ $('Loop Over Items').item.json.postal_code || '' }}"
+            },
+            {
+              "column": "country",
+              "fieldValue": "={{ $('Loop Over Items').item.json.country || '' }}"
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "={{ $('Loop Over Items').item.json.timezone|| ''  }}"
+            },
+            {
+              "column": "status",
+              "fieldValue": "={{ $('Get Inbound Task Group').item.json.status || '' }}"
+            },
+            {
+              "column": "error_message",
+              "fieldValue": "={{ $('Get Inbound Task Group').item.json.error_message || '' }}"
+            },
+            {
+              "column": "summary",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.summary || '' }}"
+            },
+            {
+              "column": "conv_id",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.conv_id || '' }}"
+            },
+            {
+              "column": "call_duration",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.call_duration || '' }}"
+            },
+            {
+              "column": "interruptions",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.interruptions|| ''  }}"
+            },
+            {
+              "column": "termination_reason",
+              "fieldValue": "={{ $('Get Inbound Calls').item.json.termination_reason || '' }}"
+            },
+            {
+              "column": "transcript",
+              "fieldValue": "={{ $('Get Call Transcript1').item?.json?.transcript ?? '' }}"
+            },
+            {
+              "column": "overall_summary",
+              "fieldValue": "={{ $json?.overall_summary ?? '' }}"
+            },
+            {
+              "column": "engagement_level",
+              "fieldValue": "={{ $json?.engagement_level ??''}}"
+            },
+            {
+              "column": "professionalism",
+              "fieldValue": "={{ $json?.professionalism ??''}}"
+            },
+            {
+              "column": "script_adherence",
+              "fieldValue": "={{ $json?.script_adherence ??\"\"}}"
+            },
+            {
+              "column": "issues_detected",
+              "fieldValue": "={{ $json?.issues_detected??\"\" }}"
+            },
+            {
+              "column": "positive_highlight",
+              "fieldValue": "={{ $json?.positive_highlight ??''}}"
+            },
+            {
+              "column": "improvement_ideas",
+              "fieldValue": "={{ $json?.improvement_ideas ??\"\"}}"
+            },
+            {
+              "column": "agent_name",
+              "fieldValue": "={{ $json?.agent_name??'' }}"
+            },
+            {
+              "column": "engagement_and_relationship_building_score",
+              "fieldValue": "={{ $json?.engagement_and_relationship_building_score ??''}}"
+            },
+            {
+              "column": "product_service_knowledge_and_education_score",
+              "fieldValue": "={{ $json?.product_service_knowledge_and_education_score??'' }}"
+            },
+            {
+              "column": "answering_questions_score",
+              "fieldValue": "={{ $json?.answering_questions_score??'' }}"
+            },
+            {
+              "column": "ability_to_upsell_and_cross_sell_score",
+              "fieldValue": "={{ $json?.ability_to_upsell_and_cross_sell_score??'' }}"
+            },
+            {
+              "column": "closing_for_appointment_and_call_to_action_score",
+              "fieldValue": "={{ $json?.closing_for_appointment_and_call_to_action_score??'' }}"
+            },
+            {
+              "column": "overall_success_rate_out_of_100",
+              "fieldValue": "={{ $json?.overall_success_rate_out_of_100??'' }}"
+            },
+            {
+              "column": "initial_wait_time",
+              "fieldValue": "={{ $json?.initial_wait_time??'' }}"
+            },
+            {
+              "column": "on_hold_time",
+              "fieldValue": "={{ $json?.on_hold_time??'' }}"
+            },
+            {
+              "column": "representative_tone",
+              "fieldValue": "={{ $json?.representative_tone??'' }}"
+            },
+            {
+              "column": "tone_consistency",
+              "fieldValue": "={{ $json?.tone_consistency??'' }}"
+            },
+            {
+              "column": "clarity",
+              "fieldValue": "={{ $json?.clarity??'' }}"
+            },
+            {
+              "column": "accuracy",
+              "fieldValue": "={{ $json?.accuracy??'' }}"
+            },
+            {
+              "column": "helpfulness",
+              "fieldValue": "={{ $json?.helpfulness??'' }}"
+            },
+            {
+              "column": "call_opening",
+              "fieldValue": "={{ $json?.call_opening??'' }}"
+            },
+            {
+              "column": "appointment_booked",
+              "fieldValue": "={{ $json?.appointment_booked??'' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add Inbound Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        2976,
+        208
+      ],
+      "id": "f10e4641-a708-4192-babe-f7f0dcc3fed6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
+          "mode": "list",
+          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AllDataOutbound",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Loop Over Items').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Loop Over Items').item.json.business_name || '' }}"
+            },
+            {
+              "column": "website",
+              "fieldValue": "={{ $('Loop Over Items').item.json.website || '' }}"
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.phone_number || '' }}"
+            },
+            {
+              "column": "address",
+              "fieldValue": "={{ $('Loop Over Items').item.json.address || '' }}"
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "={{ $('Loop Over Items').item.json.street_number || '' }}"
+            },
+            {
+              "column": "city",
+              "fieldValue": "={{ $('Loop Over Items').item.json.city || ''  }}"
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "={{ $('Loop Over Items').item.json.state_province || ''  }}"
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "={{ $('Loop Over Items').item.json.postal_code || '' }}"
+            },
+            {
+              "column": "country",
+              "fieldValue": "={{ $('Loop Over Items').item.json.country || '' }}"
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "={{ $('Loop Over Items').item.json.timezone|| ''  }}"
+            },
+            {
+              "column": "status",
+              "fieldValue": "={{ $('Get Outbound Task Group').item.json.status || '' }}"
+            },
+            {
+              "column": "error_message",
+              "fieldValue": "={{ $('Get Outbound Task Group').item.json.error_message || '' }}"
+            },
+            {
+              "column": "summary",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.summary || '' }}"
+            },
+            {
+              "column": "conv_id",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.conv_id || '' }}"
+            },
+            {
+              "column": "call_duration",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.call_duration || '' }}"
+            },
+            {
+              "column": "interruptions",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.interruptions|| ''  }}"
+            },
+            {
+              "column": "termination_reason",
+              "fieldValue": "={{ $('Get Outbound Calls').item.json.termination_reason || '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add Outbound Data if Call doesnt exists",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        1632,
+        208
+      ],
+      "id": "3b8ffe6b-a108-4ef6-b39d-f734ec0229a9",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "sheetId": "197_UgO1LD7wEs5ooIY2UEJCdS59gdj8LtqBZ0Bt4PhQ",
+        "range": "AllDataOutbound!A:A",
+        "lookupColumn": "id",
+        "lookupValue": "={{ $('Loop Over Items').item.json.id }}",
+        "options": {}
+      },
+      "name": "Get Business IDs from Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        -208
+      ],
+      "id": "641faceb-1e5a-4f6d-b45d-2d62d3519762",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc6297fc-22c9-493d-a967-930c8e6895b3",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        -208
+      ],
+      "id": "17308c3f-0da4-49cc-ade4-5689d33d0b22",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "c7e41e95-b421-4f9d-aeeb-de77fce4656d",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Outbound Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Outbound Calls": {
+      "main": [
+        [
+          {
+            "node": "If its not empty1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Transcript": {
+      "main": [
+        [
+          {
+            "node": "Get Call Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Outbound Task Group": {
+      "main": [
+        [
+          {
+            "node": "Get Outbound Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Transcript1": {
+      "main": [
+        [
+          {
+            "node": "Get Call Report1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Inbound Task Group": {
+      "main": [
+        [
+          {
+            "node": "Get Inbound Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Inbound Calls": {
+      "main": [
+        [
+          {
+            "node": "If its not empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all businesses": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If its not empty": {
+      "main": [
+        [
+          {
+            "node": "Get Call Transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Inbound Data if Call Doesnt Exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If its not empty1": {
+      "main": [
+        [
+          {
+            "node": "Get Call Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Outbound Data if Call doesnt exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Report": {
+      "main": [
+        [
+          {
+            "node": "Add Outbound Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Report1": {
+      "main": [
+        [
+          {
+            "node": "Add Inbound Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Inbound Data if Call Doesnt Exist": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Outbound Data": {
+      "main": [
+        [
+          {
+            "node": "Get Inbound Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Inbound Data": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Outbound Data if Call doesnt exists": {
+      "main": [
+        [
+          {
+            "node": "Get Inbound Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Business IDs from Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get all businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e72c3c38-7053-4e38-b0f3-0eff0cce1dad",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-21T07:27:36.381Z",
+      "updatedAt": "2025-08-21T07:27:36.381Z",
+      "role": "workflow:owner",
+      "workflowId": "zooWvwHynZXh9MrM",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
