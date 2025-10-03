@@ -1,0 +1,547 @@
+{
+  "createdAt": "2025-09-25T10:43:47.711Z",
+  "updatedAt": "2025-09-29T13:48:38.000Z",
+  "id": "EfYDJOTVlmhYLVkb",
+  "name": "Website Audit TopRatedCoach",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        -512
+      ],
+      "id": "9e4507d9-635d-44f3-8fcb-a7540b895198",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced website data extraction with OpenAI analysis\nconst input = $input.first()?.json || {};\n\nconsole.log(\"=== ENHANCED WEBSITE DATA EXTRACTION ===\");\nconsole.log(\"Input structure:\", Object.keys(input));\n\n// Extract raw HTML content\nlet rawHtml = '';\n\nif (input.website_data && Array.isArray(input.website_data)) {\n    rawHtml = input.website_data.join(' ');\n} else if (typeof input.website_data === 'string') {\n    rawHtml = input.website_data;\n} else if (input.Services && Array.isArray(input.Services)) {\n    // Fallback for existing \"Services\" key\n    rawHtml = input.Services.join(' ');\n} else if (typeof input.Services === 'string') {\n    rawHtml = input.Services;\n} else {\n    // Try to find the largest text content\n    const allValues = Object.values(input);\n    for (const value of allValues) {\n        if (typeof value === 'string' && value.length > 100) {\n            rawHtml = value;\n            break;\n        }\n    }\n}\n\nconsole.log(\"Raw HTML length:\", rawHtml.length);\n\n// Clean HTML for better analysis (remove excess whitespace and scripts)\nconst cleanedHtml = rawHtml\n    // Remove script and style tags entirely\n    .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n    .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n    \n    // Remove comments\n    .replace(/<!--[\\s\\S]*?-->/g, '')\n    \n    // Normalize whitespace\n    .replace(/\\s+/g, ' ')\n    .trim();\n\nconsole.log(\"Cleaned HTML length:\", cleanedHtml.length);\n\n// Prepare for OpenAI analysis - truncate if too long (keep under 100K chars)\nconst maxLength = 100000;\nlet analysisContent = cleanedHtml;\n\nif (analysisContent.length > maxLength) {\n    // Try to keep the most important parts\n    const parts = analysisContent.split(/(?=<(?:header|main|section|div[^>]*class[^>]*(?:content|about|service|team))|<h[1-6])/i);\n    \n    let truncatedContent = '';\n    for (const part of parts) {\n        if (truncatedContent.length + part.length <= maxLength) {\n            truncatedContent += part;\n        } else {\n            break;\n        }\n    }\n    \n    analysisContent = truncatedContent || analysisContent.substring(0, maxLength);\n    console.log(\"Content truncated to:\", analysisContent.length, \"characters\");\n}\n\n// Create the analysis prompt\nconst analysisPrompt = `Analyze the provided HTML content and extract the following information. Present the output as a JSON object with the specified structure.\n\n**JSON Structure:**\n\\`\\`\\`json\n{\n  \"business_owner\": {\n    \"name\": null,\n    \"description\": null\n  },\n  \"services_promoted\": [],\n  \"external_marketing_services\": [],\n  \"social_media_profiles\": []\n}\n\\`\\`\\`\n\n**Extraction Details:**\n\n**business_owner** (object or null):\n- **name** (string or null): Identify the name of the primary business owner, founder, director, principal, or key responsible individual (e.g., \"Dr. John Smith\", \"Coach Jane Doe\", \"Founder Alex Lee\"). Look for names explicitly associated with leadership roles in \"About Us\", \"Meet Our Team\", \"Medical Director\", or similar sections. If found, provide the full name. If not explicitly found, return null.\n- **description** (string or null): If a name is found, look for a concise description about this individual's role, philosophy, or key contributions. Extract a coherent paragraph or sentences directly related to them. If no description is found, return null.\n\n**services_promoted** (array of strings): Identify distinct services, classes, programs, memberships, treatments, or offerings. Look in navigation menus, service sections, or detailed descriptions. Prioritize specific service names over general categories.\n\n**external_marketing_services** (array of objects): Identify third-party services for:\n- Lead Management/Generation (pop-ups, chat widgets, newsletter sign-ups)\n- Scheduling/Appointments (booking systems, appointment forms, call tracking)\n- Payments Processing (payment plans like Cherry, CareCredit, rewards like Aspire, Alle)\nFor each service: {\"name\": \"ServiceName\", \"purpose\": [\"Lead Management\"|\"Scheduling\"|\"Payments\"], \"url\": \"optional_base_url\"}\n\n**social_media_profiles** (array of objects): Find direct links to official social media profiles. For each: {\"platform\": \"PlatformName\", \"url\": \"full_profile_url\"}\n\n**HTML Content:**\n${analysisContent}`;\n\n// Return the prepared data for OpenAI analysis\nreturn [{\n    json: {\n        htmlContent: analysisContent,\n        analysisPrompt: analysisPrompt,\n        originalLength: rawHtml.length,\n        cleanedLength: cleanedHtml.length,\n        analysisLength: analysisContent.length,\n        truncated: analysisContent.length < cleanedHtml.length,\n        \n        // Legacy fields for compatibility\n        fullText: analysisContent.substring(0, 1000) + \"...\", // First 1000 chars for compatibility\n        targetLength: analysisContent.length,\n        compressionRatio: ((rawHtml.length - analysisContent.length) / rawHtml.length * 100).toFixed(1) + \"%\"\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        208
+      ],
+      "id": "49244f02-33a8-464a-85bc-6ae83a608c94",
+      "name": "HTML Text Cleaning"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://production-sfo.browserless.io/content?token=2SbzME1uUu5Pj2rdbd919710f04f1b51cff52ce6540521d42",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}\n",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $json.url }}\",\n  \"gotoOptions\": {\n    \"waitUntil\": \"networkidle2\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1392,
+        208
+      ],
+      "id": "3c638bed-e9d4-4cee-a3dd-384d5c4e52ba",
+      "name": "Website Text Scraping",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "website_data",
+              "cssSelector": "body",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        208
+      ],
+      "id": "284ac43b-880d-450a-90d0-be5a513e7170",
+      "name": "HTML For Services",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Essential JSON extraction from website analysis OpenAI response\nconst input = $input.first()?.json || {};\n\nconsole.log(\"=== EXTRACTING JSON FROM WEBSITE ANALYSIS ===\");\n\nlet parsedData = null;\n\n// Extract content from OpenAI response\nif (input.message && input.message.content) {\n    const content = input.message.content;\n    console.log(\"Found OpenAI content, length:\", content.length);\n    \n    // Extract JSON from code blocks\n    const jsonMatch = content.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n    if (jsonMatch && jsonMatch[1]) {\n        const jsonContent = jsonMatch[1].trim();\n        console.log(\"✅ Extracted JSON from code blocks\");\n        \n        try {\n            parsedData = JSON.parse(jsonContent);\n            console.log(\"✅ Successfully parsed JSON\");\n            console.log(\"Business Owner Name:\", parsedData.business_owner?.name || \"NOT FOUND\");\n            console.log(\"Services Count:\", parsedData.services_promoted?.length || 0);\n            console.log(\"External Services Count:\", parsedData.external_marketing_services?.length || 0);\n            console.log(\"Social Media Count:\", parsedData.social_media_profiles?.length || 0);\n            \n            // Log social media specifically\n            if (parsedData.social_media_profiles && parsedData.social_media_profiles.length > 0) {\n                console.log(\"Social Media Platforms:\", parsedData.social_media_profiles.map(p => p.platform).join(', '));\n            }\n            \n        } catch (error) {\n            console.log(\"❌ JSON parsing error:\", error.message);\n        }\n    } else {\n        console.log(\"❌ No JSON code blocks found\");\n        console.log(\"Content preview:\", content.substring(0, 200) + \"...\");\n    }\n} else {\n    console.log(\"❌ No OpenAI content found\");\n}\n\n// Return the extracted data - this is what goes to the merge node\nreturn [{\n    json: {\n        websiteData: parsedData || {\n           business_owner: { name: null, description: null },  // ✅ Object format\n            services_promoted: [],\n            external_marketing_services: [],\n            social_media_profiles: []\n        },\n        extractionSuccess: !!parsedData,\n        extractedAt: new Date().toISOString()\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        208
+      ],
+      "id": "091fc746-b643-4c5d-8160-f28df09b2fc8",
+      "name": "Extract JSON"
+    },
+    {
+      "parameters": {
+        "content": "Website HTML Analysis",
+        "height": 260,
+        "width": 1260,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        160
+      ],
+      "id": "5175cefc-7ac6-4be5-a4f0-38f68dd916b2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analyze the provided HTML content and extract the following information. Present the output as a JSON object with the specified structure.\n\n**JSON Structure:**\n```json\n{\n  \"business_owner\": {\n    \"name\": null,\n    \"description\": null\n  },\n  \"services_promoted\": [],\n  \"external_marketing_services\": [],\n  \"social_media_profiles\": []\n}\n   \nExtraction Details:\nbusiness_owner (object or null):\nname (string or null):\nIdentify the name of the primary business owner, founder, director, principal, or key responsible individual (e.g., \"Dr. John Smith\", \"Coach Jane Doe\", \"Founder Alex Lee\").\nLook for names explicitly associated with leadership roles in \"About Us\", \"Meet Our Team\", \"Medical Director\", or similar introductory sections.\nIf found, provide the full name as a string. If not explicitly found, return null.\n\n\ndescription (string or null):\nIf a name is found, look for a concise textual description about this individual's role, philosophy, or key contributions to the business.\nPrioritize text directly following their name or within the same section (e.g., from an \"About Us\", \"Meet Dr. X\", or \"Our Philosophy\" section).\nExtract a coherent paragraph or a few sentences. Do not include unrelated content.\nIf a name is found but no specific description, return null for the description field.\nIf no business_owner name is found, the entire business_owner object should have null for both name and description.\n\nservices_promoted (array of strings, if available):\nIdentify distinct services, classes, programs, memberships, treatments, or offerings promoted on the website.\nLook for names listed in navigation menus, main content sections (e.g., headings like \"Our Services\", \"Classes Offered\", \"Programs\"), or within detailed product/service descriptions.\nPrioritize specific service names over very general categories if both are present and clearly distinct (e.g., \"Spin Class\" instead of just \"Fitness\").\nIf no services are identifiable, provide an empty array [].\n\nexternal_marketing_services (array of objects, if available):\nIdentify external third-party services (plugins, widgets, embedded tools) specifically used for:\nLead Management/Generation (e.g., pop-ups, chat widgets, newsletter sign-ups).\nScheduling/Appointments (e.g., online booking systems, appointment request forms, call tracking services).\nPayments Processing.\n\n\nFor each identified service, provide an object with:\n\"name\" (string): The common name of the service/company (e.g., \"Mindbody\", \"Square\", \"CallRail\").\n\"purpose\" (array of strings): One or more of [\"Lead Management\", \"Scheduling\", \"Payments\"].\n\"url\" (string, optional): The base URL associated with the service (e.g., from src attributes of scripts/iframes or href attributes of direct links to their platforms), if clearly identifiable. If not, omit this key.\nIf no such services are identifiable, provide an empty array [].\n\nsocial_media_profiles (array of objects, if available):\nFind direct links (<a> tags with href attributes) to the website's official social media profiles.\nLook in headers, footers, or within embedded social media feeds/scripts.\nFor each profile, provide an object with:\n\"platform\" (string): The name of the social media platform (e.g., \"Facebook\", \"Instagram\", \"TikTok\", \"LinkedIn\", \"YouTube\", \"Pinterest\", \"Twitter\", etc.).\n\"url\" (string): The full URL of the social media profile.\nIf no social media profiles are identifiable, provide an empty array [].\n\n\nHTML Content: {{ $json.htmlContent }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2064,
+        208
+      ],
+      "id": "22ae7035-8b73-404d-9f12-4117b4d4eefd",
+      "name": "HTML Analysis",
+      "credentials": {
+        "openAiApi": {
+          "id": "PtDgWP5hIvqUiw6Q",
+          "name": "OpenAI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $('Desktop Hero Section Website Analysis').first().json.choices[0].message.content;\nconst parsed = JSON.parse(rawOutput);\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        -224
+      ],
+      "id": "22d7472e-82f0-44bd-acb5-a5ad1d33599f",
+      "name": "Parse AI Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/take?access_key=8YXV2JYNnwXp9g&url={{ $('Get Business details').item.json.website }}&format=png&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=true&block_trackers=true&delay=0&timeout=60&response_type=by_format&full_page=true&full_page_scroll=true&image_quality=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "ff2gcLDr09JyMA"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        -416
+      ],
+      "id": "fe5ca1dc-d75b-43f7-8f4f-893faf9d2a64",
+      "name": "Take Full Page Screenshot Desktop",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/take?access_key=8YXV2JYNnwXp9g&url={{ $('Get Business details').item.json.website }}&viewport_has_touch=true&viewport_mobile=true&viewport_device=iphone_12_pro&format=png&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=true&block_trackers=true&delay=0&timeout=60&response_type=by_format&full_page=true&full_page_scroll=true&image_quality=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "ff2gcLDr09JyMA"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        -608
+      ],
+      "id": "d7012064-6d65-4488-9d0d-ae8f95d71286",
+      "name": "Take Full Page Screenshot Mobile",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Add Time Randomizer here to avoid rate limiting"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        -752
+      ],
+      "typeVersion": 1,
+      "id": "26aa5325-5400-45a1-b186-41e8b8cb3457",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screenshot for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screenshot. Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\nGPT, commence the brutal audit. Assume the goal is to double their conversion in the next 12 months by fixing this website.\n\nOutput Instructions:\n\nThe output must be structured exactly as requested to allow for subsequent data processing. Do not add any text outside of the defined sections.\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {
+          "detail": "high",
+          "maxTokens": 8000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1888,
+        -224
+      ],
+      "id": "b4e59e5a-0269-4728-aa0c-9f7bd88f9ab7",
+      "name": "Desktop Hero Section Website Analysis",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/take?access_key=8YXV2JYNnwXp9g&url={{ $('Get Business details').item.json.website }}&format=png&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=true&block_trackers=true&delay=0&timeout=60&response_type=by_format&full_page=false&image_quality=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "ff2gcLDr09JyMA"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        -224
+      ],
+      "id": "c6fe742e-6b07-4e06-8bf7-6aa82c4ddb5d",
+      "name": "Take Hero Section ScreenShot Desktop",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/take?access_key=8YXV2JYNnwXp9g&url={{ $('Get Business details').item.json.website }}&viewport_has_touch=true&viewport_mobile=true&viewport_device=iphone_12_pro&format=png&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=true&block_trackers=true&delay=0&timeout=60&response_type=by_format&full_page=false&image_quality=100",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "ff2gcLDr09JyMA"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        -800
+      ],
+      "id": "5d6566ac-666b-4194-8ff9-5ff3e055d6b5",
+      "name": "Take Hero Section  ScreenShot Mobile",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.Bruh Bruh"
+            },
+            {
+              "name": "select",
+              "value": "=id,business_name,website,business_category"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        -512
+      ],
+      "id": "7f7dd00a-223b-4b0c-95dc-631fe5041fa0",
+      "name": "Get Business details"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Business details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Text Cleaning": {
+      "main": [
+        [
+          {
+            "node": "HTML Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Website Text Scraping": {
+      "main": [
+        [
+          {
+            "node": "HTML For Services",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML For Services": {
+      "main": [
+        [
+          {
+            "node": "HTML Text Cleaning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Analysis": {
+      "main": [
+        [
+          {
+            "node": "Extract JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Take Full Page Screenshot Desktop": {
+      "main": [
+        []
+      ]
+    },
+    "Desktop Hero Section Website Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Take Hero Section ScreenShot Desktop": {
+      "main": [
+        [
+          {
+            "node": "Desktop Hero Section Website Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Business details": {
+      "main": [
+        [
+          {
+            "node": "Take Full Page Screenshot Desktop",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Take Hero Section ScreenShot Desktop",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Take Full Page Screenshot Mobile",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Take Hero Section  ScreenShot Mobile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "a9b85fec-0abc-4baa-bb01-8f81c91a797a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-25T10:43:47.716Z",
+      "updatedAt": "2025-09-25T10:43:47.716Z",
+      "role": "workflow:owner",
+      "workflowId": "EfYDJOTVlmhYLVkb",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
