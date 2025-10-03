@@ -1,0 +1,453 @@
+{
+  "createdAt": "2025-07-11T16:58:11.482Z",
+  "updatedAt": "2025-08-14T20:35:19.000Z",
+  "id": "Ob3Qmyn6LhCtVaYP",
+  "name": "AI RAG KNOWLEDGE BASE (COMPLETE)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  item.json.text = item.json.text?.replace(/\\s+/g, ' ').trim();\n  return item;\n});"
+      },
+      "id": "a5138f71-bb08-4fc4-b44b-ae42bb326be4",
+      "name": "Sanitize Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        80,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "ab57673b-fcda-499d-93e0-9f7bbf56d52c",
+      "name": "Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        528,
+        1088
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://knowledgebase-b93nod5.svc.aped-4627-b74a.pinecone.io/vectors/delete",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pineconeApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filter\": {\n    \"file_id\": \"{{ $('File Created').item.json.id }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        864
+      ],
+      "id": "7d242690-4250-4ce3-a075-114db1e12f66",
+      "name": "Delete Already Existing Vector if Exists",
+      "credentials": {
+        "pineconeApi": {
+          "id": "mwq2n9VCAuoBjoo3",
+          "name": "PineCone API TopRatedCoach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Tool to Add a Google Drive File to Vector DB",
+        "height": 752,
+        "width": 2071,
+        "color": 5
+      },
+      "id": "5e6954aa-eb8a-4a47-a15c-5c57d479cdd3",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1zG5SxvbVXl6oMf-hhlPKvCd-P1lOD_TE"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "853dba73-6a9f-4388-aef7-0496110fec88",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        864
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XUDdf1oxArmcPB9r",
+          "name": "FUZAIL GOOGLE DRIVE ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "34feded3-5b46-4ed2-903f-800664d24caa",
+      "name": "Set File ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -800,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "id": "6cf4791e-9369-48ef-9d1f-75339ecf78d4",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -368,
+        864
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "XUDdf1oxArmcPB9r",
+          "name": "FUZAIL GOOGLE DRIVE ACCOUNT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "knowledgebase",
+          "mode": "list",
+          "cachedResultName": "knowledgebase"
+        },
+        "options": {}
+      },
+      "id": "5c16ae27-3662-492a-bbb5-cbc5063d33ea",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        544,
+        864
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "mwq2n9VCAuoBjoo3",
+          "name": "PineCone API TopRatedCoach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('Sanitize Text').item.json.text || $('Sanitize Text').item.json.data }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_id",
+                "value": "={{ $('Set File ID').item.json.id }}"
+              },
+              {
+                "name": "original_filename",
+                "value": "={{ $('Set File ID').item.json.name }}"
+              },
+              {
+                "name": "created_at",
+                "value": "={{ $('DateTimeNow').item.json.now }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "cad8bc23-05fe-4d8d-b9ce-4915e21bd6ce",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1088
+      ]
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 150,
+        "options": {}
+      },
+      "id": "4d4f15d8-b068-4994-9af4-21333dbc544c",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        736,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(() => {\n  const now = new Date();\n  const formatted = now.toLocaleString('en-US', {\n    timeZone: 'America/New_York'\n  });\n  return { json: { now: formatted } };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        864
+      ],
+      "id": "8bc1d4a8-42b1-4ae5-a594-57704898c099",
+      "name": "DateTimeNow"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "3e79516c-ce30-4af8-b897-75ac6753a1df",
+      "name": "Extract PDF Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        864
+      ]
+    }
+  ],
+  "connections": {
+    "Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize Text": {
+      "main": [
+        [
+          {
+            "node": "DateTimeNow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Already Existing Vector if Exists": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete Already Existing Vector if Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DateTimeNow": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Sanitize Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:File Created": {
+      "lastTimeChecked": "2025-07-17T09:41:54Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "76984fdc-3f0e-4541-8a67-1a537ca38ece",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-07-11T16:58:11.486Z",
+      "updatedAt": "2025-07-11T16:58:11.486Z",
+      "role": "workflow:owner",
+      "workflowId": "Ob3Qmyn6LhCtVaYP",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
