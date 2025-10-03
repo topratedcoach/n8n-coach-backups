@@ -1,0 +1,186 @@
+{
+  "createdAt": "2025-09-10T09:28:49.849Z",
+  "updatedAt": "2025-09-29T11:56:18.000Z",
+  "id": "5q23rjNh39FQdAxa",
+  "name": "Post Call Webhook Trigger",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3dd67fe2-f6aa-4030-810a-96b24a165c9d",
+              "leftValue": "={{ $('Post Call Webhook to recieve Call Details').item.json.body.data.metadata.phone_call.direction }}",
+              "rightValue": "=inbound",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "ecd51139-31fd-4361-b7e3-a263c9c28779",
+              "leftValue": "={{ $('Post Call Webhook to recieve Call Details').item.json.body.data.metadata.call_duration_secs }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "8c3edb4b-3603-4806-bce1-1b13eb64becd",
+      "name": "Only Continue if its Inbound and Duration is more than 10 secs"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "post_call_webhook_n8n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        16
+      ],
+      "id": "cd507fe0-f034-44ff-8c65-5bb4c7c9be8f",
+      "name": "Post Call Webhook to recieve Call Details",
+      "webhookId": "4837f10b-6f47-4583-a400-d10ceb569f60"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "FYCdJ9WBDKvj8mWI",
+          "mode": "list",
+          "cachedResultName": "Agent: Inbound Call Processor (Fuzail)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        16
+      ],
+      "id": "b222a0cb-f884-43cb-8d5c-043421517ed5",
+      "name": "Execute Workflow"
+    }
+  ],
+  "connections": {
+    "Post Call Webhook to recieve Call Details": {
+      "main": [
+        [
+          {
+            "node": "Only Continue if its Inbound and Duration is more than 10 secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only Continue if its Inbound and Duration is more than 10 secs": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "c91f124d-1253-4c91-8539-ab74c3c9f8d5",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-09-10T09:28:49.856Z",
+      "updatedAt": "2025-09-10T09:28:49.856Z",
+      "role": "workflow:owner",
+      "workflowId": "5q23rjNh39FQdAxa",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
