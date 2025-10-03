@@ -1,0 +1,241 @@
+{
+  "createdAt": "2025-07-22T12:09:50.072Z",
+  "updatedAt": "2025-09-18T18:22:10.000Z",
+  "id": "vE8ayrdMSXBZ5Bjx",
+  "name": "Cron Job To Trigger OutboundCall Workflows (Depreciated-Shifted to Cron job Supabase)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Get Pending Jobs from DB and trigger respective workflows in N8N\n",
+        "height": 80,
+        "width": 780,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "2e8c3b6c-5255-404a-b84c-15edb235ae97",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "vsArFcX3K2atVDxC",
+          "mode": "list",
+          "cachedResultName": "Agent Name: Outbound Call Processor (Fuzail)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "taks_group_details": "={{ $('Get Pending Outbound Job whose Scheduled time is UP from DB').item.json }}"
+          },
+          "matchingColumns": [
+            "taks_group_details"
+          ],
+          "schema": [
+            {
+              "id": "taks_group_details",
+              "displayName": "taks_group_details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "65dc4354-30c2-401b-b12a-70521fe22be4",
+      "name": "Execute Outbound Call Workflow"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_name",
+              "value": "=eq.{{ $vars.OutboundAnalysisDbKEY }}"
+            },
+            {
+              "name": "status",
+              "value": "eq.pending"
+            },
+            {
+              "name": "scheduled_at",
+              "value": "=lte.{{ new Date().toISOString()}}"
+            },
+            {
+              "name": "order",
+              "value": "scheduled_at.asc"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Prefer",
+              "value": "count=exact"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "ce5e7b2e-b52b-4c32-b7cb-5c896fb74471",
+      "name": "Get Pending Outbound Job whose Scheduled time is UP from DB"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "bf87c703-5bea-4db7-9f19-663fb14a5a5c",
+      "name": "Check DB every 10 mins"
+    }
+  ],
+  "connections": {
+    "Get Pending Outbound Job whose Scheduled time is UP from DB": {
+      "main": [
+        [
+          {
+            "node": "Execute Outbound Call Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check DB every 10 mins": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Outbound Job whose Scheduled time is UP from DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Check DB every 5 mins": {
+      "recurrenceRules": []
+    },
+    "node:Check DB every 10 mins": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "2b5db4ed-1849-4fee-bd68-747d46ecd7b7",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-07-22T12:09:50.077Z",
+      "updatedAt": "2025-07-22T12:09:50.077Z",
+      "role": "workflow:owner",
+      "workflowId": "vE8ayrdMSXBZ5Bjx",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
