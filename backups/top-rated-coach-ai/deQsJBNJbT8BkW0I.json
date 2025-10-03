@@ -1,0 +1,223 @@
+{
+  "createdAt": "2025-08-12T11:55:22.258Z",
+  "updatedAt": "2025-08-15T19:41:07.000Z",
+  "id": "deQsJBNJbT8BkW0I",
+  "name": "Create JSON of smartline transcripts - FUZAIL",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9e3a605e-8512-42d1-b287-1f06917a3edd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-HMKJ1YE5IcNjdxb0_JXHmEt5Y2qEYb0VqXFOOltt7o",
+          "mode": "list",
+          "cachedResultName": "Copy of Gym smartline transcription aug 11, 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-HMKJ1YE5IcNjdxb0_JXHmEt5Y2qEYb0VqXFOOltt7o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 990158957,
+          "mode": "list",
+          "cachedResultName": "August 11th",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-HMKJ1YE5IcNjdxb0_JXHmEt5Y2qEYb0VqXFOOltt7o/edit#gid=990158957"
+        },
+        "columnToMatchOn": "Call ID",
+        "valueToMatchOn": "={{ $('Get Businesses from Google Sheets').item.json[\"Call ID\"] }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "newColumn",
+              "columnName": "Trancript Json",
+              "fieldValue": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Google Sheets - Write Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        928,
+        -224
+      ],
+      "id": "2e3110da-377b-41de-aef0-24aba8427cc3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LVK0Pfc2xVQjke1W",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sheetId": "1-HMKJ1YE5IcNjdxb0_JXHmEt5Y2qEYb0VqXFOOltt7o",
+        "range": "August 11th!B:D",
+        "options": {}
+      },
+      "name": "Get Businesses from Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ff697b90-7f77-4e6f-bd86-58d0fa7e3157",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LVK0Pfc2xVQjke1W",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const regex = /^Speaker\\s*(\\d+)\\s+(\\d{2}:\\d{2}:\\d{2})\\s+(.*)$/;\n\nreturn items.map(item => {\n  const lines = (item.json.Transcript || '').split('\\n').filter(Boolean);\n\n  const parsedTranscript = lines.reduce((acc, line) => {\n    const match = line.match(regex);\n    if (match) {\n      const [, speakerNum, timestamp, utterance] = match;\n      acc.push({\n        speaker: `Speaker ${speakerNum}`,\n        timestamp,\n        utterance: utterance.trim(),\n      });\n    }\n    return acc;\n  }, []);\n\n  return { json: { parsedTranscript } };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "0619896b-007c-42cb-bc72-255d63643c95",
+      "name": "Make Jsons of transcripts"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "SmartLine Transcripts JSON"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "a46bf93f-e487-4502-bdb3-aadca70edfe1",
+      "name": "Convert to File"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Businesses from Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Businesses from Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Make Jsons of transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make Jsons of transcripts": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9e3a0640-b0eb-4613-80b2-1f69cdd509a3",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-08-12T11:55:22.308Z",
+      "updatedAt": "2025-08-12T11:55:22.308Z",
+      "role": "workflow:owner",
+      "workflowId": "deQsJBNJbT8BkW0I",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
