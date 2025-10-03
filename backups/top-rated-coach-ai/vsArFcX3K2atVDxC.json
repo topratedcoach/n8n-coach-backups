@@ -1,0 +1,3671 @@
+{
+  "createdAt": "2025-06-12T11:29:58.203Z",
+  "updatedAt": "2025-09-29T13:41:48.000Z",
+  "id": "vsArFcX3K2atVDxC",
+  "name": "Agent Name: Outbound Call Processor (Fuzail)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.ElevenLabsBaseURL}}twilio/outbound-call",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "xi-api-key",
+              "value": "={{$vars.ElevenLabsAPIkey}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent_id",
+              "value": "={{$vars.ElevenLabsAgentID_Value}}"
+            },
+            {
+              "name": "agent_phone_number_id",
+              "value": "={{$vars.ElevenLabsAgentPhoneNoID_Value}}"
+            },
+            {
+              "name": "to_number",
+              "value": "={{ $('Get a specific business').item.json.phone_number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2160,
+        320
+      ],
+      "id": "475a904e-0510-454b-9acf-9ca851cbffd2",
+      "name": "Call Business",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a8dcacb-a980-4b2d-9a1f-1070ca63f955",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "39fb58a3-5e89-49e3-87c7-2a8b76090313",
+              "leftValue": "={{ $json.conversation_id }}",
+              "rightValue": "null",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1888,
+        352
+      ],
+      "id": "4e9af67e-2f7f-4587-b7c6-5930cd8f4779",
+      "name": "Check Outbound Success"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst transcript = $('Fetch Conversation through ConvID').first().json.transcript;\n\nlet output = '';\nfor (const entry of transcript) {\n  const speaker = entry.role.toUpperCase();\n  const message = entry.message?.trim();\n  if (message) {\n    output += `${speaker}: ${message}\\n\\n`;\n  }\n}\n\nreturn [{ json: { transcript: output.trim() } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        352
+      ],
+      "id": "084333cc-5197-4b10-a7eb-12e0103d8f0c",
+      "name": "Generate a Transcript JSON"
+    },
+    {
+      "parameters": {
+        "content": "## Agent Name: Outbound Call Processor\n\nThis workflow initiates and processes outbound calls:\n1. Retrieves target number from Firestore (inbound_calls collection)\n2. Initiates outbound call via ElevenLabs ConvAI API\n3. Monitors call status until completion\n4. Processes transcript into readable conversation format\n5. Structures call metadata (duration, summary, gym details)\n6. Saves formatted data to 'outbound_calls' collection\n7. Uses ElevenLabs conversation_id as Firestore document ID",
+        "height": 340,
+        "width": 520,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2496,
+        -560
+      ],
+      "typeVersion": 1,
+      "id": "d947a7df-35bd-42dd-b334-5bb7e11b6069",
+      "name": "Workflow Overview1"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        464
+      ],
+      "id": "3072b63a-fcdb-4c47-b421-e03e1430c28e",
+      "name": "Wait for Conv History",
+      "webhookId": "aeeff5df-77d0-4010-af03-6e03a8134d05"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1712,
+        -240
+      ],
+      "id": "8c220ed1-f980-44b8-9caf-7051e55e483c",
+      "name": "CHATGPT",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Get Counter number to track retries",
+        "height": 340,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2880,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "0da2882c-c236-4595-bd1c-9f9787ba2286",
+      "name": "Workflow Overview7"
+    },
+    {
+      "parameters": {
+        "content": "## Initiates outbound call via ElevenLabs ConvAI API\n",
+        "height": 340,
+        "width": 220,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2208,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "c9733669-982b-40ee-bde1-f84ccf5423bb",
+      "name": "Workflow Overview8"
+    },
+    {
+      "parameters": {
+        "content": "## Monitors call status until completion\n",
+        "height": 880,
+        "width": 2540
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1968,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "523938ce-132a-445e-bfdc-837ccd840367",
+      "name": "Workflow Overview9"
+    },
+    {
+      "parameters": {
+        "content": "## Processes transcript into readable conversation format\n",
+        "height": 420,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "a641a1e3-3699-4eba-8cc6-e49bc6a8b6fd",
+      "name": "Workflow Overview11"
+    },
+    {
+      "parameters": {
+        "content": "## Structures call metadata and give to AI for Analysis and Scoring\n(duration, summary, gym details)\n",
+        "height": 440,
+        "width": 1740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -544
+      ],
+      "typeVersion": 1,
+      "id": "a3de5986-9ea8-4fee-b7cf-e7a1740c1cf4",
+      "name": "Workflow Overview12"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Questionaire json and add in Call_Report_Evaluations in DB",
+        "height": 400,
+        "width": 940,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "6f3d8332-6023-4bb8-a7bf-ec2c32a7fd04",
+      "name": "Workflow Overview13"
+    },
+    {
+      "parameters": {
+        "content": "## Save AI GENERATED REPORT to Supabase",
+        "height": 400,
+        "width": 360,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "594ea500-85d6-42af-9ab9-22243dbf2cc7",
+      "name": "Workflow Overview14"
+    },
+    {
+      "parameters": {
+        "content": "# Call Status Description\n### 0: completed: \nThe call was answered and has ended normally.\n### 1: ringing: \nThe call is currently ringing.\n### 2: in-progress: \nThe call was answered and is currently in progress.\n### 3: queued: \nThe call is ready and waiting in line before dialing.\n### 4: canceled: \nThe call was hung up while it was queued or ringing.\n### 5: busy: \nThe caller received a busy signal.\n### 6: no-answer: \nThere was no answer or the call was rejected.\n### 7: failed: \nThe call could not be completed as dialed, most likely because the provided number was invalid.",
+        "height": 560,
+        "width": 560,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1968,
+        -816
+      ],
+      "typeVersion": 1,
+      "id": "2a706de0-2314-4bb6-a666-1cfe104fadcd",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ERROR ZONE\n",
+        "height": 500,
+        "width": 4040,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2336,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "ec89eec8-858f-43d1-9f7f-7ea3976a1765",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## 422 Error Unprocessable Entity",
+        "height": 100,
+        "width": 740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2096,
+        1024
+      ],
+      "typeVersion": 1,
+      "id": "81cc73d1-5160-4a05-9b2d-1695f11f800c",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.ElevenLabsBaseURL}}conversations/{{ $('Call Business').item.json.conversation_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Xi-Api-Key",
+              "value": "={{$vars.ElevenLabsAPIkey}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        -144
+      ],
+      "id": "d13a3ef1-4b88-4f0f-aa83-a4acff00212c",
+      "name": "Fetch Conversation through ConvID",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.twilio.com/2010-04-01/Accounts/{{$vars.TWILIO_ACCOUNT_SID}}/Calls/{{ $('Call Business').item.json.callSid }}.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1456,
+        208
+      ],
+      "id": "56cbc5fb-71e2-4100-9a50-09af9fd82851",
+      "name": "Twilio Call Status",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "PdHyrjcfDMihAzEn",
+          "name": "TwilioAuth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.status }}",
+                    "rightValue": "done",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "580f662e-e0f8-4d31-8c23-8f93e608e18d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "done"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87f3be98-214e-45f9-8684-b8065512b4d2",
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.status }}",
+                    "rightValue": "in-progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "in-progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "40b76916-9b6d-4e3d-a217-106c598cfd29",
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.status }}",
+                    "rightValue": "processing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "processing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6466a82f-03bc-41bf-9e1b-6652c1cbdd83",
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.status }}",
+                    "rightValue": "initiated",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "initiated"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d856ffff-b0ed-48dc-81d7-0038612e0e5b",
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "54609a40-365d-4779-8b94-a69adc01dc07",
+                    "leftValue": "={{ $('Fetch Conversation through ConvID').item.json.error }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "not found"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        112,
+        272
+      ],
+      "id": "3bd2ae49-cef7-44c4-8b53-ebe005bb863a",
+      "name": "Check Status of Conversation",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "completed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "580f662e-e0f8-4d31-8c23-8f93e608e18d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "completed"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "87f3be98-214e-45f9-8684-b8065512b4d2",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "ringing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ringing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "40b76916-9b6d-4e3d-a217-106c598cfd29",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "in-progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "in-progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1ccb9fa3-0eb8-4d19-8cc8-eba07d38c61e",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "queued",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "queued"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6466a82f-03bc-41bf-9e1b-6652c1cbdd83",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "canceled",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "canceled"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d856ffff-b0ed-48dc-81d7-0038612e0e5b",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "busy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "busy"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ee80a39d-1e7c-4960-8fa6-a35faad496dc",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "no-answer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "no-answer"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fa24a9c7-1411-462a-9dc0-0fc3adcd6a85",
+                    "leftValue": "={{ $('Twilio Call Status').item.json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failed"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1280,
+        32
+      ],
+      "id": "c10de204-0a36-4b4f-8d8a-47c7914af7dc",
+      "name": "Check Status of Call",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1904,
+        128
+      ],
+      "id": "4d0d3b79-3cc5-4f7f-a335-e5b47bcbf1be",
+      "name": "Wait for Success",
+      "webhookId": "effc8350-57b0-40cd-a88f-f8cb7863f0f8"
+    },
+    {
+      "parameters": {
+        "content": "## Retries after 1 hour and updates the number of tries counter",
+        "height": 260,
+        "width": 780,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2944,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "b913bd42-a092-4ad1-9e85-f17437b9ec71",
+      "name": "Workflow Overview10"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14f09c3a-4929-4dc8-b269-5fc9f0e2ec22",
+              "leftValue": "={{ $json.duration }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -688,
+        -48
+      ],
+      "id": "6d719803-5c4e-4a76-890a-6dc18b4cf690",
+      "name": "Call duration >10 Sec"
+    },
+    {
+      "parameters": {
+        "jsCode": "const duration = parseInt($('Twilio Call Status').first().json.duration);\nreturn [{ json: { duration } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        -176
+      ],
+      "id": "81f84e28-4995-4710-aa1b-ed48c89536f9",
+      "name": "Convert String into Number"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "counter",
+              "value": -1,
+              "type": "number",
+              "id": "9d67f730-737b-4cc8-a27a-107fe1454ec1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d9c2e556-1b21-4897-b87a-b6ee007af592",
+      "name": "Number of tries counter Initialize",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2816,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let current = 0;\n\ntry {\n  current = $('If calling retries are > 3-').first().json.counter ?? 0;\n} catch (e) {\n  current = $('Number of tries counter Initialize').first().json.counter ?? 0;\n}\n\nreturn [{ json: { ...$json, counter: current + 1 } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2624,
+        272
+      ],
+      "id": "d416bced-ff5e-4745-a8fb-f6d696943dfc",
+      "name": "Increment Counter"
+    },
+    {
+      "parameters": {
+        "content": "## Analyze voicemails and reschedule calls if voicemails detected\n",
+        "height": 740,
+        "width": 800,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        864,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "dfa5dbb7-90d9-4afb-b950-3cf5e9d6f5cb",
+      "name": "Workflow Overview15"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        448
+      ],
+      "id": "33aa2fbf-3084-4602-8eaa-895d17d69681",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert AI call transcript analyzer. Your task is to determine whether the USER's messages in the transcript indicate a real human conversation or a voicemail.\nImportant Instructions:\nONLY analyze the USER’s responses. Ignore all AGENT messages.\n\n\nClassify as “voicemail” only if the USER messages contain no real human responses — for example, if they are limited to automated system messages, menu options, or silent/incomplete entries.\n\n\nClassify as “human” if the USER messages show signs of a natural human conversation, such as greetings, specific answers, questions, elaboration, or engagement.\n\n\nDo not classify as voicemail if the USER responds meaningfully after hearing an IVR or pressing keys — even if the conversation begins with an automated system.\n\n\nYour analysis should be resilient to false positives, especially in cases where the conversation starts with automation but transitions to real human interaction.\n\n\nOutput:\n Only return raw JSON in the following format:\n{\n  \"classification\": \"voicemail\" | \"human\",\n  \"reason\": \"Short explanation for classification\"\n}\n\nTranscript:\n {{ $('Generate a Transcript JSON').item.json.transcript }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        944,
+        272
+      ],
+      "id": "fb432167-dd3a-45fd-8cbe-54a92941e4e0",
+      "name": "Voicemail Detector Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $('Call Analysis AI').first().json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        -480
+      ],
+      "id": "c7dba389-4584-45da-885f-f4f00d5d4b9d",
+      "name": "Parse AI Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.item.json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        160
+      ],
+      "id": "cdb24418-ed6a-45f7-b774-92ee8c2a233a",
+      "name": "Parse Voicemail Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c06f78f8-db9b-432e-8687-6e358ab043e7",
+              "leftValue": "={{ $json.classification }}",
+              "rightValue": "voicemail",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        400
+      ],
+      "id": "0b12044a-4d83-44df-803d-0011e3632c81",
+      "name": "If its Voicemail then Schedule Call Again"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Increment Counter').item.json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        224
+      ],
+      "id": "19775456-6331-4cf2-96f1-c6070589aaa3",
+      "name": "Update Counter Value"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert customer experience auditor. You are analyzing a phone call between a customer (our AI agent) and a business. I will provide you with the transcript of the entire call. Based on this transcript, your job is to audit the customer experience quality by extracting and evaluating key metrics.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\nYour output must:\n- Be in valid JSON format.\n- Start with { and end with } (no Markdown, no quotes around the whole output, no extra text).\n- Contain all the fields below exactly as named.\n- Keep the structure exactly as specified.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or an empty array [].\n- Be objective, concise, and actionable.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the questions asked?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the rep polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the agent\",\n      \"answer\": \"Response from the business\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags detected during the call (e.g., rude behavior, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments in the interaction\"\n  ],\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n  \"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n  \"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building\n    - Product/Service Knowledge and Education\n    - Answering Questions\n    - Ability to Upsell and Cross-Sell\n    - Closing for Appointment and Call to Action\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nOnly use the information from the transcript. Do not assume or invent details.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').item.json) }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1744,
+        -400
+      ],
+      "id": "23ace0f5-c00a-4238-959b-60aebb42bc67",
+      "name": "Call Analysis AI"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.business_id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2848,
+        -96
+      ],
+      "id": "237bfbd3-1ccf-4cd9-a36f-d41251550bb9",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "content": "## Update  the TaskGroup status to in progress and Audit status to inprogress\n",
+        "height": 320,
+        "width": 1160,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3136,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "5092b55a-b69a-48b9-a834-5bacec37e73a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n{\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"task_type\": \"elevenlabs\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n},\n{\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"task_type\": \"twilio\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n},\n{\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"task_type\": \"fetch_conversation\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n},\n{\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"task_type\": \"voicemail_detection\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n},\n{\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"task_type\": \"ai_analysis\",\n  \"status\": \"pending\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n}\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2624,
+        -96
+      ],
+      "id": "e96a6943-20f1-4cb9-a9d9-346336ff60d2",
+      "name": "Create AI Agent Micro Tasks"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"in_progress\",\n  \"started_at\": \"{{ new Date().toISOString() }}\",\n  \"n8n_workflow_id\": \"{{ $workflow.id }}\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2400,
+        -96
+      ],
+      "id": "c74f2468-7f95-445a-bcce-972a9928d0a0",
+      "name": "Updating TaskGroups Row To In-Progress",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"status\": \"in_progress\",\n\"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2176,
+        -96
+      ],
+      "id": "f08be140-3e03-4780-b00b-ed077aaceb75",
+      "name": "Update Audit Status to in_progress and Started AT Time",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'elevenlabs')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"started_at\": \"{{ new Date().toISOString() }}\",\n  \"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2384,
+        304
+      ],
+      "id": "2bf9ae0b-9d2d-4a41-a9c6-b4a5b090ad83",
+      "name": "Start ElevenLabs Task in DB"
+    },
+    {
+      "parameters": {
+        "content": "## Initiate MicroTask in DB",
+        "height": 340,
+        "width": 220,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2448,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "7006e9fd-07c8-4c74-a308-8008dc760129",
+      "name": "Workflow Overview16"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'elevenlabs')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"error_type\": \"connection_failed\",\n  \"error_message\": \"{{ $('Call Business').item.json.message || 'Unprocessable Entity' }}\",\n  \"result_data\": {{ JSON.stringify($('Call Business').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2096,
+        848
+      ],
+      "id": "ee1137da-0964-4b6a-8880-425be0cb7b31",
+      "name": "Fail ElevenLabs Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail ElevenLabs Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail ElevenLabs Task in DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail ElevenLabs Task in DB').item.json.error_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1888,
+        848
+      ],
+      "id": "d75a9e07-7f1f-4fab-be94-6cf76d87ae64",
+      "name": "Fail Outbound TaskGroup"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'elevenlabs')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Call Business').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1680,
+        224
+      ],
+      "id": "006921c2-41e4-4f57-8038-7ac798662390",
+      "name": "Success ElevenLabs Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'twilio')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }},\n\"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1456,
+        368
+      ],
+      "id": "25e3d482-fbea-4197-834a-bd4c2a7b3a4f",
+      "name": "Start Twilio Task in DB"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3414326-2127-4752-ab20-bf74b5df6a76",
+              "leftValue": "={{ $('Increment Counter').item.json.counter }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "id": "c291401d-4b75-4328-b119-7cca5d031af0",
+      "name": "If calling retries are 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        128
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'twilio')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Make Dynamic JSON based on Merge Output').item.json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -16
+      ],
+      "id": "67ef180b-8e36-47d5-b5eb-42f08f4b21e0",
+      "name": "Fail Twilio Task in DB"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json;\nconst duration = data.duration;\nconst status = data.status;\n\nlet error_type = null;\nlet error_message = null;\n\n// Handle null duration\nif (duration === null) {\n  error_type = \"duration_null\";\n  error_message = \"Call Duration is null\";\n} \n// Handle short call duration (e.g. 0-10 seconds)\nelse if (Number(duration) <= 10) {\n  error_type = \"duration_too_short\";\n  error_message = \"Call duration was too low to be considered a successful call.\";\n}\n// Handle known non-completed statuses\nelse if (status && status !== \"completed\") {\n  switch (status) {\n    case \"canceled\":\n      error_type = \"status_canceled\";\n      error_message = \"The call was hung up while it was queued or ringing.\";\n      break;\n    case \"busy\":\n      error_type = \"status_busy\";\n      error_message = \"The caller received a busy signal.\";\n      break;\n    case \"no-answer\":\n      error_type = \"status_no_answer\";\n      error_message = \"There was no answer or the call was rejected.\";\n      break;\n    default:\n      error_type = \"status_other\";\n      error_message = `Call ended with status '${status}'`;\n  }\n}\n\nreturn [\n  {\n    json: {\n      status: \"failed\",\n      error_type,\n      error_message,\n      result_data: data,\n      completed_at: new Date().toISOString(),\n      retry_count: $('Increment Counter').first().json.counter,\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        384
+      ],
+      "id": "0724a793-d0d6-4b27-8c18-1f1aff97c2ff",
+      "name": "Make Dynamic JSON based on Merge Output"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'twilio')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"error_type\": \"connection_failed\",\n  \"error_message\": \"The call could not be completed as dialed, most likely because the provided number was invalid.\",\n  \"result_data\": {{ JSON.stringify($('Call Business').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        864
+      ],
+      "id": "98344b59-6154-475e-af6b-c5d86ce2ce79",
+      "name": "Fail Twilio Task DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail Twilio Task DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail Twilio Task DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail Twilio Task DB').item.json.error_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -464,
+        864
+      ],
+      "id": "14a7218d-d930-48c5-a617-02a34c83cc01",
+      "name": "Fail Outbound Task Group"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'twilio')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Check Status of Call').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        -208
+      ],
+      "id": "f0a0a06e-20b4-4e96-a9ec-30820f4e6687",
+      "name": "Success Twilio Task in DB1"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'fetch_conversation')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }},\n\"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -208
+      ],
+      "id": "7c196721-f83b-4a6d-88f5-dedf99040aed",
+      "name": "Start Fetch Conversation Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'fetch_conversation')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Fetch Conversation through ConvID').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        128
+      ],
+      "id": "a14cdf3b-59d3-4469-a312-165cbc7a2a6e",
+      "name": "Success Fetch Conversation Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'fetch_conversation')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "failed"
+            },
+            {
+              "name": "n8n_execution_id",
+              "value": "={{ $execution.id }}"
+            },
+            {
+              "name": "error_type",
+              "value": "fetch_conversation_failed"
+            },
+            {
+              "name": "error_message",
+              "value": "={{ $('Fetch Conversation through ConvID').item.json.metadata.termination_reason ? $('Fetch Conversation through ConvID').item.json.metadata.error.reason : 'Fetching conversation failed.' }}"
+            },
+            {
+              "name": "result_data",
+              "value": "={{ $('Fetch Conversation through ConvID').item.json || {} }}"
+            },
+            {
+              "name": "completed_at",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "retry_count",
+              "value": "={{ $('Increment Counter').item.json.counter }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        832
+      ],
+      "id": "2040d6e3-0ced-4919-8d11-2746c5824396",
+      "name": "Fail Fetch Conversation Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'voicemail_detection')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"retry_count\":{{ $('Increment Counter').item.json.counter }},\n  \"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        48
+      ],
+      "id": "aba56ed0-b906-4ebe-9750-216898ced98e",
+      "name": "Start Voicemail Detection Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'voicemail_detection')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"error_type\": \"voicemail_detected\",\n  \"error_message\": \"{{ $('If its Voicemail then Schedule Call Again').item.json.reason }}\",\n  \"result_data\": {{ JSON.stringify($('If its Voicemail then Schedule Call Again').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        832
+      ],
+      "id": "165e1186-2dfb-42ac-bdb0-15e52bf68abf",
+      "name": "Fail Voicemail Detection Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'voicemail_detection')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Parse Voicemail Analysis Output into JSON').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1504,
+        384
+      ],
+      "id": "8b680fde-7614-4432-9f00-b0b3a128205e",
+      "name": "Success Voicemail Detection Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'ai_analysis')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"running\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"retry_count\":{{ $('Increment Counter').item.json.counter }},\n  \"started_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        -400
+      ],
+      "id": "171a843e-15c9-4727-999b-5dd3f50b283e",
+      "name": "Start AI Analysis Task in DB"
+    },
+    {
+      "parameters": {
+        "jsCode": "const call = $('Twilio Call Status').first().json;\n\n// Parse timestamps\nconst dateCreated = new Date(call.date_created);\nconst queueTimeSec = parseInt(call.queue_time || \"0\", 10);\nconst startTime = new Date(call.start_time);\n\n// Calculate actual ringing start time\nconst ringingStartTime = new Date(dateCreated.getTime() + queueTimeSec * 1000);\n\n\nconst conv = $('Fetch Conversation through ConvID').first().json;\nconst { metadata, analysis, transcript, conversation_initiation_client_data } = conv;\nconst { phone_call, charging, termination_reason, call_duration_secs } = metadata;\n\n// Performance metrics calculation\nlet ragCount = 0, totalTTFB = 0, totalTTF = 0, totalRAGLatency = 0, interruptions = 0;\nconst ragDistances = [];\n\ntranscript.forEach(turn => {\n  // Process latency metrics\n  const metrics = turn.conversation_turn_metrics?.metrics;\n  if (metrics) {\n    totalTTFB += metrics.convai_llm_service_ttfb?.elapsed_time || 0;\n    totalTTF += metrics.convai_llm_service_ttf_sentence?.elapsed_time || 0;\n  }\n  \n  // Process RAG metrics\n  const ragInfo = turn.rag_retrieval_info;\n  if (ragInfo) {\n    ragCount++;\n    totalRAGLatency += ragInfo.rag_latency_secs;\n    ragInfo.chunks.forEach(chunk => ragDistances.push(chunk.vector_distance));\n  }\n  \n  // Track interruptions\n  if (turn.interrupted) interruptions++;\n});\n\n// Calculate averages safely\nconst calcAverage = (sum, count) => count > 0 ? parseFloat((sum / count).toFixed(3)) : 0;\nconst ragDistanceStats = ragDistances.length > 0 ? {\n  min: parseFloat(Math.min(...ragDistances).toFixed(3)),\n  max: parseFloat(Math.max(...ragDistances).toFixed(3))\n} : { min: 0, max: 0 };\n\n// Extract LLM data safely\nconst llmTokens = charging?.llm_usage?.irreversible_generation?.model_usage?.[\"gpt-4.1\"] || {};\nconst llmCost = charging?.llm_price || 0;\n\nreturn [{\n  json: {\n    // Metadata\n    conversation_id: conversation_initiation_client_data.dynamic_variables.system__conversation_id,\n    call_duration_sec: call_duration_secs,\n    eventTime: new Date(metadata.start_time_unix_secs * 1000).toISOString(),\n    callInitiateTime: ringingStartTime.toISOString(),\n    callAcceptedTime: startTime.toISOString(),\n    direction: phone_call.direction,\n    from_number: phone_call.agent_number,\n    to_number: phone_call.external_number,\n    \n    // Performance metrics\n    performance: {\n      avg_ttfb_sec: calcAverage(totalTTFB, ragCount),\n      avg_ttf_sec: calcAverage(totalTTF, ragCount),\n      rag_retrievals: ragCount,\n      rag_avg_latency_sec: calcAverage(totalRAGLatency, ragCount),\n      rag_min_distance: ragDistanceStats.min,\n      rag_max_distance: ragDistanceStats.max,\n      llm_cost: parseFloat(llmCost.toFixed(6)),\n      llm_input_tokens: llmTokens.input?.tokens || 0,\n      llm_output_tokens: llmTokens.output_total?.tokens || 0\n    },\n    \n    // Quality indicators\n    quality: {\n      termination_reason,\n      call_successful: analysis.call_successful,\n      interruptions\n    },\n    \n    // Content analysis\n    summary: analysis.transcript_summary,\n    gym_name: conversation_initiation_client_data.dynamic_variables.gym_name,\n\n    \n    // Transcript (optimized format)\n    transcript: transcript.map(({ role, message, time_in_call_secs }) => ({\n      role,\n      message,\n      timestamp_sec: time_in_call_secs\n    }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -400
+      ],
+      "id": "b7fce71f-f905-4c2e-a06b-478331347825",
+      "name": "Create JSON with metadata"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"conv_id\": \"{{ $('Create JSON with metadata').item.json.conversation_id }}\",\n  \"direction\": \"{{ $('Create JSON with metadata').item.json.direction }}\",\n  \"call_sid\": \"{{ $('Twilio Call Status').item.json.sid }}\",\n  \"business_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.business_id }}\",\n  \"task_group_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"created_at\": \"{{ new Date().toISOString() }}\",\n  \"call_initiate_time\": \"{{ $('Create JSON with metadata').item.json.callInitiateTime }}\",\n  \"call_accepted_time\": \"{{ $('Create JSON with metadata').item.json.callAcceptedTime }}\",\n  \"to_number\": \"{{ $('Create JSON with metadata').item.json.to_number }}\",\n  \"from_number\": \"{{ $('Create JSON with metadata').item.json.from_number }}\",\n  \"agent_id\": \"{{ $('Fetch Conversation through ConvID').item.json.agent_id }}\",\n  \"metadata\": {{ JSON.stringify($('Create JSON with metadata').item.json.performance) }},\n  \"summary\": {{ JSON.stringify($('Create JSON with metadata').item.json.summary.trim()) }},\n  \"call_duration\": {{ $('Create JSON with metadata').item.json.call_duration_sec }},\n  \"interruptions\": {{ $('Create JSON with metadata').item.json.quality.interruptions }},\n  \"termination_reason\": \"{{ $('Create JSON with metadata').item.json.quality.termination_reason }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        -400
+      ],
+      "id": "4b85319e-1b85-4fc7-bbb0-16c615dc5cf4",
+      "name": "Create Call Entry In DB"
+    },
+    {
+      "parameters": {
+        "content": "## Cost Needs to be added\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        304,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "12616488-0b99-4706-bc89-55af4b4a9b3f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"call_id\": \"{{ $('Create Call Entry In DB').item.json.id }}\",\n  \"transcript\": {{ JSON.stringify($('Create JSON with metadata').item.json.transcript) }}\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        -400
+      ],
+      "id": "6b9f84bc-60e7-48c6-8728-a9f7c89c35d5",
+      "name": "Create Call Transcripts Entry In DB"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = { ...$('Create JSON with metadata').item.json };\ndelete data.performance;\n\nreturn [\n  {\n    json: \n      (data)\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        -400
+      ],
+      "id": "4fe08aed-a93a-4748-a318-e335c9b20798",
+      "name": "Convert Transcript Object into AI Friendly"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Create AI Agent Micro Tasks').all().find(item => item.json.task_type === 'ai_analysis')?.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2128,
+        -288
+      ],
+      "id": "de8bd9d1-79ba-4d2d-8959-221c0f9c3431",
+      "name": "AI Analysis Task in DB"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').item.json.business_id || '' }}\",\n  \"audit_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').item.json.id || '' }}\",\n  \"task_group_id\": \"{{ $('Updating TaskGroups Row To In-Progress').item.json.id || '' }}\",\n  \"overall_summary\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.overall_summary || '' }}\",\n  \"engagement_level\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_level || '' }}\",\n  \"professionalism\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.professionalism || '' }}\",\n  \"script_adherence\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.script_adherence || '' }}\",\n  \"issues_detected\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.issues_detected || '' }}\",\n  \"positive_highlight\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.positive_highlights || '' }}\",\n  \"engagement_and_relationship_building_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Parse AI Analysis Output into JSON').item?.json?.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.improvement_ideas || []) }},\n  \"agent_name\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.agent_name || '' }}\",\n   \"appointment_booked\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.appointment_booked || false }}\",\n  \"initial_wait_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.initial_wait_time || '' }}\",\n  \"on_hold_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.on_hold_time || '' }}\",\n  \"representative_tone\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.representative_tone || '' }}\",\n  \"tone_consistency\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.tone_consistency || '' }}\",\n  \"clarity\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.clarity || '' }}\",\n  \"accuracy\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.accuracy || '' }}\",\n  \"helpfulness\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.helpfulness || '' }}\",\n  \"call_opening\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.call_opening || '' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1808,
+        112
+      ],
+      "id": "ec3b8f7c-2179-49e1-abd4-6f15b6b0fedd",
+      "name": "Create Generated Reports Entry In DB"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=question_handling",
+        "options": {}
+      },
+      "id": "fb9b7bd3-47c8-428f-84d0-6b65995a96a3",
+      "name": "Split Question Handling",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        528
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    question_handling: $('Parse AI Analysis Output into JSON').first().json.question_handling\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        528
+      ],
+      "id": "1b0b673c-170a-44a8-b218-37e5a480088e",
+      "name": "Parse question handling",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff8a64b-82a7-48cf-be01-989fbfbf0cd3",
+              "name": "report_id",
+              "value": "={{ $('Create Generated Reports Entry In DB').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2224,
+        528
+      ],
+      "id": "982f198f-e191-43fc-ade3-81a031679769",
+      "name": "Attach report_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2448,
+        528
+      ],
+      "id": "15baabf8-171c-4510-9035-06c53da67b18",
+      "name": "Create Call Report Evaluations Entry In DB"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail Fetch Conversation Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail Fetch Conversation Task in DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail Fetch Conversation Task in DB').item.json.error_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        592,
+        832
+      ],
+      "id": "42acee3d-e706-414f-8851-ad9e576f933a",
+      "name": "Fail Outbound Task"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"result_data\": {{ JSON.stringify($('Fetch Conversation through ConvID').item.json || {}) }},\n\"error_message\": \"\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2992,
+        528
+      ],
+      "id": "85185931-c16b-4db8-a2d6-57db58ee8429",
+      "name": "Updating TaskGroups Row To Completed",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{ $('Create Call Entry In DB').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"report_id\": \"{{ $('Create Generated Reports Entry In DB').item.json.id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2768,
+        528
+      ],
+      "id": "f7d1c1f8-77c2-44ea-a0d1-751bf9f7776d",
+      "name": "Update Call Table With Report Id"
+    },
+    {
+      "parameters": {
+        "content": "## Update tables with Completed Status and report id",
+        "height": 400,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2640,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "e44bff11-9cb2-4411-a247-95393e9dde64",
+      "name": "Workflow Overview"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Updating TaskGroups Row To In-Progress').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=scheduled_at",
+              "value": "={{ $('Get  5 mins Ahead of Rescheduling Time').item.json.scheduled_at }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2608,
+        560
+      ],
+      "id": "b7b1690c-7e00-4f1f-a404-f7f347cfccc3",
+      "name": "Updating TaskGroups Row with New Scheduled Time",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail Voicemail Detection Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail Voicemail Detection Task in DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail Voicemail Detection Task in DB').item.json.error_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1488,
+        992
+      ],
+      "id": "f3e96e5c-9ec9-48a5-8e5b-e82448f27546",
+      "name": "Fail Outbound Task1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Increment Counter').item.json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        832
+      ],
+      "id": "c7ae8573-a47e-4321-a2ab-27bdbd9e1c0f",
+      "name": "Update Counter Value1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3414326-2127-4752-ab20-bf74b5df6a76",
+              "leftValue": "={{ $('Update Counter Value1').item.json.counter }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "id": "e33e8c8f-6742-4e0e-8fe7-a5cd0568db6f",
+      "name": "If calling retries are > 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1264,
+        1024
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        1024
+      ],
+      "id": "f44d9d65-a558-4053-a959-b4a905dd8f34",
+      "name": "End Workflow"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail Twilio Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail Twilio Task in DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail Twilio Task in DB').item.json.error_message }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -144,
+        32
+      ],
+      "id": "710aa43f-556c-4348-afb4-7fb1008e4ec5",
+      "name": "Fail Outbound Task Group1"
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2384,
+        560
+      ],
+      "id": "780182f6-28d6-44f9-b1ef-3349ca80fef5",
+      "name": "Reschedule Call After 5 mins",
+      "webhookId": "d3b048ed-f051-458c-b030-e73cc0b52ad8"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -960,
+        0
+      ],
+      "id": "2601f84a-dae5-4adb-a42c-3e8da3370fc4",
+      "name": "Wait for 3 mins before Rechecking Call Status",
+      "webhookId": "effc8350-57b0-40cd-a88f-f8cb7863f0f8"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "outbound_call_agent_n8n",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3056,
+        -96
+      ],
+      "id": "fa1479b7-759f-40ca-88ee-83849da31e9f",
+      "name": "Recieve Trigger Request form Supabase",
+      "webhookId": "62208f00-774c-4240-a4d0-b680abcd0066",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XN2wz67KBUO7399v",
+          "name": "Supabase-TopRatedCoach-AuthenticationHeader"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const date = new Date($('Updating TaskGroups Row To In-Progress').first().json.scheduled_at);\ndate.setMinutes(date.getMinutes() + 5);\n\nreturn [{ json: { scheduled_at: date.toISOString() } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2816,
+        560
+      ],
+      "id": "db6fc5c7-822e-4121-9b66-49f736152e91",
+      "name": "Get  5 mins Ahead of Rescheduling Time"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        848
+      ],
+      "id": "61a85d35-8943-4e83-9d65-dbb57703344c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3414326-2127-4752-ab20-bf74b5df6a76",
+              "leftValue": "={{ $('Update Counter Value').item.json.counter }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "id": "f761a12f-3615-48f6-95fc-f2bd86cc5ed8",
+      "name": "If calling retries are > 3-",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        432
+      ],
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "Call Business": {
+      "main": [
+        [
+          {
+            "node": "Wait for Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail ElevenLabs Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Outbound Success": {
+      "main": [
+        [
+          {
+            "node": "Success ElevenLabs Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail ElevenLabs Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate a Transcript JSON": {
+      "main": [
+        [
+          {
+            "node": "Start Voicemail Detection Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Conv History": {
+      "main": [
+        [
+          {
+            "node": "Fetch Conversation through ConvID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CHATGPT": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Call Analysis AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Conversation through ConvID": {
+      "main": [
+        [
+          {
+            "node": "Check Status of Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status of Conversation": {
+      "main": [
+        [
+          {
+            "node": "Success Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Conv History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Conv History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Conv History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twilio Call Status": {
+      "main": [
+        [
+          {
+            "node": "Check Status of Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status of Call": {
+      "main": [
+        [
+          {
+            "node": "Convert String into Number",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for 3 mins before Rechecking Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for 3 mins before Rechecking Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for 3 mins before Rechecking Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make Dynamic JSON based on Merge Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make Dynamic JSON based on Merge Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make Dynamic JSON based on Merge Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Twilio Task DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fail Twilio Task DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Success": {
+      "main": [
+        [
+          {
+            "node": "Check Outbound Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call duration >10 Sec": {
+      "main": [
+        [
+          {
+            "node": "Success Twilio Task in DB1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make Dynamic JSON based on Merge Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert String into Number": {
+      "main": [
+        [
+          {
+            "node": "Call duration >10 Sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Number of tries counter Initialize": {
+      "main": [
+        [
+          {
+            "node": "Increment Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Counter": {
+      "main": [
+        [
+          {
+            "node": "Start ElevenLabs Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Voicemail Detector Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voicemail Detector Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Voicemail Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Voicemail Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "If its Voicemail then Schedule Call Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If its Voicemail then Schedule Call Again": {
+      "main": [
+        [
+          {
+            "node": "Fail Voicemail Detection Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Success Voicemail Detection Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Counter Value": {
+      "main": [
+        [
+          {
+            "node": "If calling retries are > 3-",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analysis AI": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        [
+          {
+            "node": "Create AI Agent Micro Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating TaskGroups Row To In-Progress": {
+      "main": [
+        [
+          {
+            "node": "Update Audit Status to in_progress and Started AT Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create AI Agent Micro Tasks": {
+      "main": [
+        [
+          {
+            "node": "Updating TaskGroups Row To In-Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Audit Status to in_progress and Started AT Time": {
+      "main": [
+        [
+          {
+            "node": "Number of tries counter Initialize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start ElevenLabs Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Call Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail ElevenLabs Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound TaskGroup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Outbound TaskGroup": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success ElevenLabs Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Start Twilio Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Twilio Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Twilio Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If calling retries are 3": {
+      "main": [
+        [
+          {
+            "node": "Fail Twilio Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Counter Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Twilio Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound Task Group1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make Dynamic JSON based on Merge Output": {
+      "main": [
+        [
+          {
+            "node": "If calling retries are 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Twilio Task DB": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Outbound Task Group": {
+      "main": [
+        [
+          {
+            "node": "End Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Twilio Task in DB1": {
+      "main": [
+        [
+          {
+            "node": "Start Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Fetch Conversation Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Fetch Conversation through ConvID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Fetch Conversation Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Generate a Transcript JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Fetch Conversation Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Voicemail Detection Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Voicemail Detector Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Voicemail Detection Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Update Counter Value1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Voicemail Detection Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Create JSON with metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start AI Analysis Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Call Analysis AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create JSON with metadata": {
+      "main": [
+        [
+          {
+            "node": "Create Call Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Create Call Transcripts Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Transcripts Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Convert Transcript Object into AI Friendly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Transcript Object into AI Friendly": {
+      "main": [
+        [
+          {
+            "node": "Start AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Analysis Task in DB": {
+      "main": [
+        [
+          {
+            "node": "Create Generated Reports Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Generated Reports Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Parse question handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Question Handling": {
+      "main": [
+        [
+          {
+            "node": "Attach report_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse question handling": {
+      "main": [
+        [
+          {
+            "node": "Split Question Handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach report_id": {
+      "main": [
+        [
+          {
+            "node": "Create Call Report Evaluations Entry In DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Call Report Evaluations Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Update Call Table With Report Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Outbound Task": {
+      "main": [
+        [
+          {
+            "node": "End Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Call Table With Report Id": {
+      "main": [
+        [
+          {
+            "node": "Updating TaskGroups Row To Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating TaskGroups Row with New Scheduled Time": {
+      "main": [
+        [
+          {
+            "node": "Reschedule Call After 5 mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Counter Value1": {
+      "main": [
+        [
+          {
+            "node": "If calling retries are > 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If calling retries are > 3": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound Task1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Counter Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Outbound Task1": {
+      "main": [
+        [
+          {
+            "node": "Update Counter Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fail Outbound Task Group1": {
+      "main": [
+        [
+          {
+            "node": "Update Counter Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reschedule Call After 5 mins": {
+      "main": [
+        [
+          {
+            "node": "Increment Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for 3 mins before Rechecking Call Status": {
+      "main": [
+        [
+          {
+            "node": "Twilio Call Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recieve Trigger Request form Supabase": {
+      "main": [
+        [
+          {
+            "node": "Get a specific business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get  5 mins Ahead of Rescheduling Time": {
+      "main": [
+        [
+          {
+            "node": "Updating TaskGroups Row with New Scheduled Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    },
+    "If calling retries are > 3-": {
+      "main": [
+        [
+          {
+            "node": "End Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get  5 mins Ahead of Rescheduling Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a53e6045-e596-4932-bdf5-e56dde729dcb",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-06-12T11:29:58.207Z",
+      "updatedAt": "2025-06-12T11:29:58.207Z",
+      "role": "workflow:owner",
+      "workflowId": "vsArFcX3K2atVDxC",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
