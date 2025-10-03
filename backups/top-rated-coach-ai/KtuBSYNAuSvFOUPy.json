@@ -1,0 +1,425 @@
+{
+  "createdAt": "2025-07-25T10:36:42.659Z",
+  "updatedAt": "2025-09-26T09:29:41.000Z",
+  "id": "KtuBSYNAuSvFOUPy",
+  "name": "RESET USER CHATS AND PERSONALITY AND CHAT SUMMARIES",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "04a3077b-3c5c-43ec-b31f-863d1d046a9c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/chat_messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "session_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "659e3cd0-0357-45c0-83fa-7389e10bc7b1",
+      "name": "DELETE ALL CHAT MESSAGES"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/chat_sessions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.ac222d33-8c35-4411-8655-c4027bd34198"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "a8bdef57-05dd-4f20-8e55-38c47f8a1faf",
+      "name": "GET Chat Session"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/chat_archived_summaries",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "a04fc3e5-5de7-4ec0-bf46-2ecf76a23d97",
+      "name": "DELETE ALL CHAT SUMMARIES",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/personality_analysis_log",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        -16
+      ],
+      "id": "9a233e7e-fa07-4ce9-86bf-5379b8a9b929",
+      "name": "DELETE PERSONALITY ANALYSIS LOG"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/personality_message_tracker",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -16
+      ],
+      "id": "f92d62db-8c3e-4169-8d27-ac69a2d0b2ea",
+      "name": "DELETE PERSONALITY MESSAGE TRACKER"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/user_personality",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        -16
+      ],
+      "id": "9f105046-7978-4704-92e9-e3f0c7c166c5",
+      "name": "DELETE USER PERSONALITY",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/chat_sessions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1552,
+        -16
+      ],
+      "id": "6236369a-1554-4fbc-9cb7-d46f0720d452",
+      "name": "DELETE CHAT SESSION"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "GET Chat Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Chat Session": {
+      "main": [
+        [
+          {
+            "node": "DELETE ALL CHAT MESSAGES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE ALL CHAT MESSAGES": {
+      "main": [
+        [
+          {
+            "node": "DELETE ALL CHAT SUMMARIES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE ALL CHAT SUMMARIES": {
+      "main": [
+        [
+          {
+            "node": "DELETE PERSONALITY ANALYSIS LOG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE PERSONALITY ANALYSIS LOG": {
+      "main": [
+        [
+          {
+            "node": "DELETE PERSONALITY MESSAGE TRACKER",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE PERSONALITY MESSAGE TRACKER": {
+      "main": [
+        [
+          {
+            "node": "DELETE USER PERSONALITY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DELETE USER PERSONALITY": {
+      "main": [
+        [
+          {
+            "node": "DELETE CHAT SESSION",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "65a015d1-a76e-4760-88d2-d5f2e711d88b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-25T10:36:42.664Z",
+      "updatedAt": "2025-07-25T10:36:42.664Z",
+      "role": "workflow:owner",
+      "workflowId": "KtuBSYNAuSvFOUPy",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
