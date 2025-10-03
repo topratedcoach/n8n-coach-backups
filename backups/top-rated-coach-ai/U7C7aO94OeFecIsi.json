@@ -1,0 +1,462 @@
+{
+  "createdAt": "2025-07-14T16:45:26.928Z",
+  "updatedAt": "2025-09-29T04:36:24.000Z",
+  "id": "U7C7aO94OeFecIsi",
+  "name": "RAG CHATBOT (Depreciated-Shifted to Cron job Supabase)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions.",
+        "topK": "=100"
+      },
+      "id": "2787c232-be90-4e91-8529-e680e9cd7914",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        128,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "7c81111b-8763-4085-be49-75da93110d3e",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        112,
+        768
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get User Message').item.json.body.message }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant. Always use the tools provided to you first before using your own internal knowledge.\n\nUse the \"Get Messages History\" tool to retrieve chat context. This tool returns an object with a field called \"response\", which contains a list of messages. Each message has a \"role\" (either \"user\" or \"ai\") and a \"message\" field. Reconstruct the full chronological conversation from this list and use it as chat history context.\n\nUse the \"user_documents\" tool (a vector store) as a prioritized source of information to answer user queries. Incorporate insights from these documents whenever relevant. However, you are not limited to them — you may (and should) enhance your response using your own internal knowledge, especially when it leads to a more complete, accurate, or actionable answer. If your response includes both, do not artificially separate them; synthesize them seamlessly.\n\nIf your confidence in understanding the user query is low or the request is ambiguous, ask the user for clarification instead of guessing.\n\n--- USER PERSONALITY ---\n\nThe user prefers a {{ $json.tone_preference }} tone, with {{ $json.response_length }} responses. They communicate in a {{ $json.communication_style }} style.\n\nDetailed summary:\n{{ $json.detailed_personality_summary }}\n\nAlign your tone and communication style accordingly to match the user. Confidence in personality accuracy: {{ $json.confidence_score }}.\n\n--- FORMAT ---\n\nRespond ONLY in the following strict JSON format:\n\nDo NOT include extra explanation or escape characters. Just return raw JSON object, like this:\n\n{\n  \"output\": \"your message here\",\n  \"tokenCount\": 123\n}"
+        }
+      },
+      "id": "7d3a253c-4c36-43ab-9c44-23043ebe067e",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        128,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new_user_message",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        144
+      ],
+      "id": "1308b572-228d-493a-bffd-d5e144c04a1c",
+      "name": "Get User Message",
+      "webhookId": "78bbf65b-9957-425b-a2e5-0f54ebc91eef",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XN2wz67KBUO7399v",
+          "name": "Supabase-TopRatedCoach-AuthenticationHeader"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/insert_chat_message",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role  }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_session_id\": \"{{ $('Get User Message').item.json.body.session_id }}\",\n  \"_role\": \"ai\",\n  \"_message\": {{ JSON.stringify($json.output) }},\n  \"_token_count\": {{ $('Parse AI Analysis Output into JSON').item.json.tokenCount }},\n  \"_metadata\": {\n    \"model\": \"gpt-4o-mini\",\n    \"business_id\": \"{{ $('Get User Message').item.json.body.business_id }}\"\n  }\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        144
+      ],
+      "id": "a8dc7e6a-117a-4f74-9b95-a1452182f6f5",
+      "name": "Add the AI response in DB"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/user_personality",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        144
+      ],
+      "id": "c6ad3129-59dd-4573-8f2b-e5bc0654b3f8",
+      "name": "Get User Personality from DB"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "d924b3e7-ab2f-4ed6-abde-6ced0a8c2aa0",
+      "name": "AI Chat",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        368
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2f33b642-ade5-4bc2-a776-97d19ec17fd8",
+      "name": "AI Vector Search ",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        320,
+        560
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "knowledgebase",
+          "mode": "list",
+          "cachedResultName": "knowledgebase"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        576
+      ],
+      "id": "c571b1b5-f371-4ec5-a04f-a12559f8ccbd",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "mwq2n9VCAuoBjoo3",
+          "name": "PineCone API TopRatedCoach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.first().json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        144
+      ],
+      "id": "9d9d39bf-43ce-4d76-ae43-c0fdc9b278ec",
+      "name": "Parse AI Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool gets the last 8 messages from DB and returns the user's and AI's messages to be used as context.",
+        "url": "={{$vars.SupabaseDBUrl}}/chat_messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "session_id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.session_id }}"
+            },
+            {
+              "name": "order",
+              "value": "=created_at.desc"
+            },
+            {
+              "name": "limit",
+              "value": "8"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "=application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        368
+      ],
+      "id": "09522bbb-4d00-41ed-96f7-f944e76f06ee",
+      "name": "Get Messages History (LAST 8)"
+    }
+  ],
+  "connections": {
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Message": {
+      "main": [
+        [
+          {
+            "node": "Get User Personality from DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Personality from DB": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Chat": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Vector Search ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "Add the AI response in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Messages History (LAST 8)": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5bc2fe12-c8d0-49ef-95a6-376187e87db2",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-07-14T16:45:26.932Z",
+      "updatedAt": "2025-07-14T16:45:26.932Z",
+      "role": "workflow:owner",
+      "workflowId": "U7C7aO94OeFecIsi",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
