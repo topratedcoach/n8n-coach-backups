@@ -1,0 +1,806 @@
+{
+  "createdAt": "2025-10-02T14:19:13.510Z",
+  "updatedAt": "2025-10-03T10:52:48.000Z",
+  "id": "vunHkbizyUk9GJ61",
+  "name": "Backup TopRatedCoachAI Workflows to GitHub",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "id": "6aeb4a9d-02d9-4366-bd94-4a8915435b2d",
+      "name": "Schedule Trigger - Daily 3AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1216,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "filters": {
+          "tags": "TopRatedCoachAI"
+        },
+        "requestOptions": {}
+      },
+      "id": "9e824f0b-26b3-4eb5-b97d-270f76478e34",
+      "name": "Get All n8n Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        288
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "yb9JsACJEDvgSjMC",
+          "name": "n8n account API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $('Get All n8n Workflows').item.json.id }}",
+          "mode": ""
+        },
+        "requestOptions": {}
+      },
+      "id": "8d11ec61-ff0f-4559-8c47-fc5018b3bf44",
+      "name": "Get Full Workflow Details",
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        288
+      ],
+      "credentials": {
+        "n8nApi": {
+          "id": "yb9JsACJEDvgSjMC",
+          "name": "n8n account API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Get the workflow data\nconst workflow = $input.item.json;\n\n// Clean the workflow name for display\nconst workflowName = (workflow.name || 'unnamed')\n  .replace(/\\//g, '-')\n  .replace(/\\\\/g, '-')\n  .replace(/:/g, '-');\n\nconst workflowId = workflow.id || 'unknown';\n\n// ✅ FIX: Use ONLY the ID for the filename (stable, no duplicates)\nconst fileName = `${workflowId}.json`;\nconst filePath = `backups/top-rated-coach-ai/${fileName}`;\n\n// Create the workflow JSON string with proper formatting\nconst workflowJson = JSON.stringify(workflow, null, 2);\n\n// Convert to Base64 for GitHub API\nconst encodedContent = Buffer.from(workflowJson, 'utf-8').toString('base64');\n\n// Create commit message with name for human readability\nconst currentDate = new Date().toISOString().replace('T', ' ').substring(0, 19);\nconst commitMessage = `Backup: ${workflowName} (ID: ${workflowId}) - ${currentDate}`;\n\n// Return the prepared data\nreturn {\n  workflowName,\n  workflowId,\n  fileName,\n  filePath,\n  content: encodedContent,\n  commitMessage,\n  backupDate: currentDate,\n  active: workflow.active || false,\n  tags: workflow.tags || []\n};"
+      },
+      "id": "19dbd216-418d-41e5-8ffa-f399db11d1c6",
+      "name": "Prepare GitHub File Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Prepare GitHub File Data').item.json.filePath }}",
+        "additionalParameters": {}
+      },
+      "id": "4301068d-72c7-487b-816f-65bdf933c0ca",
+      "name": "Check if File Exists",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        288
+      ],
+      "webhookId": "b261e073-67b7-42b6-b16d-1e46196af089",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Check if File Exists').item.json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "id": "7d45474b-24ed-4c68-bd56-76c925d75f39"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "a3481d69-da82-4725-81a2-07e6a32946d4",
+      "name": "File Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Prepare GitHub File Data').item.json.filePath }}",
+        "fileContent": "={{ $('Prepare GitHub File Data').item.json.content }}",
+        "commitMessage": "={{ $('Prepare GitHub File Data').item.json.commitMessage }} [UPDATE]"
+      },
+      "id": "a559858f-1dee-4b7c-91c6-481b5d8f37ec",
+      "name": "Update Existing File",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        192
+      ],
+      "webhookId": "3d07764e-40db-40f5-aa87-63fe58b01376",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Prepare GitHub File Data').item.json.filePath }}",
+        "fileContent": "={{ $('Prepare GitHub File Data').item.json.content }}",
+        "commitMessage": "={{ $('Prepare GitHub File Data').item.json.commitMessage }} [CREATE]"
+      },
+      "id": "6b46c4ef-8132-4ba5-b004-277e5d68fd82",
+      "name": "Create New File",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        384
+      ],
+      "webhookId": "a82ce063-f97b-4fd4-b8bd-cf20c7168a91",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "backupResults",
+        "options": {}
+      },
+      "id": "ddc35ed0-e534-4eca-868d-058b1ce42683",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        800,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const results = $input.item.json.backupResults || [];\n\n// Get current timestamp\nconst timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);\nconst githubOwner = $vars.GITHUB_OWNER;\nconst githubRepo = $vars.GITHUB_REPO;\nconst baseUrl = `https://github.com/${githubOwner}/${githubRepo}`;\n\nconst workflows = results\n  .filter(r => r.commit && !r.error) \n  .map(result => {\n    return {\n      // These keys should now be populated correctly from the Set node\n      id: result.workflowId || 'unknown',\n      name: result.workflowName || 'Unknown Workflow', \n      fileName: result.fileName || `${result.workflowId || 'unknown'}.json`,\n      active: result.active !== undefined ? result.active : true,\n      // The updatedAt property relies on the GitHub commit date, which is fine\n      updatedAt: result.commit?.author?.date || timestamp, \n      tags: result.tags || []\n    };\n  })\n  .sort((a, b) => a.name.localeCompare(b.name));\n\nfunction getStatusEmoji(name) {\n  const nameLower = name.toLowerCase();\n  if (nameLower.includes('danger') || nameLower.includes('delete')) return '⚠️';\n  if (nameLower.includes('depreciated') || nameLower.includes('deprecated')) return '🔕';\n  if (nameLower.includes('webhook') || nameLower.includes('trigger')) return '🔔';\n  if (nameLower.includes('agent') || nameLower.includes('ai')) return '🤖';\n  if (nameLower.includes('backup')) return '💾';\n  if (nameLower.includes('call') || nameLower.includes('phone')) return '📞';\n  if (nameLower.includes('email') || nameLower.includes('mail')) return '📧';\n  if (nameLower.includes('chat')) return '💬';\n  if (nameLower.includes('analysis') || nameLower.includes('audit')) return '📊';\n  if (nameLower.includes('scrape')) return '🔍';\n  if (nameLower.includes('cron') || nameLower.includes('schedule')) return '⏰';\n  if (nameLower.includes('rag') || nameLower.includes('knowledge')) return '📚';\n  if (nameLower.includes('user') || nameLower.includes('personality')) return '👤';\n  return '⚙️';\n}\n\n// Build category statistics\nconst categories = {};\nworkflows.forEach(w => {\n  const emoji = getStatusEmoji(w.name);\n  const category = \n    emoji === '🔔' ? 'Triggers & Webhooks' :\n    emoji === '🤖' ? 'AI Agents' :\n    emoji === '📞' ? 'Phone Call Workflows' :\n    emoji === '📊' ? 'Analytics & Audits' :\n    emoji === '💾' ? 'Backup & Data' :\n    emoji === '🔍' ? 'Scrapers & Data Collection' :\n    emoji === '⚠️' ? 'Administrative (Danger)' :\n    emoji === '🔕' ? 'Deprecated' :\n    'Other';\n  categories[category] = (categories[category] || 0) + 1;\n});\n\n// ✅ FIXED: Removed escaped backticks\nconst categoryStats = Object.entries(categories)\n  .sort(([,a], [,b]) => b - a)\n  .map(([cat, count]) => `- **${cat}**: ${count}`)  // ← FIXED LINE\n  .join('\\n');\n\nconst readme = `# TopRatedCoachAI Workflow Backups\n\n> Automated daily backups of all n8n workflows tagged with \"TopRatedCoachAI\"\n\n## 📊 Backup Summary\n\n- **Last Updated**: ${timestamp} UTC\n- **Total Workflows**: ${workflows.length}\n- **Active Workflows**: ${workflows.filter(w => w.active).length}\n- **Repository**: [${githubOwner}/${githubRepo}](${baseUrl})\n- **Backup Frequency**: Daily at 3:00 AM UTC\n\n---\n\n## 📋 Workflow Index\n\n${workflows.map((w, index) => {\n  const emoji = getStatusEmoji(w.name);\n  const status = w.active ? '✅ Active' : '⏸️ Inactive';\n  const deprecatedNote = w.name.toLowerCase().includes('depreciated') || \n                         w.name.toLowerCase().includes('deprecated') ? \n                         ' (Deprecated)' : '';\n  \n  return `### ${index + 1}. ${emoji} ${w.name}\n\n- **Workflow ID**: \\`${w.id}\\`\n- **Status**: ${status}${deprecatedNote}\n- **Last Backup**: ${w.updatedAt.substring(0, 19).replace('T', ' ')} UTC\n- **File**: [backups/top-rated-coach-ai/${w.fileName}](./backups/top-rated-coach-ai/${w.fileName})\n- **Direct Link**: [View on GitHub](${baseUrl}/blob/main/backups/top-rated-coach-ai/${w.fileName})\n\n---`;\n}).join('\\n\\n')}\n\n## 🔧 How to Use These Backups\n\n### Restore a Workflow to n8n\n\n1. Navigate to **backups/top-rated-coach-ai/** folder above\n2. Click on any workflow file\n3. Click the **Raw** button on GitHub\n4. Copy the entire JSON content\n5. In n8n:\n   - Go to **Workflows** → **Add workflow**\n   - Click **Import from URL or File**\n   - Paste the JSON and click **Import**\n\n### View Workflow History\n\nEach workflow file maintains its complete version history in Git:\n\n\\`\\`\\`bash\n# View all changes to a specific workflow\ngit log backups/top-rated-coach-ai/{workflow-id}.json\n\n# Compare two versions  \ngit diff HEAD~5 HEAD backups/top-rated-coach-ai/{workflow-id}.json\n\n# See what changed in a specific commit\ngit show {commit-hash}\n\\`\\`\\`\n\n### Search for Workflows\n\n- **In this README**: Press \\`Ctrl+F\\` and search by workflow name\n- **In GitHub**: Press \\`t\\` to open file finder and search\n- **In Git**: \\`git log --all --grep=\"workflow-name\"\\`\n\n---\n\n## 📁 Repository Structure\n\n\\`\\`\\`\nn8n-coach-backups/\n├── README.md                      ← You are here\n└── backups/\n    └── top-rated-coach-ai/\n        ├── 5q23rjNh39FQdAxa.json  (Post Call Webhook Trigger)\n        ├── CcHBrELrSsWhXNYT.json  (PreCall Initial Data)\n        ├── E7kXqgU4iMB7Gzl5.json  (Delete USER - DANGER)\n        └── ... (${workflows.length} total workflow files)\n\\`\\`\\`\n\n---\n\n## 🎯 Key Features\n\n### ✅ Stable Filenames\nFiles are named by workflow ID (e.g., \\`5q23rjNh39FQdAxa.json\\`) which:\n- **Never changes** even when you rename the workflow\n- **Prevents duplicates** when workflow names change\n- **Maintains clean Git history** for each workflow\n\n### 📝 Complete Backups\nEach backup includes:\n- All nodes and their configurations\n- Connections between nodes\n- Workflow settings and metadata\n- Credential references (IDs only, not actual secrets)\n\n### 📚 Version History\nEvery change is tracked:\n- See exactly what changed in each backup\n- Compare any two versions\n- Restore to any previous state\n\n### 🤖 Auto-Generated\nThis README updates automatically:\n- Regenerated with each backup run\n- Always shows current workflow names\n- Automatically sorted alphabetically\n\n---\n\n## ⚠️ Important Notes\n\n### Security\n- ✅ Workflow files contain credential **IDs** only\n- ❌ Actual credentials (passwords, API keys) are **never** backed up\n- ✅ Safe to store in public/private repositories\n\n### File Naming Convention\n- **Format**: \\`{workflow-id}.json\\`\n- **Example**: \\`5q23rjNh39FQdAxa.json\\`\n- **Benefit**: Renaming a workflow updates the same file (no duplicates)\n- **Workflow name**: Stored inside the JSON and in this README\n\n### Backup Scope\n- ✅ Only workflows tagged with **\"TopRatedCoachAI\"**\n- ✅ Includes both active and inactive workflows\n- ❌ Workflows without this tag are not backed up\n\n---\n\n## 🚀 Automation Details\n\n### The Backup Workflow\n\nThis backup system is built using n8n itself:\n\n- **Workflow Name**: Backup TopRatedCoachAI Workflows to GitHub\n- **Workflow ID**: \\`vunHkbizyUk9GJ61\\`\n- **Schedule**: Daily at **3:00 AM UTC**\n- **Execution Time**: ~30-60 seconds\n\n### Backup Process\n\n1. **Discovery**: Finds all workflows with tag \"TopRatedCoachAI\"\n2. **Export**: Gets complete workflow JSON from n8n API\n3. **Prepare**: Converts to Base64 for GitHub API\n4. **Check**: Determines if file exists (update vs create)\n5. **Commit**: Uploads to GitHub with descriptive commit message\n6. **Index**: Updates this README with current workflow list\n7. **Report**: Sends success/error summary\n\n### Recent Runs\n\n- **Last Successful Run**: ${timestamp} UTC\n- **Workflows Backed Up**: ${workflows.length}\n- **Status**: ${workflows.length > 0 ? '✅ All workflows backed up successfully' : '⚠️ No workflows found'}\n\n---\n\n## 📊 Statistics\n\n### Overall\n- **Total Workflows**: ${workflows.length}\n- **Active**: ${workflows.filter(w => w.active).length}\n- **Inactive**: ${workflows.filter(w => !w.active).length}\n\n### By Category\n${categoryStats}\n\n---\n\n## 🔧 Configuration\n\n### Environment Variables Required\n\n\\`\\`\\`bash\nGITHUB_OWNER=\"${githubOwner}\"\nGITHUB_REPO=\"${githubRepo}\"\n\\`\\`\\`\n\n### Credentials Required\n\n1. **n8n API Credentials**\n   - Access to workflow list and details\n   - Used by \"Get All n8n Workflows\" node\n\n2. **GitHub OAuth2 Credentials**  \n   - Repository write access\n   - Used by all GitHub nodes\n\n---\n\n## 📞 Support & Troubleshooting\n\n### Common Issues\n\n**❓ README not updating**\n- Check: GitHub credentials have write permission\n- Check: Repository name and owner are correct\n- Solution: Run workflow manually and check execution logs\n\n**❓ Workflows showing as \"Unknown\"**\n- Check: \"Prepare GitHub File Data\" node is passing metadata\n- Solution: Verify \\`workflowName\\` and \\`workflowId\\` in node output\n\n**❓ Backup failed for some workflows**\n- Check: Execution logs for specific errors\n- Check: GitHub API rate limits\n- Solution: Review error summary in workflow output\n\n### Need Help?\n\n1. Check the backup workflow execution logs in n8n\n2. Verify all credentials are properly configured\n3. Ensure environment variables are set correctly\n4. Review the [n8n documentation](https://docs.n8n.io)\n\n---\n\n## 🎨 Customization\n\nWant to modify this backup system? Here's what you can customize:\n\n### Change Backup Location\nEdit \\`filePath\\` in \"Prepare GitHub File Data\" node:\n\\`\\`\\`javascript\nfilePath = \\`your-custom-path/\\${fileName}\\`\n\\`\\`\\`\n\n### Change Schedule\nEdit cron expression in \"Schedule Trigger\" node:\n\\`\\`\\`\n0 3 * * *  → Daily at 3 AM\n0 */6 * * * → Every 6 hours\n0 0 * * 0  → Weekly on Sunday\n\\`\\`\\`\n\n### Filter Different Workflows\nEdit tag filter in \"tags: \"YourCustomTag\"\n\\`\\`\\`\n\n---\n\n## 📜 License & Usage\n\nThese backups are for internal use of the TopRatedCoachAI n8n instance. \n\n- ✅ Safe to clone/fork for your own n8n backup needs\n- ✅ Modify and adapt as needed\n- ❌ Workflow credentials are not included (by design)\n\n---\n\n*This README is auto-generated by the n8n backup workflow.*  \n*Last updated: ${timestamp} UTC*  \n*Maintained by: n8n Backup Automation*\n`;\n\nreturn {\n  readme: readme,\n  readmePath: 'README.md',\n  readmeContent: Buffer.from(readme, 'utf-8').toString('base64'),\n  commitMessage: `Update README with ${workflows.length} workflows - ${timestamp}`,\n  backupResults: results,\n  timestamp: timestamp\n};"
+      },
+      "id": "dd9f499c-4398-41aa-a609-1d39c37cdff7",
+      "name": "Generate README Index",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $json.readmePath }}",
+        "additionalParameters": {}
+      },
+      "id": "873e398f-ab20-46dc-aefb-7a21ce22b175",
+      "name": "Check if README Exists",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        288
+      ],
+      "webhookId": "cf01a892-ced9-436a-aeb4-9129669d6fd8",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "continueOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Check if README Exists').item.json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "id": "readme-exists-check"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "bda5e4a9-0e33-4272-a69c-42c764e498ca",
+      "name": "README Exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Generate README Index').item.json.readmePath }}",
+        "fileContent": "={{ $('Generate README Index').item.json.readmeContent }}",
+        "commitMessage": "={{ $('Generate README Index').item.json.commitMessage }}"
+      },
+      "id": "dc676dff-1e5d-4c9f-9966-11c67799b3c2",
+      "name": "Update README",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        192
+      ],
+      "webhookId": "bf9e4fad-33e3-437f-9d54-445c711ce3c2",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_OWNER }}",
+          "mode": ""
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $vars.GITHUB_REPO }}",
+          "mode": ""
+        },
+        "filePath": "={{ $('Generate README Index').item.json.readmePath }}",
+        "fileContent": "={{ $('Generate README Index').item.json.readmeContent }}",
+        "commitMessage": "={{ $('Generate README Index').item.json.commitMessage }}"
+      },
+      "id": "9bf442a8-e7bd-4d9e-9e25-dbdf4d54a378",
+      "name": "Create README",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        384
+      ],
+      "webhookId": "a9a46aae-038c-435b-a16d-c15876e39bc4",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "UL8ggAOpdToI27xY",
+          "name": "AI Coach Github Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Generate README Index').item.json.backupResults.some(r => r.error !== undefined) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              },
+              "id": "662a2af5-9be6-462b-bd19-4ab08231dd9b"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "33497d94-29c0-4a83-90d3-192a909a824d",
+      "name": "Any Errors?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1920,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const results = $('Generate README Index').item.json.backupResults || [];\n\n// Separate successes and errors\nconst successes = results.filter(r => r.commit && !r.error);\nconst errors = results.filter(r => r.error);\n\n// Create summary\nconst current_time = new Date().toISOString().replace('T', ' ').substring(0, 19);\nconst githubOwner = $vars.GITHUB_OWNER;\nconst githubRepo = $vars.GITHUB_REPO;\n\nconst summary_text = `✅ n8n Backup Completed Successfully\n\nDate: ${current_time}\nTotal workflows backed up: ${successes.length}\n${errors.length > 0 ? `Failed: ${errors.length}` : ''}\n\nAll workflows with tag 'TopRatedCoachAI' have been successfully backed up to GitHub.\n\nRepository: https://github.com/${githubOwner}/${githubRepo}\nBranch: main\nPath: /backups/top-rated-coach-ai/\n\n📖 View the complete index: https://github.com/${githubOwner}/${githubRepo}/blob/main/backups/top-rated-coach-ai/README.md\n`;\n\n// List of backed up workflows\nlet workflow_list = \"\\nBacked up workflows:\\n\";\nfor (const workflow of successes) {\n  const name = workflow.workflowName || 'Unknown';\n  const id = workflow.workflowId || 'unknown';\n  workflow_list += `- ${name} (ID: ${id})\\n`;\n}\n\nreturn {\n  summary: summary_text + workflow_list,\n  successCount: successes.length,\n  errorCount: errors.length,\n  totalCount: results.length,\n  timestamp: current_time,\n  success: true\n};"
+      },
+      "id": "831d34f1-0d6c-4b22-a52d-da9aebbebac7",
+      "name": "Prepare Success Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const results = $('Generate README Index').item.json.backupResults || [];\n\n// Separate successes and errors properly\nconst successes = results.filter(r => r.commit && !r.error);\nconst errors = results.filter(r => r.error);\n\n// Create summary message\nconst error_count = errors.length;\nconst success_count = successes.length;\nconst total = results.length;\n\nlet error_details = \"\";\nif (error_count > 0) {\n    error_details = \"\\n\\nFailed Workflows:\\n\";\n    for (const error of errors) {\n        const workflow_name = error.workflowName || error.fileName || 'Unknown';\n        const error_msg = error.error?.message || error.error || 'Unknown error';\n        error_details += `- ${workflow_name}: ${error_msg}\\n`;\n    }\n}\n\n// Create email body\nconst email_subject = `n8n Backup Alert: ${error_count} Failures out of ${total} workflows`;\nconst email_body = `n8n Workflow Backup Report\n\nBackup process completed with errors.\n\nSummary:\n- Total workflows processed: ${total}\n- Successfully backed up: ${success_count}\n- Failed: ${error_count}\n${error_details}\n\nPlease check the logs and resolve the issues.\n\nRepository: https://github.com/${$vars.GITHUB_OWNER}/${$vars.GITHUB_REPO}\n`;\n\n// For Slack message\nlet slack_text = `🚨 *n8n Backup Alert*\\n\\n*${error_count} failures* out of ${total} workflows`;\nif (error_count > 0) {\n    slack_text += \"\\n\\n*Failed Workflows:*\";\n    for (const error of errors) {\n        const workflow_name = error.workflowName || error.fileName || 'Unknown';\n        slack_text += `\\n• ${workflow_name}`;\n    }\n}\n\nreturn {\n    emailSubject: email_subject,\n    emailBody: email_body,\n    slackMessage: slack_text,\n    errorCount: error_count,\n    successCount: success_count,\n    totalCount: total,\n    errors: errors,\n    hasErrors: error_count > 0\n};"
+      },
+      "id": "55fb3d27-7353-489a-8afe-784d2247ebd8",
+      "name": "Prepare Error Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3039596-2ce6-4367-98b1-ba10ca661d6c",
+              "name": "workflowName",
+              "value": "={{ $('Prepare GitHub File Data').item.json.workflowName }}",
+              "type": "string"
+            },
+            {
+              "id": "c72acb16-6389-48db-a4b2-7a632959e4a1",
+              "name": "workflowId",
+              "value": "={{ $('Prepare GitHub File Data').item.json.workflowId }}",
+              "type": "string"
+            },
+            {
+              "id": "5cfcc1e6-7419-46fa-ac36-49b17b27a746",
+              "name": "fileName",
+              "value": "={{ $('Prepare GitHub File Data').item.json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "ed0e31b7-b971-497c-973c-3b6e057821b8",
+              "name": "active",
+              "value": "={{ $('Prepare GitHub File Data').item.json.active }}",
+              "type": "string"
+            },
+            {
+              "id": "a3794ccf-3922-49bb-a70e-6d9d4c0d4265",
+              "name": "tags",
+              "value": "={{ $('Prepare GitHub File Data').item.json.tags }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        288
+      ],
+      "id": "40375ffc-0196-4081-8e46-7226e99199df",
+      "name": "Preserve Workflow Data"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// The current item ($input.item.json) contains the output from the GitHub node.\nconst commitResult = $input.item.json;\n\n// Correct: Retrieve the entire list of 26 items from the 'Preserve Workflow Data' node,\n// and then use the current index ($itemIndex) to get the corresponding item's JSON data.\n// We get the JSON data directly from the item object.\nconst preservedItem = $('Preserve Workflow Data').all()[$itemIndex];\nconst preservedData = preservedItem.json;\n\n// Return a new object that merges the GitHub commit result with the\n// preserved workflow metadata.\nreturn {\n  ...commitResult, // Contains the 'commit' object from GitHub\n  workflowName: preservedData.workflowName,\n  workflowId: preservedData.workflowId,\n  fileName: preservedData.fileName,\n  active: preservedData.active,\n  tags: preservedData.tags,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        288
+      ],
+      "id": "d9878d08-56e4-4740-adfa-f87fe278f323",
+      "name": "Merge Commit and Metadata"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger - Daily 3AM": {
+      "main": [
+        [
+          {
+            "node": "Get All n8n Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All n8n Workflows": {
+      "main": [
+        [
+          {
+            "node": "Get Full Workflow Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Workflow Details": {
+      "main": [
+        [
+          {
+            "node": "Prepare GitHub File Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare GitHub File Data": {
+      "main": [
+        [
+          {
+            "node": "Preserve Workflow Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if File Exists": {
+      "main": [
+        [
+          {
+            "node": "File Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Exists?": {
+      "main": [
+        [
+          {
+            "node": "Update Existing File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create New File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Existing File": {
+      "main": [
+        [
+          {
+            "node": "Merge Commit and Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Create New File": {
+      "main": [
+        [
+          {
+            "node": "Merge Commit and Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "Generate README Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate README Index": {
+      "main": [
+        [
+          {
+            "node": "Check if README Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if README Exists": {
+      "main": [
+        [
+          {
+            "node": "README Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "README Exists?": {
+      "main": [
+        [
+          {
+            "node": "Update README",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create README",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update README": {
+      "main": [
+        [
+          {
+            "node": "Any Errors?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create README": {
+      "main": [
+        [
+          {
+            "node": "Any Errors?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Errors?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Success Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preserve Workflow Data": {
+      "main": [
+        [
+          {
+            "node": "Check if File Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Commit and Metadata": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "6bdf49c8-aad8-40d0-9f1b-a25dcc61bf66",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-02T14:19:13.515Z",
+      "updatedAt": "2025-10-02T14:19:13.515Z",
+      "role": "workflow:owner",
+      "workflowId": "vunHkbizyUk9GJ61",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
