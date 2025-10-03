@@ -1,0 +1,593 @@
+{
+  "createdAt": "2025-07-15T14:01:51.749Z",
+  "updatedAt": "2025-08-27T17:03:21.000Z",
+  "id": "dzqrhlxZOIgHuw5O",
+  "name": "Create Chat Message (DELETE LATER)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/rpc/insert_chat_message",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_session_id\": \"{{ $('Create Chat Session (RPC)').item.json.session_id }}\",\n  \"_role\": \"ai\",\n  \"_message\": \"{{ $json.message }}\",\n  \"_token_count\": {{ $json.tokenCount }}\n}\n\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -128
+      ],
+      "id": "9666ca0d-66ab-487d-acdc-bc36115561a2",
+      "name": "Create Initial AI Message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a0ef300b-7db1-46ea-964f-57d8835c0417",
+              "leftValue": "={{ $json.newly_created }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -224
+      ],
+      "id": "af5c5df8-c00d-43e1-ac25-7e77294d8205",
+      "name": "if session already existed"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/rpc/insert_chat_message",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_session_id\": \"{{ $('Create Chat Session (RPC)').item.json.session_id }}\",\n  \"_role\": \"user\",\n  \"_message\": \"{{ $json.message }}\",\n  \"_token_count\": {{ $json.tokenCount }}\n}\n\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        -320
+      ],
+      "id": "462a50b9-bc1d-4fe3-a020-e647d1904d62",
+      "name": "Create Chat Message",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -224
+      ],
+      "id": "0422ff9c-ffa1-4e5c-ab65-01d55b7d7f7e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/auth/v1/token",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "password"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "=fuzailsohail40@gmail.com"
+            },
+            {
+              "name": "password",
+              "value": "jajakaka1245@"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        -224
+      ],
+      "id": "71a517ed-9625-48b0-a715-401c1decb0d8",
+      "name": "Login"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/rpc/get_or_create_chat_session",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_user_id\": \"{{ $('Login').item.json.user.id }}\"\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -224
+      ],
+      "id": "8a431591-7647-4f22-b35e-4607857218f1",
+      "name": "Create Chat Session (RPC)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5bb491f-14e8-4828-a009-9e4bafe02eaf",
+              "name": "message",
+              "value": "How can you help me?",
+              "type": "string"
+            },
+            {
+              "id": "3c60dced-e8f1-4e9c-b19c-8007a43131eb",
+              "name": "tokenCount",
+              "value": 30,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -320
+      ],
+      "id": "f3f693de-8387-4a6c-b50b-d7baefb754ae",
+      "name": "Edit User Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f5bb491f-14e8-4828-a009-9e4bafe02eaf",
+              "name": "message",
+              "value": "Hey! I'm your AI Business Coach. I'm here to help you grow, fix, and scale your business — whether it's strategy, marketing, systems, or just figuring out what’s blocking progress. To get started, what’s one challenge you’re facing right now?",
+              "type": "string"
+            },
+            {
+              "id": "1c58dd08-cbc6-4689-bfa5-55d0c1c82fe6",
+              "name": "tokenCount",
+              "value": 56,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "d32e1225-bea9-4473-b4c0-cf744b5ea778",
+      "name": "Edit AI Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.SupabaseDBUrl }}/user_personality",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Login').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user_id\": \"{{ $('Sample User Personality').item.json.user_id }}\",\n  \"communication_style\": \"{{ $('Sample User Personality').item.json.communication_style }}\",\n  \"response_length\": \"{{ $('Sample User Personality').item.json.response_length }}\",\n  \"tone_preference\": \"{{ $('Sample User Personality').item.json.tone_preference }}\",\n  \"source\": \"onboarding\",\n  \"confidence_score\": {{ $('Sample User Personality').item.json.confidence_score }},\n  \"detailed_personality_summary\": \"{{ $('Sample User Personality').item.json.detailed_personality_summary }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -224
+      ],
+      "id": "25564a83-0fef-4da3-a85a-2631adaff5ca",
+      "name": "Create USER PERSONALITY",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "user_id",
+              "value": "={{ $('Login').item.json.user.identities[0].user_id }}"
+            },
+            {
+              "name": "communication_style",
+              "value": "direct"
+            },
+            {
+              "name": "response_length",
+              "value": "concise"
+            },
+            {
+              "name": "tone_preference",
+              "value": "friendly"
+            },
+            {
+              "name": "detailed_personality_summary",
+              "value": "Prefers direct communication with short, actionable responses. Favors friendly but efficient tone."
+            }
+          ],
+          "number": [
+            {
+              "name": "confidence_score",
+              "value": 0.9
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ef36ba57-10ae-410d-807b-f0612f3aa207",
+      "name": "Sample User Personality",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Credentials:\n\nfuzailsohail40@gmail.com\n\njajakaka1245@\n\n\nRun Once and Pin Node. If later it throws error, unpin it, run it and pin it again.",
+        "height": 220,
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "e1bcaa0c-1189-4ecb-a9ed-bc5b1171c09f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Add User Personality Features.\n\nDisable after running once\n",
+        "height": 100,
+        "width": 380,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "c0e5456c-2c38-4168-9a29-e7765c19c6b6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Each User Has one chat session.\n\nif it doesnt exists already, this will create it and move to AI Message for initial greeting",
+        "width": 380,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "3802c1f2-187d-4e57-98ac-daf5c25c0526",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Create Initial AI Message.\nWill Automatically only run once.\nIn the Pen(SET) node, Edit the message. Ignore Token Count",
+        "height": 120,
+        "width": 380,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        48
+      ],
+      "typeVersion": 1,
+      "id": "7eda242c-241a-4323-8c68-296ddd100590",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Create User Message.\nIn the Pen(SET) node, Edit the message. Ignore Token Count",
+        "height": 120,
+        "width": 380,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        -464
+      ],
+      "typeVersion": 1,
+      "id": "066a9aff-eb28-44e7-ad7d-dce36e81ff85",
+      "name": "Sticky Note5"
+    }
+  ],
+  "connections": {
+    "if session already existed": {
+      "main": [
+        [
+          {
+            "node": "Edit User Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit AI Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login": {
+      "main": [
+        [
+          {
+            "node": "Sample User Personality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Chat Session (RPC)": {
+      "main": [
+        [
+          {
+            "node": "if session already existed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Initial AI Message": {
+      "main": [
+        []
+      ]
+    },
+    "Edit User Message": {
+      "main": [
+        [
+          {
+            "node": "Create Chat Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit AI Message": {
+      "main": [
+        [
+          {
+            "node": "Create Initial AI Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create USER PERSONALITY": {
+      "main": [
+        [
+          {
+            "node": "Create Chat Session (RPC)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample User Personality": {
+      "main": [
+        [
+          {
+            "node": "Create USER PERSONALITY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "693cc68b-c3c0-47f9-9208-899b62f06532",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-07-15T14:01:51.754Z",
+      "updatedAt": "2025-07-15T14:01:51.754Z",
+      "role": "workflow:owner",
+      "workflowId": "dzqrhlxZOIgHuw5O",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
