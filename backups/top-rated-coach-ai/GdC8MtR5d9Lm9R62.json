@@ -1,0 +1,416 @@
+{
+  "createdAt": "2025-08-07T07:13:24.569Z",
+  "updatedAt": "2025-09-18T14:16:28.000Z",
+  "id": "GdC8MtR5d9Lm9R62",
+  "name": "Cron Job To update Audit Status (Depreciated-Shifted to Cron job Supabase)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=audit_id",
+              "value": "=eq.{{$('Split Out').item.json.id}}"
+            },
+            {
+              "name": "select",
+              "value": "=id,audit_id,task_name,status"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8563f5dc-3b49-42da-99eb-67854e4112c0",
+      "name": "Get Task Groups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        448,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=id",
+              "value": "=eq.{{$('Decide Audit Status').item.json.audit_id}}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=status",
+              "value": "={{ $('Decide Audit Status').item.json.status }}"
+            },
+            {
+              "name": "completed_at",
+              "value": "={{ $('Decide Audit Status').item.json.completed_at || null}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6522bcbf-6b74-4daf-a53c-7301ce87e6b9",
+      "name": "Update Audit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        896,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Group tasks by audit_id\nconst grouped = {};\nfor (const item of items) {\n  const t = item.json;\n  if (!grouped[t.audit_id]) grouped[t.audit_id] = [];\n  grouped[t.audit_id].push(t);\n}\n\nconst results = [];\n\nfor (const [audit_id, tasks] of Object.entries(grouped)) {\n  const statuses = tasks.map(t => t.status);\n\n  let hasPending = false;\n  let hasInProgress = false;\n  let hasFailed = false;\n  let allCompleted = true;\n  let allFailed = true;\n  let allPending = true;\n  let allFinished = true; // completed or failed only\n\n  for (const s of statuses) {\n    if (s === 'pending') hasPending = true;\n    if (s === 'in_progress') hasInProgress = true;\n    if (s === 'failed') hasFailed = true;\n\n    if (s !== 'completed') allCompleted = false;\n    if (s !== 'failed') allFailed = false;\n    if (s !== 'pending') allPending = false;\n    if (!(s === 'completed' || s === 'failed')) allFinished = false;\n  }\n\n  let status;\n  let completed_at = null;\n\n  if (allCompleted) {\n    status = 'completed';\n    completed_at = new Date().toISOString();\n  } else if (allFailed) {\n    status = 'failed';\n    completed_at = new Date().toISOString();\n  } else if (hasFailed && allFinished) {\n    status = 'partially_completed';\n    completed_at = new Date().toISOString();\n  } else if (allPending) {\n    status = 'pending';\n  } else if (hasPending || hasInProgress) {\n    status = 'in_progress';\n  } else {\n    status = 'unknown';\n  }\n\n  results.push({\n    json: {\n      audit_id,\n      status,\n      completed_at\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "id": "ace9143b-9f61-47aa-bd1e-b5dff65131fe",
+      "name": "Decide Audit Status",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        672,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🛠 Auto-Audit Status Updater (Every 15 Mins)\nThis workflow runs every 5 minutes to evaluate and update the status of all audits currently marked as in_progress. For each audit:\n\n    It fetches associated task_groups.\n\n    Calculates the overall audit status using task group states:\n\n        completed: all tasks completed\n\n        partially_completed: mix of completed and failed\n\n        in_progress: contains any pending or in_progress tasks\n\n        failed is never set explicitly\n\n    Updates the audit record in Supabase accordingly.",
+        "height": 420,
+        "width": 500,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "ff658790-a5e9-4a94-86c4-96fd4a981175",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=status",
+              "value": "=eq.in_progress"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9402ef26-c141-42ca-a895-ae6b358d3b19",
+      "name": "Get In_Progress Audits",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        0,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "8c688da1-285e-4d49-8821-5c321ac91589",
+      "name": "Run Every 15 Mins",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "id",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        32
+      ],
+      "id": "8b145097-a844-4791-a859-f44fca152d6d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsCode": "const groupedTasks = new Map();\nconst tasksToUpdate = [];\n\n// Group tasks by audit_id\nfor (const item of $input.all()) {\n  const task = item.json;\n  const auditId = task.audit_id;\n\n  if (!groupedTasks.has(auditId)) {\n    groupedTasks.set(auditId, []);\n  }\n  groupedTasks.get(auditId).push(task);\n}\n\n// Iterate through each group to apply the logic\nfor (const [auditId, tasks] of groupedTasks.entries()) {\n  const outboundTask = tasks.find(t => t.task_name === $vars.OutboundAnalysisDbKEY);\n  const inboundTask = tasks.find(t => t.task_name === $vars.InboundAnalysisDbKEY);\n\n  // Check if Outbound_Call_Analysis is 'failed' and Inbound_Call_Analysis is not 'failed'\n  if (outboundTask && inboundTask && outboundTask.status === 'failed' && inboundTask.status !== 'failed') {\n    // If the condition is met, prepare the inbound task for an update\n    tasksToUpdate.push({\n      json: {\n        id: inboundTask.id,\n        status: 'failed',\n        audit_id: inboundTask.audit_id,\n        task_name: inboundTask.task_name\n      }\n    });\n  }\n}\n\nreturn tasksToUpdate;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -64
+      ],
+      "id": "c1fafb14-3657-41b9-b29a-f2c2f1ed01ff",
+      "name": "Check if Outbound Failed then Fail the Inbound"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Check if Outbound Failed then Fail the Inbound').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "failed"
+            },
+            {
+              "name": "error_message",
+              "value": "Outbound Call for this Audit failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cf1a1fb-6908-41de-b8be-c75ada40b2fc",
+      "name": "Mark Inbound as Failed only if its Outbound Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        896,
+        -64
+      ]
+    }
+  ],
+  "connections": {
+    "Get Task Groups": {
+      "main": [
+        [
+          {
+            "node": "Decide Audit Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check if Outbound Failed then Fail the Inbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Audit Status": {
+      "main": [
+        [
+          {
+            "node": "Update Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get In_Progress Audits": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Every 15 Mins": {
+      "main": [
+        [
+          {
+            "node": "Get In_Progress Audits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Outbound Failed then Fail the Inbound": {
+      "main": [
+        [
+          {
+            "node": "Mark Inbound as Failed only if its Outbound Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Run Every 5 Mins": {
+      "recurrenceRules": []
+    },
+    "node:Run Every 15 Mins": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "e4caef0a-2272-4f4f-b5ce-b9060b63e4ba",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-07T07:13:24.577Z",
+      "updatedAt": "2025-08-07T07:13:24.577Z",
+      "role": "workflow:owner",
+      "workflowId": "GdC8MtR5d9Lm9R62",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
