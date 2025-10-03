@@ -1,0 +1,1565 @@
+{
+  "createdAt": "2025-09-16T14:49:26.069Z",
+  "updatedAt": "2025-09-29T04:36:15.000Z",
+  "id": "vpPcWd2Nqogu6whh",
+  "name": "Rag Chatbot Development (Depreciated-Shifted to Cron job Supabase)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions.",
+        "topK": "=100"
+      },
+      "id": "2dee8afd-85bc-47e6-82e9-1ca1e03d2cdb",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        128,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "079ef92b-bac8-4f10-85d5-692623de73d3",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        96,
+        1008
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get User Message').item.json.body.message }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant. Always use the tools provided to you first before using your own internal knowledge.\n\nUse the \"Get Messages History\" tool to retrieve chat context. This tool returns an object with a field called \"response\", which contains a list of messages. Each message has a \"role\" (either \"user\" or \"ai\") and a \"message\" field. Reconstruct the full chronological conversation from this list and use it as chat history context.\n\nUse the \"user_documents\" tool (a vector store) as a prioritized source of information to answer user queries. Incorporate insights from these documents whenever relevant. However, you are not limited to them — you may (and should) enhance your response using your own internal knowledge, especially when it leads to a more complete, accurate, or actionable answer. If your response includes both, do not artificially separate them; synthesize them seamlessly.\n\nIf your confidence in understanding the user query is low or the request is ambiguous, ask the user for clarification instead of guessing.\n\n--- USER PERSONALITY ---\n\nThe user prefers a {{ $json.tone_preference }} tone, with {{ $json.response_length }} responses. They communicate in a {{ $json.communication_style }} style.\n\nDetailed summary:\n{{ $json.detailed_personality_summary }}\n\nAlign your tone and communication style accordingly to match the user. Confidence in personality accuracy: {{ $json.confidence_score }}.\n\n--- FORMAT ---\n\nRespond ONLY in the following strict JSON format:\n\nDo NOT include extra explanation or escape characters. Just return raw JSON object, like this:\n\n{\n  \"output\": \"your message here\",\n  \"tokenCount\": 123\n}"
+        }
+      },
+      "id": "9b1b12b9-17b3-4bbb-8acc-dac5b27bfcf3",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        128,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new_user_message",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        -768
+      ],
+      "id": "c47d1e58-3a0f-48bf-aba7-742b38afa306",
+      "name": "Get User Message",
+      "webhookId": "78bbf65b-9957-425b-a2e5-0f54ebc91eef",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XN2wz67KBUO7399v",
+          "name": "Supabase-TopRatedCoach-AuthenticationHeader"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/user_personality",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.user_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -528,
+        -768
+      ],
+      "id": "d1606c7e-6677-4e54-a483-f3f8e19e1670",
+      "name": "Get User Personality from DB"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1f81c78f-7307-42d1-8d52-1cf68b8b6dfe",
+      "name": "AI Chat",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        592
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5d11ec2b-3a21-4d06-ab45-3143f65d96bd",
+      "name": "AI Vector Search ",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        304,
+        800
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "knowledgebase",
+          "mode": "list",
+          "cachedResultName": "knowledgebase"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        800
+      ],
+      "id": "752c6a36-0a04-4688-a704-db5cb92b7c11",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "mwq2n9VCAuoBjoo3",
+          "name": "PineCone API TopRatedCoach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.first().json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        368
+      ],
+      "id": "4de66c66-b570-483f-80d5-0d893df10ebd",
+      "name": "Parse AI Analysis Output into JSON"
+    },
+    {
+      "parameters": {
+        "toolDescription": "This tool gets the last 8 messages from DB and returns the user's and AI's messages to be used as context.",
+        "url": "={{$vars.SupabaseDBUrl}}/chat_messages",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "session_id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.session_id }}"
+            },
+            {
+              "name": "order",
+              "value": "=created_at.desc"
+            },
+            {
+              "name": "limit",
+              "value": "8"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "=application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        592
+      ],
+      "id": "db6c7756-96d0-4c38-accb-6692eb02035d",
+      "name": "Get Messages History (LAST 8)"
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "chat_archived_summaries",
+          "mode": "list",
+          "cachedResultName": "chat_archived_summaries"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        80
+      ],
+      "id": "8e3057d8-b6b7-456a-aafd-3e792b547157",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "cCj3Ge07dU8ItSe7",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "8e51f407-bfeb-4804-a25a-778c4399b2ff",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        288
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "user_chat_summaries",
+        "description": "Contains all the user's chat summaries that you can fetch to get the context of the message",
+        "topK": "=100"
+      },
+      "id": "78cde8cf-7612-4109-8c1a-16653694764d",
+      "name": "Retrieve Documents1",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ff646b0c-9986-440a-816e-b8d9d3eb41ff",
+      "name": "AI Vector Search 1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions.",
+        "topK": "=100"
+      },
+      "id": "fe470948-b3a9-427f-95d4-7ad85fd0d7e4",
+      "name": "Retrieve Documents2",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "59bf950b-0bdc-4e2f-9cf9-cb5d75803d72",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        1424
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3cf14c46-234e-448e-badb-9ce0cf45b5b2",
+      "name": "AI Vector Search 2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        1216
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "knowledgebase",
+          "mode": "list",
+          "cachedResultName": "knowledgebase"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        1216
+      ],
+      "id": "cefac65a-ed38-4616-a907-dfddfafb9ce7",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "mwq2n9VCAuoBjoo3",
+          "name": "PineCone API TopRatedCoach"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e6a871f6-f141-4a26-998f-1b1c058ebe91",
+      "name": "AI Chat2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        1008
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get User Message').item.json.body.message }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant. Always use the tools provided to you first before using your own internal knowledge.\n\nUse the \"user_documents\" tool (a vector store) as a prioritized source of information to answer user queries. Incorporate insights from these documents whenever relevant. However, you are not limited to them — you may (and should) enhance your response using your own internal knowledge, especially when it leads to a more complete, accurate, or actionable answer. If your response includes both, do not artificially separate them; synthesize them seamlessly."
+        }
+      },
+      "id": "3100268c-11b9-4edc-86c4-299bf87b58d8",
+      "name": "Get Pinecone knowledgebase",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -720,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "b4e19de3-4064-47ad-98d8-0dd6211f9e4f",
+      "name": "AI Chat1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        -128
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Get User Message').item.json.body.message }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant. Always use the tools provided to you first before using your own internal knowledge.\n\nUse the \"user_chat_summaries\" tool (a vector store) Contains all the user's chat summaries that you can fetch to get the context of the message."
+        }
+      },
+      "id": "f7bdd23e-f15b-4d2e-ba40-1ed17a153d54",
+      "name": "Get User Chat Summaries Supabase",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -720,
+        -352
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -240,
+        368
+      ],
+      "id": "88d6bd73-dbee-42ba-801d-54c37907437b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/insert_chat_message",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_API_Key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role  }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_session_id\": \"{{ $('Get User Message').item.json.body.session_id }}\",\n  \"_role\": \"ai\",\n  \"_message\": {{ JSON.stringify($json.output) }},\n  \"_token_count\": {{ $('Parse AI Analysis Output into JSON').item.json.tokenCount }},\n  \"_metadata\": {\n    \"model\": \"gpt-4o-mini\",\n    \"business_id\": \"{{ $('Get User Message').item.json.body.business_id }}\"\n  }\n}\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        368
+      ],
+      "id": "5c4b2c11-710d-4c9c-ab87-eeaf431cba46",
+      "name": "Add the AI response in DB"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.business_id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -304,
+        -768
+      ],
+      "id": "7ef683ef-bf09-4156-af9a-c82df2384f8c",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "business_id",
+              "value": "=eq.{{ $('Get User Message').item.json.body.business_id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            },
+            {
+              "name": "order",
+              "value": "created_at.desc"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        -768
+      ],
+      "id": "b3822a28-c9a3-4b9a-a502-5cf58c1103a7",
+      "name": "Get all Audits of this Business"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Get all Audits of this Business').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=id,audit_id,business_id,task_name,status,started_at,completed_at,created_at,updated_at,error_message,scheduled_at"
+            },
+            {
+              "name": "order",
+              "value": "created_at.desc"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -768
+      ],
+      "id": "df3a458f-4867-4376-b30c-47c1e3b7ae4d",
+      "name": "Get all Audits Task groups"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This code is designed to be used in an n8n Code node.\n// It explicitly structures data field by field from the preceding nodes\n// to create a clean, well-organized JSON object for an AI chatbot's context.\nconst userPersonalityInput = $('Get User Personality from DB').first().json;\nconst businessDetailsInput = $('Get a specific business').first().json;\nconst mergeReportsInput = $('Merge Reports').all().map(item => item.json);\n\n// Use .all() to ensure you get all items from the preceding nodes\nconst audits = $('Get all Audits of this Business').all().map(item => item.json);\nconst taskGroups = $('Get all Audits Task groups').all().map(item => item.json).flat();\n\n// Initialize the final context object with a structured schema.\nconst finalContext = {\n  userPersonality: {},\n  business: {},\n  latestAudit: {},\n  pastAudits: []\n};\n\n// Helper function to check if an object is not null and not empty.\nconst isObjectAndNotEmpty = (obj) => {\n  return typeof obj === 'object' && obj !== null && Object.keys(obj).length > 0;\n};\n\n// --- Add reports to tasks based on id, field by field ---\nif (mergeReportsInput && mergeReportsInput.length > 0 && taskGroups.length > 0) {\n  for (const mergedReport of mergeReportsInput) {\n    if (isObjectAndNotEmpty(mergedReport.inboundReport) && mergedReport.inboundReport.task_group_id) {\n      const inboundReportId = mergedReport.inboundReport.task_group_id;\n      const inboundTask = taskGroups.find(task => task.id === inboundReportId);\n      if (inboundTask) {\n        const reportData = {};\n        // Add each key one by one from the inbound report\n        if (mergedReport.inboundReport.overall_summary) reportData.overall_summary = mergedReport.inboundReport.overall_summary;\n        if (mergedReport.inboundReport.engagement_level) reportData.engagement_level = mergedReport.inboundReport.engagement_level;\n        if (mergedReport.inboundReport.professionalism) reportData.professionalism = mergedReport.inboundReport.professionalism;\n        if (mergedReport.inboundReport.script_adherence) reportData.script_adherence = mergedReport.inboundReport.script_adherence;\n        if (mergedReport.inboundReport.issues_detected) reportData.issues_detected = mergedReport.inboundReport.issues_detected;\n        if (mergedReport.inboundReport.positive_highlight) reportData.positive_highlight = mergedReport.inboundReport.positive_highlight;\n        if (mergedReport.inboundReport.improvement_ideas) reportData.improvement_ideas = mergedReport.inboundReport.improvement_ideas;\n        if (mergedReport.inboundReport.agent_name) reportData.agent_name = mergedReport.inboundReport.agent_name;\n        if (mergedReport.inboundReport.engagement_and_relationship_building_score) reportData.engagement_and_relationship_building_score = mergedReport.inboundReport.engagement_and_relationship_building_score;\n        if (mergedReport.inboundReport.product_service_knowledge_and_education_score) reportData.product_service_knowledge_and_education_score = mergedReport.inboundReport.product_service_knowledge_and_education_score;\n        if (mergedReport.inboundReport.answering_questions_score) reportData.answering_questions_score = mergedReport.inboundReport.answering_questions_score;\n        if (mergedReport.inboundReport.ability_to_upsell_and_cross_sell_score) reportData.ability_to_upsell_and_cross_sell_score = mergedReport.inboundReport.ability_to_upsell_and_cross_sell_score;\n        if (mergedReport.inboundReport.closing_for_appointment_and_call_to_action_score) reportData.closing_for_appointment_and_call_to_action_score = mergedReport.inboundReport.closing_for_appointment_and_call_to_action_score;\n        if (mergedReport.inboundReport.overall_success_rate_out_of_100) reportData.overall_success_rate_out_of_100 = mergedReport.inboundReport.overall_success_rate_out_of_100;\n        if (mergedReport.inboundReport.appointment_booked) reportData.appointment_booked = mergedReport.inboundReport.appointment_booked;\n        if (mergedReport.inboundReport.initial_wait_time) reportData.initial_wait_time = mergedReport.inboundReport.initial_wait_time;\n        if (mergedReport.inboundReport.on_hold_time) reportData.on_hold_time = mergedReport.inboundReport.on_hold_time;\n        if (mergedReport.inboundReport.representative_tone) reportData.representative_tone = mergedReport.inboundReport.representative_tone;\n        if (mergedReport.inboundReport.tone_consistency) reportData.tone_consistency = mergedReport.inboundReport.tone_consistency;\n        if (mergedReport.inboundReport.clarity) reportData.clarity = mergedReport.inboundReport.clarity;\n        if (mergedReport.inboundReport.accuracy) reportData.accuracy = mergedReport.inboundReport.accuracy;\n        if (mergedReport.inboundReport.helpfulness) reportData.helpfulness = mergedReport.inboundReport.helpfulness;\n        if (mergedReport.inboundReport.call_opening) reportData.call_opening = mergedReport.inboundReport.call_opening;\n        if (mergedReport.inboundReport.questionaires) reportData.questionaires = mergedReport.inboundReport.questionaires;\n\n        inboundTask.report = reportData;\n      }\n    }\n    if (isObjectAndNotEmpty(mergedReport.outboundReport) && mergedReport.outboundReport.task_group_id) {\n      const outboundReportId = mergedReport.outboundReport.task_group_id;\n      const outboundTask = taskGroups.find(task => task.id === outboundReportId);\n      if (outboundTask) {\n        const reportData = {};\n        // Add each key one by one from the outbound report\n        if (mergedReport.outboundReport.overall_summary) reportData.overall_summary = mergedReport.outboundReport.overall_summary;\n        if (mergedReport.outboundReport.engagement_level) reportData.engagement_level = mergedReport.outboundReport.engagement_level;\n        if (mergedReport.outboundReport.professionalism) reportData.professionalism = mergedReport.outboundReport.professionalism;\n        if (mergedReport.outboundReport.script_adherence) reportData.script_adherence = mergedReport.outboundReport.script_adherence;\n        if (mergedReport.outboundReport.issues_detected) reportData.issues_detected = mergedReport.outboundReport.issues_detected;\n        if (mergedReport.outboundReport.positive_highlight) reportData.positive_highlight = mergedReport.outboundReport.positive_highlight;\n        if (mergedReport.outboundReport.improvement_ideas) reportData.improvement_ideas = mergedReport.outboundReport.improvement_ideas;\n        if (mergedReport.outboundReport.agent_name) reportData.agent_name = mergedReport.outboundReport.agent_name;\n        if (mergedReport.outboundReport.engagement_and_relationship_building_score) reportData.engagement_and_relationship_building_score = mergedReport.outboundReport.engagement_and_relationship_building_score;\n        if (mergedReport.outboundReport.product_service_knowledge_and_education_score) reportData.product_service_knowledge_and_education_score = mergedReport.outboundReport.product_service_knowledge_and_education_score;\n        if (mergedReport.outboundReport.answering_questions_score) reportData.answering_questions_score = mergedReport.outboundReport.answering_questions_score;\n        if (mergedReport.outboundReport.ability_to_upsell_and_cross_sell_score) reportData.ability_to_upsell_and_cross_sell_score = mergedReport.outboundReport.ability_to_upsell_and_cross_sell_score;\n        if (mergedReport.outboundReport.closing_for_appointment_and_call_to_action_score) reportData.closing_for_appointment_and_call_to_action_score = mergedReport.outboundReport.closing_for_appointment_and_call_to_action_score;\n        if (mergedReport.outboundReport.overall_success_rate_out_of_100) reportData.overall_success_rate_out_of_100 = mergedReport.outboundReport.overall_success_rate_out_of_100;\n        if (mergedReport.outboundReport.appointment_booked) reportData.appointment_booked = mergedReport.outboundReport.appointment_booked;\n        if (mergedReport.outboundReport.initial_wait_time) reportData.initial_wait_time = mergedReport.outboundReport.initial_wait_time;\n        if (mergedReport.outboundReport.on_hold_time) reportData.on_hold_time = mergedReport.outboundReport.on_hold_time;\n        if (mergedReport.outboundReport.representative_tone) reportData.representative_tone = mergedReport.outboundReport.representative_tone;\n        if (mergedReport.outboundReport.tone_consistency) reportData.tone_consistency = mergedReport.outboundReport.tone_consistency;\n        if (mergedReport.outboundReport.clarity) reportData.clarity = mergedReport.outboundReport.clarity;\n        if (mergedReport.outboundReport.accuracy) reportData.accuracy = mergedReport.outboundReport.accuracy;\n        if (mergedReport.outboundReport.helpfulness) reportData.helpfulness = mergedReport.outboundReport.helpfulness;\n        if (mergedReport.outboundReport.call_opening) reportData.call_opening = mergedReport.outboundReport.call_opening;\n        if (mergedReport.outboundReport.questionaires) reportData.questionaires = mergedReport.outboundReport.questionaires;\n\n        outboundTask.report = reportData;\n      }\n    }\n  }\n}\n\n// --- 1. Process User Personality with Null Safety ---\nif (userPersonalityInput) {\n  const personality = {};\n  if (userPersonalityInput.communication_style) {\n    personality.communicationStyle = userPersonalityInput.communication_style;\n  }\n  if (userPersonalityInput.tone_preference) {\n    personality.tonePreference = userPersonalityInput.tone_preference;\n  }\n  if (userPersonalityInput.response_length) {\n    personality.responseLength = userPersonalityInput.response_length;\n  }\n  if (userPersonalityInput.summary) {\n    personality.summary = userPersonalityInput.summary;\n  }\n  if (userPersonalityInput.confidence_score) {\n    personality.confidenceScore = userPersonalityInput.confidence_score;\n  }\n  if (userPersonalityInput.detailed_personality_summary) {\n    personality.detailedPersonalitySummary = userPersonalityInput.detailed_personality_summary;\n  }\n  if (Object.keys(personality).length > 0) {\n    finalContext.userPersonality = personality;\n  }\n}\n\n// --- 2. Process Business Details with Null Safety ---\nif (businessDetailsInput) {\n  const business = {};\n  if (businessDetailsInput.business_name) {\n    business.businessName = businessDetailsInput.business_name;\n  }\n  if (businessDetailsInput.email) {\n    business.email = businessDetailsInput.email;\n  }\n  if (businessDetailsInput.website) {\n    business.website = businessDetailsInput.website;\n  }\n  if (businessDetailsInput.formatted_address) {\n    business.formattedAddress = businessDetailsInput.formatted_address;\n  }\n  if (businessDetailsInput.timezone) {\n    business.timezone = businessDetailsInput.timezone;\n  }\n  if (businessDetailsInput.facebook_handle) {\n    business.facebookHandle = businessDetailsInput.facebook_handle;\n  }\n  if (businessDetailsInput.instagram_handle) {\n    business.instagramHandle = businessDetailsInput.instagram_handle;\n  }\n  if (businessDetailsInput.linkedin_handle) {\n    business.linkedinHandle = businessDetailsInput.linkedin_handle;\n  }\n  if (businessDetailsInput.twitter_handle) {\n    business.twitterHandle = businessDetailsInput.twitter_handle;\n  }\n  if (businessDetailsInput.youtube_channel) {\n    business.youtubeChannel = businessDetailsInput.youtube_channel;\n  }\n  if (businessDetailsInput.phone_number) {\n    business.phoneNumber = businessDetailsInput.phone_number;\n  }\n  if (businessDetailsInput.business_category) {\n    business.category = businessDetailsInput.business_category;\n  }\n  if (businessDetailsInput.last_audited_at) {\n    business.lastAuditedAt = businessDetailsInput.last_audited_at;\n  }\n  if (Object.keys(business).length > 0) {\n    finalContext.business = business;\n  }\n}\n\n// --- 3. Process All Audits and their Tasks (Separate Latest from Others) with Null Safety ---\nif (audits && audits.length > 0 && businessDetailsInput && businessDetailsInput.current_audit_id) {\n  const latestAuditId = businessDetailsInput.current_audit_id;\n  const latestAudit = audits.find(audit => audit.id === latestAuditId);\n  const otherAudits = audits.filter(audit => audit.id !== latestAuditId);\n\n  // Process the latest audit if found\n  if (latestAudit) {\n    const latestAuditData = {};\n    if (latestAudit.audit_type) latestAuditData.type = latestAudit.audit_type;\n    if (latestAudit.status) latestAuditData.status = latestAudit.status;\n    if (latestAudit.created_at) latestAuditData.createdAt = latestAudit.created_at;\n    if (latestAudit.completed_at) latestAuditData.completedAt = latestAudit.completed_at;\n    if (latestAudit.overall_score) latestAuditData.overallScore = latestAudit.overall_score;\n\n    if (isObjectAndNotEmpty(latestAudit.insights)) {\n      latestAuditData.insights = latestAudit.insights;\n    }\n    if (isObjectAndNotEmpty(latestAudit.recommendations)) {\n      latestAuditData.recommendations = latestAudit.recommendations;\n    }\n\n    const latestAuditTasks = taskGroups.filter(task => task.audit_id === latestAudit.id);\n    if (latestAuditTasks.length > 0) {\n      latestAuditData.tasks = latestAuditTasks.map(task => {\n        const taskObj = {};\n        if (task.task_name) taskObj.taskName = task.task_name;\n        if (task.status) taskObj.status = task.status;\n        if (task.error_message) taskObj.errorMessage = task.error_message;\n        if (task.report) taskObj.report = task.report;\n        return taskObj;\n      });\n    }\n\n    if (Object.keys(latestAuditData).length > 0) {\n      finalContext.latestAudit = latestAuditData;\n    }\n  }\n\n  // Process the other audits\n  finalContext.pastAudits = otherAudits.map(audit => {\n    const auditData = {};\n    if (audit.audit_type) auditData.type = audit.audit_type;\n    if (audit.status) auditData.status = audit.status;\n    if (audit.completed_at) auditData.completedAt = audit.completed_at;\n    if (audit.overall_score) auditData.overallScore = audit.overall_score;\n\n    if (isObjectAndNotEmpty(audit.insights)) {\n      auditData.insights = audit.insights;\n    }\n    if (isObjectAndNotEmpty(audit.recommendations)) {\n      auditData.recommendations = audit.recommendations;\n    }\n\n    const auditTasks = taskGroups.filter(task => task.audit_id === audit.id);\n    if (auditTasks.length > 0) {\n      auditData.tasks = auditTasks.map(task => {\n        const taskObj = {};\n        if (task.task_name) taskObj.taskName = task.task_name;\n        if (task.status) taskObj.status = task.status;\n        if (task.error_message) taskObj.errorMessage = task.error_message;\n        if (task.report) taskObj.report = task.report;\n        return taskObj;\n      });\n    }\n\n    return auditData;\n  }).filter(audit => Object.keys(audit).length > 0);\n}\n\n// The n8n Code node requires the output to be a single item with the consolidated context.\nreturn {\n  context: finalContext\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        -768
+      ],
+      "id": "dc54e36e-d20b-466c-96ce-9b7d848e1f31",
+      "name": "Merge all data to give to AI"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get all Audits Task groups').item.json.task_name }}",
+                    "rightValue": "={{ $vars.InboundAnalysisDbKEY }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "92a787e6-bac9-49f7-891b-189cf20eea17"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=Inbound_Call_Analysis"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d67913d5-94e4-436b-bbaa-af886eed4af1",
+                    "leftValue": "={{ $('Get all Audits Task groups').item.json.task_name }}",
+                    "rightValue": "={{ $vars.OutboundAnalysisDbKEY }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=Outbound_Call_Analysis"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        -768
+      ],
+      "id": "76484ded-8187-4d9c-a00b-2a9bc6237e99",
+      "name": "Parallel Run"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "526b1971-e497-496e-ace1-bdd757cb2a93",
+              "leftValue": "={{ $('Get all Audits Task groups').item.json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -880
+      ],
+      "id": "2c0771ae-671f-4959-a421-d6ba2d3a2416",
+      "name": "If Inbound task is Succesful",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "526b1971-e497-496e-ace1-bdd757cb2a93",
+              "leftValue": "={{ $('Get all Audits Task groups').item.json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -672
+      ],
+      "id": "fe49e23b-2750-443c-bcd9-a81dbeb3c06f",
+      "name": "If Outbound task is Succesful",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('If Inbound task is Succesful').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        816,
+        -1008
+      ],
+      "id": "dd662384-ba29-40ab-a7cf-dd49cb9e94c7",
+      "name": "Get Call Report for this Inbound",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get Call Report for this Inbound').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        -1008
+      ],
+      "id": "77f30190-5974-481f-9022-b8df4e7739ba",
+      "name": "Get Questionaires for Inbound",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('If Outbound task is Succesful').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            },
+            {
+              "name": "order",
+              "value": "created_at.desc"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        816,
+        -560
+      ],
+      "id": "1656655c-e5f8-49c3-9a5a-5efd2666b9d1",
+      "name": "Get Call Report for this Outbound",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const callReport = $('Get Call Report for this Inbound').first()?.json ?? {};\nconst questionnaires = $('Get Questionaires for Inbound').all().map(item => item.json ?? {});\n\n// Utility: add key only if value is not null/undefined/empty\nconst addIfValid = (obj, key, value) => {\n  if (\n    value !== null &&\n    value !== undefined &&\n    !(typeof value === 'string' && value.trim() === '') &&\n    !(Array.isArray(value) && value.length === 0) &&\n    !(typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0)\n  ) {\n    obj[key] = value;\n  }\n};\n\nconst inboundReport = {};\n[\n  \"task_group_id\",\n  \"overall_summary\",\n  \"engagement_level\",\n  \"professionalism\",\n  \"script_adherence\",\n  \"issues_detected\",\n  \"positive_highlight\",\n  \"improvement_ideas\",\n  \"agent_name\",\n  \"engagement_and_relationship_building_score\",\n  \"product_service_knowledge_and_education_score\",\n  \"answering_questions_score\",\n  \"ability_to_upsell_and_cross_sell_score\",\n  \"closing_for_appointment_and_call_to_action_score\",\n  \"overall_success_rate_out_of_100\",\n  \"appointment_booked\",\n  \"initial_wait_time\",\n  \"on_hold_time\",\n  \"representative_tone\",\n  \"tone_consistency\",\n  \"clarity\",\n  \"accuracy\",\n  \"helpfulness\",\n  \"call_opening\"\n].forEach(key => addIfValid(inboundReport, key, callReport[key]));\n\nif (questionnaires.length > 0) {\n  const qList = questionnaires\n    .map(q => {\n      const obj = {};\n      addIfValid(obj, \"question\", q.question);\n      addIfValid(obj, \"answer\", q.answer);\n      addIfValid(obj, \"evaluation\", q.evaluation);\n      return Object.keys(obj).length > 0 ? obj : null;\n    })\n    .filter(Boolean);\n\n  addIfValid(inboundReport, \"questionaires\", qList);\n}\n\nreturn [\n  {\n    json: {\n      inboundReport\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -1008
+      ],
+      "id": "053e211f-2cfb-4629-8bde-f77dd3563960",
+      "name": "Merge Inbound Report and questionaire",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const callReport = $('Get Call Report for this Outbound').first()?.json ?? {};\nconst questionnaires = $('Get Questionaires for Outbound').all().map(item => item.json ?? {});\n\n// Utility: add key only if value is not null/undefined/empty\nconst addIfValid = (obj, key, value) => {\n  if (\n    value !== null &&\n    value !== undefined &&\n    !(typeof value === 'string' && value.trim() === '') &&\n    !(Array.isArray(value) && value.length === 0) &&\n    !(typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0)\n  ) {\n    obj[key] = value;\n  }\n};\n\nconst outboundReport = {};\n[\n  \"task_group_id\",\n  \"overall_summary\",\n  \"engagement_level\",\n  \"professionalism\",\n  \"script_adherence\",\n  \"issues_detected\",\n  \"positive_highlight\",\n  \"improvement_ideas\",\n  \"agent_name\",\n  \"engagement_and_relationship_building_score\",\n  \"product_service_knowledge_and_education_score\",\n  \"answering_questions_score\",\n  \"ability_to_upsell_and_cross_sell_score\",\n  \"closing_for_appointment_and_call_to_action_score\",\n  \"overall_success_rate_out_of_100\",\n  \"appointment_booked\",\n  \"initial_wait_time\",\n  \"on_hold_time\",\n  \"representative_tone\",\n  \"tone_consistency\",\n  \"clarity\",\n  \"accuracy\",\n  \"helpfulness\",\n  \"call_opening\"\n].forEach(key => addIfValid(outboundReport, key, callReport[key]));\n\nif (questionnaires.length > 0) {\n  const qList = questionnaires\n    .map(q => {\n      const obj = {};\n      addIfValid(obj, \"question\", q.question);\n      addIfValid(obj, \"answer\", q.answer);\n      addIfValid(obj, \"evaluation\", q.evaluation);\n      return Object.keys(obj).length > 0 ? obj : null;\n    })\n    .filter(Boolean);\n\n  addIfValid(outboundReport, \"questionaires\", qList);\n}\n\nreturn [\n  {\n    json: {\n      outboundReport\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        -560
+      ],
+      "id": "47ddb0d7-f7fc-4802-9b23-1c6c5334c8de",
+      "name": "Merge Outbound Report and questionaire",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1488,
+        -768
+      ],
+      "id": "35984d61-001b-4f85-bcc6-8a8409a61a2c",
+      "name": "Merge Reports",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get Call Report for this Outbound').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        -560
+      ],
+      "id": "2ad9392f-fe09-4c25-a4cc-b5612606a4b4",
+      "name": "Get Questionaires for Outbound",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -784
+      ],
+      "id": "e16592eb-a2d3-4503-bb0d-c54dea3875c6",
+      "name": "Continue"
+    }
+  ],
+  "connections": {
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Analysis Output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Message": {
+      "main": [
+        [
+          {
+            "node": "Get User Personality from DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Personality from DB": {
+      "main": [
+        [
+          {
+            "node": "Get a specific business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Chat": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Vector Search ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Analysis Output into JSON": {
+      "main": [
+        [
+          {
+            "node": "Add the AI response in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Messages History (LAST 8)": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents1",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Vector Search 1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Documents1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get User Chat Summaries Supabase",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Documents2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Get Pinecone knowledgebase",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Vector Search 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents2",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Chat2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get Pinecone knowledgebase",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pinecone knowledgebase": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI Chat1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Get User Chat Summaries Supabase",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Chat Summaries Supabase": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        [
+          {
+            "node": "Get all Audits of this Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all Audits of this Business": {
+      "main": [
+        [
+          {
+            "node": "Get all Audits Task groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all Audits Task groups": {
+      "main": [
+        [
+          {
+            "node": "Parallel Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parallel Run": {
+      "main": [
+        [
+          {
+            "node": "If Inbound task is Succesful",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Outbound task is Succesful",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Inbound task is Succesful": {
+      "main": [
+        [
+          {
+            "node": "Get Call Report for this Inbound",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Report for this Inbound": {
+      "main": [
+        [
+          {
+            "node": "Get Questionaires for Inbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Outbound task is Succesful": {
+      "main": [
+        [
+          {
+            "node": "Get Call Report for this Outbound",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Report for this Outbound": {
+      "main": [
+        [
+          {
+            "node": "Get Questionaires for Outbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Questionaires for Inbound": {
+      "main": [
+        [
+          {
+            "node": "Merge Inbound Report and questionaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Inbound Report and questionaire": {
+      "main": [
+        [
+          {
+            "node": "Merge Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Outbound Report and questionaire": {
+      "main": [
+        [
+          {
+            "node": "Merge Reports",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Reports": {
+      "main": [
+        [
+          {
+            "node": "Merge all data to give to AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Questionaires for Outbound": {
+      "main": [
+        [
+          {
+            "node": "Merge Outbound Report and questionaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue": {
+      "main": [
+        [
+          {
+            "node": "Merge Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Get User Message": [
+      {
+        "json": {
+          "headers": {
+            "host": "referrizer.app.n8n.cloud",
+            "user-agent": "pg_net/0.19.5",
+            "content-length": "143",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2600:1f16:1cd0:3323:fb77:4e18:4577:706a",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "US",
+            "cf-ray": "9818a912919cab34-YYZ",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-api-key": "5bdd46b8-5e94-499c-8c7f-20f7d5531ac4-052e2cdc-c3fa-4052-9122-f1874dc23608-@!@!@!@",
+            "x-forwarded-for": "2600:1f16:1cd0:3323:fb77:4e18:4577:706a, 172.70.80.2",
+            "x-forwarded-host": "referrizer.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-18-7959cfc789-zp8xj",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2600:1f16:1cd0:3323:fb77:4e18:4577:706a"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": "yo",
+            "user_id": "ac222d33-8c35-4411-8655-c4027bd34198",
+            "session_id": "c231f664-9159-4273-a6a6-e5c20bd48086",
+            "business_id": "ChIJwWhMscho24ARgK_do7e5E9U"
+          },
+          "webhookUrl": "https://referrizer.app.n8n.cloud/webhook/new_user_message",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "652e06cb-3988-42eb-b8e6-a7f0b6fc3cd4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-16T14:49:26.074Z",
+      "updatedAt": "2025-09-16T14:49:26.074Z",
+      "role": "workflow:owner",
+      "workflowId": "vpPcWd2Nqogu6whh",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
