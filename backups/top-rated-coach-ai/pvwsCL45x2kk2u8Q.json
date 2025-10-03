@@ -1,0 +1,354 @@
+{
+  "createdAt": "2025-07-11T10:15:21.615Z",
+  "updatedAt": "2025-09-29T11:54:41.000Z",
+  "id": "pvwsCL45x2kk2u8Q",
+  "name": "Add Task Groups based on Audit Types",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new_audit",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "10dd99f8-09e5-49a7-acce-964b536e11c0",
+      "name": "Get Unprocessed Audits Real Time",
+      "webhookId": "987f4f26-5ff8-4ada-9361-e1becba9c444",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XN2wz67KBUO7399v",
+          "name": "Supabase-TopRatedCoach-AuthenticationHeader"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1c9b4d39-5d80-4c5e-8569-8c4a5beaa71f",
+              "leftValue": "={{ $json.body.data.status }}",
+              "rightValue": "pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "b768f8c8-fa25-4bfa-b41e-10a5564d3d71",
+      "name": "Confirm if the Status is Pending of Audit"
+    },
+    {
+      "parameters": {
+        "content": "## Add Steps in DB based on Audit Type Selected.\n\nRight now there is only one audit type \"lead_conversion\" which has two steps right now.\n\nOutbound Call Analysis\nInbound Call Analysis\n\n",
+        "height": 220,
+        "width": 460,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        32,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "6d444f7c-c5f3-40e9-b143-ecb73237e4a3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10586252-1ec1-4a1b-83dd-bd5fb536872b",
+              "name": "Outbound Call Analysis",
+              "value": "Outbound_Call_Analysis",
+              "type": "string"
+            },
+            {
+              "id": "56e4f03c-2397-4045-83d9-7e4639e5c46a",
+              "name": "Inbound Call Analysis",
+              "value": "Inbound_Call_Analysis",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        0
+      ],
+      "id": "34e35be5-f4ea-4730-92a7-c6589ba2c0b8",
+      "name": "Set Lead Gen Steps Names"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Outbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  },\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Inbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "7b367c7c-1277-4a0d-a90e-11585d9c7afe",
+      "name": "Creating Steps in Task Groups Table"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}"
+            },
+            {
+              "name": "select",
+              "value": "=*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "9b79e701-9fa5-486e-b106-99cb5e53df61",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "jsCode": "function getOffsetInMinutes(timeZone) {\n  const now = new Date();\n  const formatter = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    hour12: false,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n  });\n\n  const parts = formatter.formatToParts(now).reduce((acc, part) => {\n    if (part.type !== 'literal') acc[part.type] = part.value;\n    return acc;\n  }, {});\n\n  const localTimeStr = `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`;\n  const localTime = new Date(localTimeStr);\n  const offsetMs = now.getTime() - localTime.getTime();\n  return -offsetMs / (60 * 1000);\n}\n\nfunction getNextWorkingTimeInTimezone(tz) {\n  const offsetMinutes = getOffsetInMinutes(tz);\n  const now = new Date();\n  const localNow = new Date(now.getTime() + offsetMinutes * 60 * 1000);\n\n  // limit to 24-hour limit\n  const maxDate = new Date(localNow.getTime() + 24 * 60 * 60 * 1000);\n\n  let attempt = 0;\n  while (attempt < 1000) {\n    const candidate = new Date(localNow);\n\n    const randomOffsetMs = Math.floor(Math.random() * (maxDate.getTime() - localNow.getTime()));\n    candidate.setTime(localNow.getTime() + randomOffsetMs);\n\n    // MODIFICATION 2: Skip Sundays (0) AND Saturdays (6)\n    if (candidate.getDay() === 0 || candidate.getDay() === 6) {\n      attempt++;\n      continue;\n    }\n\n    // Enforce business hours 09:00 to 17:59\n    let hour = candidate.getHours();\n    if (hour < 9) {\n      candidate.setHours(9, Math.floor(Math.random() * 60), 0, 0);\n    } else if (hour >= 18) {\n      candidate.setDate(candidate.getDate() + 1);\n\n      // MODIFICATION 3: Logic to skip Sat/Sun and land on Monday (day 1)\n      let day = candidate.getDay();\n      if (day === 0) { // If it rolled to Sunday (0), advance 1 more day\n          candidate.setDate(candidate.getDate() + 1);\n      } else if (day === 6) { // If it rolled to Saturday (6), advance 2 more days\n          candidate.setDate(candidate.getDate() + 2);\n      }\n      \n      candidate.setHours(9, Math.floor(Math.random() * 60), 0, 0);\n    } else {\n      candidate.setMinutes(Math.floor(Math.random() * 60), 0, 0);\n    }\n\n    // Skip if in past\n    if (candidate <= localNow) {\n      attempt++;\n      continue;\n    }\n\n    // Skip if beyond 24h window\n    if (candidate > maxDate) {\n      attempt++;\n      continue;\n    }\n\n    const utcDate = new Date(candidate.getTime() - offsetMinutes * 60 * 1000);\n    return utcDate.toISOString();\n  }\n\n  //Update the error message to reflect the new window/days\n  throw new Error(\"Couldn't generate valid scheduled time within 24-hour business-day (Mon-Fri) window\");\n}\n\n// Main\nreturn items.map(item => {\n  const tz = $('Get a specific business').first().json.timezone || 'America/New_York';\n  const scheduledAt = getNextWorkingTimeInTimezone(tz);\n\n  return {\n    json: {\n      scheduled_at: scheduledAt\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "b3a579ec-d6dd-4a0b-9ba7-d1f754364352",
+      "name": "Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const prevScheduledAt = new Date($input.first().json.scheduled_at);\n  const newScheduledAt = new Date(prevScheduledAt.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days\n\n  return {\n    json: {\n      scheduled_at: newScheduledAt.toISOString()\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "6a8e2dc5-5ec3-4b1d-8d90-0d3737fa9b2b",
+      "name": "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time"
+    }
+  ],
+  "connections": {
+    "Get Unprocessed Audits Real Time": {
+      "main": [
+        [
+          {
+            "node": "Confirm if the Status is Pending of Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm if the Status is Pending of Audit": {
+      "main": [
+        [
+          {
+            "node": "Get a specific business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Lead Gen Steps Names": {
+      "main": [
+        [
+          {
+            "node": "Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creating Steps in Task Groups Table": {
+      "main": [
+        []
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        [
+          {
+            "node": "Set Lead Gen Steps Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri": {
+      "main": [
+        [
+          {
+            "node": "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time": {
+      "main": [
+        [
+          {
+            "node": "Creating Steps in Task Groups Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "21cbfa58-cc8e-4f90-a629-5c44836e10ce",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-07-11T10:15:21.619Z",
+      "updatedAt": "2025-07-11T10:15:21.619Z",
+      "role": "workflow:owner",
+      "workflowId": "pvwsCL45x2kk2u8Q",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
