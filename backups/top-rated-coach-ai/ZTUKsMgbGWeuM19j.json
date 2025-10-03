@@ -1,0 +1,623 @@
+{
+  "createdAt": "2025-08-09T12:27:21.079Z",
+  "updatedAt": "2025-10-03T10:55:31.000Z",
+  "id": "ZTUKsMgbGWeuM19j",
+  "name": "Scrape Google Maps Places Data- Fuzail",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## name,formatted_address,geometry,formatted_phone_number,international_phone_number,website,rating,user_ratings_total,opening_hours,reviews,types,photos,\n\nrating,reviews,user_ratings_total",
+        "height": 208,
+        "width": 540
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "e00a4449-2e6d-452d-96ac-81e330ff0a49",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function to extract the Place ID from the HTML-like string\nconst getPlaceId = (dataString) => {\n\n  if (!dataString) {\n\n    return null;\n\n  }\n\n  \n\n  // The regex pattern looks for the string \"ChIJ\" followed by a sequence of\n\n  // alphanumeric characters, hyphens, and colons.\n\n  const regex = /(ChIJ[\\w:-]+)/;\n\n  const match = dataString.match(regex);\n\n  \n\n  if (match) {\n\n    // The captured group is at index 1\n\n    return match[1];\n\n  }\n\n  \n\n  return null;\n\n};\n\n\n// Create a new array to hold the results\n\nconst results = [];\n\n\n// Process each item from the previous node\n\nfor (const item of items) {\n\n  // Get the 'data' field from the current item\n\n  const data = item.json.data;\n\n  \n\n  // Extract the Place ID\n\n  const place_id = getPlaceId(data);\n\n  \nresults.push({\n  place_id,\n  Maps_url: $('Get Businesses Data').item.json.Maps_url\n});\n\n}\n\n\n// Return the new array of results\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ecdb3024-70ac-4439-8a64-246ac5dc7ae0",
+      "name": "Extract Place id",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Maps_url }}",
+        "responseFormat": "string",
+        "options": {
+          "fullResponse": true
+        }
+      },
+      "name": "Expand Short URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "beea5509-965e-4b45-af4e-919c9715df35",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        1264
+      ],
+      "id": "396409a1-40b8-4477-9ef0-5ba15728bdd1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/timezone/json",
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "location",
+              "value": "={{$node[\"Get Place Details\"].json[\"result\"][\"geometry\"][\"location\"][\"lat\"]}},{{$node[\"Get Place Details\"].json[\"result\"][\"geometry\"][\"location\"][\"lng\"]}}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ Math.floor(new Date().getTime() / 1000) }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $vars.Maps_API_Key }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Time Zone",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        672,
+        224
+      ],
+      "id": "90f90566-0b22-4361-a34f-1ad78123fff9"
+    },
+    {
+      "parameters": {
+        "url": "https://maps.googleapis.com/maps/api/place/details/json",
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "place_id",
+              "value": "={{ $('Code').item.json.id }}"
+            },
+            {
+              "name": "key",
+              "value": "={{ $vars.Maps_API_Key }}"
+            },
+            {
+              "name": "fields",
+              "value": "=address_components,adr_address,business_status,formatted_address,geometry,name,place_id,plus_code,type,url,utc_offset,vicinity,formatted_phone_number,international_phone_number,website"
+            }
+          ]
+        }
+      },
+      "name": "Get Place Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        448,
+        224
+      ],
+      "id": "42fb2ddb-ff56-43de-bc77-23eb8d165c7c",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c",
+          "mode": "list",
+          "cachedResultName": "Business Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Code').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.name ?? '' }}"
+            },
+            {
+              "column": "business_category\r",
+              "fieldValue": "={{ $('Get Place Details').item.json.result.types??[] }}"
+            },
+            {
+              "column": "website",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.website ?? '' }}"
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "=+{{ ($('Get Place Details').item.json?.result?.international_phone_number ?? '')\n  .replace(/^\\+/, 'PLUS')\n  .replace(/\\D/g, '')\n  .replace(/^PLUS/, '+') }}"
+            },
+            {
+              "column": "address",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.formatted_address ?? '' }}"
+            },
+            {
+              "column": "latitude",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.geometry?.location?.lat ?? '' }}"
+            },
+            {
+              "column": "longitude",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.geometry?.location?.lng ?? '' }}"
+            },
+            {
+              "column": "formatted_address",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.formatted_address ?? '' }}"
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('street_number'))?.long_name ?? '' }}"
+            },
+            {
+              "column": "city",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('locality'))?.long_name ?? '' }}"
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('administrative_area_level_1'))?.long_name ?? '' }}"
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('postal_code'))?.long_name ?? '' }}"
+            },
+            {
+              "column": "country",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('country'))?.long_name ?? '' }}"
+            },
+            {
+              "column": "country_code",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('country'))?.short_name ?? '' }}"
+            },
+            {
+              "column": "plus_code",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.plus_code ? `${$('Get Place Details').item.json.result.plus_code?.global_code ?? ''} ${$('Get Place Details').item.json.result.plus_code?.compound_code ?? ''}`.trim() : '' }}"
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "={{ $('Get Time Zone').item.json?.timeZoneId ?? '' }}"
+            },
+            {
+              "column": "google_maps_url",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.url ?? '' }}"
+            },
+            {
+              "column": "owner_id",
+              "fieldValue": "ac222d33-8c35-4411-8655-c4027bd34198"
+            },
+            {
+              "column": "street_name",
+              "fieldValue": "={{ $('Get Place Details').item.json?.result?.address_components?.find(c => c.types?.includes('route'))?.long_name ?? '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Google Sheets - Write Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        896,
+        224
+      ],
+      "id": "bba7035e-2043-4ff8-8f3e-ff1f277266b5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the array from the first item\nconst data = items.map(item => item.json);\n\n// Remove duplicates based on GOOGLE_PLACE_ID\nconst unique = Array.from(\n  new Map(data.map(obj => [obj.id, obj])).values()\n);\n\n// Return in same format\nreturn unique.map(obj => ({ json: obj }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        224
+      ],
+      "id": "2a747063-d777-40cd-87ae-5c4cb36e6835",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c",
+          "mode": "list",
+          "cachedResultName": "Business Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Get Businesses').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add Owner Id for businesses",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        80,
+        816
+      ],
+      "id": "a894ba1c-0dd0-4224-b02d-88d4b5236da3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sheetId": "12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c",
+        "range": "Sheet1!A:Z",
+        "options": {}
+      },
+      "name": "Get Businesses",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        1264
+      ],
+      "id": "b192974e-3a10-4490-9272-725bc8153b5b",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sheetId": "1l7_qhQ_gDxQwx0_ZRl8VsHrmKzfHP7Ws4gS1YttWP20",
+        "range": "Sheet1!A:A",
+        "options": {}
+      },
+      "name": "Get Businesses Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        0,
+        224
+      ],
+      "id": "5b1236ae-9943-4e04-b6e7-95e538a9d552",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Add business category \n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "7c5ed9ff-cd6b-4664-89b2-4acc15816783",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        192
+      ],
+      "id": "dfd33e3e-bfff-4d3f-948a-685f270641f0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ef6cc8ac-acbf-44bf-a5e5-dcfb9e6ccdd2",
+              "leftValue": "={{ $json.country_code }}",
+              "rightValue": "CA",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        816
+      ],
+      "id": "d0c9065a-c3a2-42d2-a4e8-27aac215df0c",
+      "name": "If business is in CA",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Businesses').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": \"{{ $('Get Businesses').item.json.id }}\",\n  \"business_name\": \"{{ $('Get Businesses').item.json.business_name || null }}\",\n  \"business_category\": {{ $('Get Businesses').item.json.business_category || 'null' }},\n  \"website\": \"{{ $('Get Businesses').item.json.website || null }}\",\n  \"phone_number\": \"{{ $('Get Businesses').item.json.phone_number || null }}\",\n  \"email\": \"{{ $('Get Businesses').item.json.email || null }}\",\n  \"address\": \"{{ $('Get Businesses').item.json.address || null }}\",\n  \"latitude\": {{ $('Get Businesses').item.json.latitude || 'null' }},\n  \"longitude\": {{ $('Get Businesses').item.json.longitude || 'null' }},\n  \"formatted_address\": \"{{ $('Get Businesses').item.json.formatted_address || null }}\",\n  \"street_number\": \"{{ $('Get Businesses').item.json.street_number || null }}\",\n  \"street_name\": \"{{ $('Get Businesses').item.json.street_name || null }}\",\n  \"city\": \"{{ $('Get Businesses').item.json.city || null }}\",\n  \"state_province\": \"{{ $('Get Businesses').item.json.state_province || null }}\",\n  \"postal_code\": \"{{ $('Get Businesses').item.json.postal_code || null }}\",\n  \"country\": \"{{ $('Get Businesses').item.json.country || null }}\",\n  \"country_code\": \"{{ $('Get Businesses').item.json.country_code || null }}\",\n  \"plus_code\": \"{{ $('Get Businesses').item.json.plus_code || null }}\",\n  \"timezone\": \"{{ $('Get Businesses').item.json.timezone || null }}\",\n  \"google_maps_url\": \"{{ $('Get Businesses').item.json.google_maps_url || null }}\",\n  \"facebook_handle\": \"{{ $('Get Businesses').item.json.facebook_handle || null }}\",\n  \"instagram_handle\": \"{{ $('Get Businesses').item.json.instagram_handle || null }}\",\n  \"linkedin_handle\": \"{{ $('Get Businesses').item.json.linkedin_handle || null }}\",\n  \"twitter_handle\": \"{{ $('Get Businesses').item.json.twitter_handle || null }}\",\n  \"youtube_channel\": \"{{ $('Get Businesses').item.json.youtube_channel || null }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        1264
+      ],
+      "id": "bea323ce-22ec-44f0-a9b4-2d74bfa5938a",
+      "name": "Update business",
+      "executeOnce": false
+    }
+  ],
+  "connections": {
+    "Expand Short URL": {
+      "main": [
+        [
+          {
+            "node": "Extract Place id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Time Zone": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Write Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Place Details": {
+      "main": [
+        [
+          {
+            "node": "Get Time Zone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get Place Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Businesses": {
+      "main": [
+        [
+          {
+            "node": "Update business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Businesses Data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Businesses Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If business is in CA": {
+      "main": [
+        [
+          {
+            "node": "Add Owner Id for businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b8e3e217-a5ed-4b63-9357-42a6d13d511e",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-08-09T12:27:21.084Z",
+      "updatedAt": "2025-08-09T12:27:21.084Z",
+      "role": "workflow:owner",
+      "workflowId": "ZTUKsMgbGWeuM19j",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-03",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
