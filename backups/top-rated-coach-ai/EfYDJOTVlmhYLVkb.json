@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-25T10:43:47.711Z",
-  "updatedAt": "2025-09-29T13:48:38.000Z",
+  "updatedAt": "2025-10-03T16:50:35.000Z",
   "id": "EfYDJOTVlmhYLVkb",
   "name": "Website Audit TopRatedCoach",
   "active": false,
@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        1216,
-        -512
+        1312,
+        -432
       ],
       "id": "9e4507d9-635d-44f3-8fcb-a7540b895198",
       "name": "When clicking ‘Execute workflow’"
@@ -139,13 +139,13 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawOutput = $('Desktop Hero Section Website Analysis').first().json.choices[0].message.content;\nconst parsed = JSON.parse(rawOutput);\nreturn [{ json: parsed }];"
+        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2112,
-        -224
+        2432,
+        -336
       ],
       "id": "22d7472e-82f0-44bd-acb5-a5ad1d33599f",
       "name": "Parse AI Analysis Output into JSON"
@@ -158,7 +158,7 @@
           "parameters": [
             {
               "name": "secret-key",
-              "value": "ff2gcLDr09JyMA"
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
             }
           ]
         },
@@ -175,8 +175,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1664,
-        -416
+        2704,
+        464
       ],
       "id": "fe5ca1dc-d75b-43f7-8f4f-893faf9d2a64",
       "name": "Take Full Page Screenshot Desktop",
@@ -191,7 +191,7 @@
           "parameters": [
             {
               "name": "secret-key",
-              "value": "ff2gcLDr09JyMA"
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
             }
           ]
         },
@@ -208,8 +208,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1664,
-        -608
+        2704,
+        272
       ],
       "id": "d7012064-6d65-4488-9d0d-ae8f95d71286",
       "name": "Take Full Page Screenshot Mobile",
@@ -222,8 +222,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1312,
-        -752
+        1248,
+        -880
       ],
       "typeVersion": 1,
       "id": "26aa5325-5400-45a1-b186-41e8b8cb3457",
@@ -231,47 +231,66 @@
     },
     {
       "parameters": {
-        "resource": "image",
-        "operation": "analyze",
-        "modelId": {
-          "__rl": true,
-          "value": "chatgpt-4o-latest",
-          "mode": "list",
-          "cachedResultName": "CHATGPT-4O-LATEST"
+        "url": "=https://api.screenshotone.com/take",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_key",
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_ACCESS_KEY }}"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('Get Business details').item.json.website }}"
+            },
+            {
+              "name": "format",
+              "value": "png"
+            },
+            {
+              "name": "block_ads",
+              "value": "true"
+            },
+            {
+              "name": "block_cookie_banners",
+              "value": "true"
+            },
+            {
+              "name": "block_banners_by_heuristics",
+              "value": "true"
+            },
+            {
+              "name": "block_trackers",
+              "value": "true"
+            },
+            {
+              "name": "delay",
+              "value": "0"
+            },
+            {
+              "name": "timeout",
+              "value": "60"
+            },
+            {
+              "name": "response_type",
+              "value": "by_format"
+            },
+            {
+              "name": "full_page",
+              "value": "false"
+            },
+            {
+              "name": "image_quality",
+              "value": "100"
+            }
+          ]
         },
-        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screenshot for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screenshot. Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\nGPT, commence the brutal audit. Assume the goal is to double their conversion in the next 12 months by fixing this website.\n\nOutput Instructions:\n\nThe output must be structured exactly as requested to allow for subsequent data processing. Do not add any text outside of the defined sections.\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
-        "inputType": "base64",
-        "simplify": false,
-        "options": {
-          "detail": "high",
-          "maxTokens": 8000
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        1888,
-        -224
-      ],
-      "id": "b4e59e5a-0269-4728-aa0c-9f7bd88f9ab7",
-      "name": "Desktop Hero Section Website Analysis",
-      "credentials": {
-        "openAiApi": {
-          "id": "GwlwzOiOthioGCVV",
-          "name": "OpenAI TOP RATED COACH API KEY"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "url": "=https://api.screenshotone.com/take?access_key=8YXV2JYNnwXp9g&url={{ $('Get Business details').item.json.website }}&format=png&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=true&block_trackers=true&delay=0&timeout=60&response_type=by_format&full_page=false&image_quality=100",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "secret-key",
-              "value": "ff2gcLDr09JyMA"
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
             }
           ]
         },
@@ -288,11 +307,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1664,
-        -224
+        2704,
+        672
       ],
       "id": "c6fe742e-6b07-4e06-8bf7-6aa82c4ddb5d",
       "name": "Take Hero Section ScreenShot Desktop",
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -303,7 +323,7 @@
           "parameters": [
             {
               "name": "secret-key",
-              "value": "ff2gcLDr09JyMA"
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
             }
           ]
         },
@@ -320,8 +340,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1664,
-        -800
+        2704,
+        80
       ],
       "id": "5d6566ac-666b-4194-8ff9-5ff3e055d6b5",
       "name": "Take Hero Section  ScreenShot Mobile",
@@ -336,7 +356,7 @@
           "parameters": [
             {
               "name": "id",
-              "value": "=eq.Bruh Bruh"
+              "value": "=eq.ChIJ03GydmLj2IgRC5OggGgNrwU"
             },
             {
               "name": "select",
@@ -362,11 +382,356 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1440,
-        -512
+        1536,
+        -432
       ],
       "id": "7f7dd00a-223b-4b0c-95dc-631fe5041fa0",
       "name": "Get Business details"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/animate",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_key",
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_ACCESS_KEY }}"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('Get Business details').item.json.website }}"
+            },
+            {
+              "name": "format",
+              "value": "mp4"
+            },
+            {
+              "name": "block_ads",
+              "value": "true"
+            },
+            {
+              "name": "block_cookie_banners",
+              "value": "true"
+            },
+            {
+              "name": "block_banners_by_heuristics",
+              "value": "true"
+            },
+            {
+              "name": "block_trackers",
+              "value": "true"
+            },
+            {
+              "name": "delay",
+              "value": "0"
+            },
+            {
+              "name": "timeout",
+              "value": "60"
+            },
+            {
+              "name": "wait_until",
+              "value": "load"
+            },
+            {
+              "name": "viewport_width",
+              "value": "1920"
+            },
+            {
+              "name": "viewport_height",
+              "value": "1080"
+            },
+            {
+              "name": "device_scale_factor",
+              "value": "1"
+            },
+            {
+              "name": "wait_until",
+              "value": "domcontentloaded"
+            },
+            {
+              "name": "scenario",
+              "value": "default"
+            },
+            {
+              "name": "duration",
+              "value": "5"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        -336
+      ],
+      "id": "29dd0bfa-c4b5-425b-8afe-40d8c889bd22",
+      "name": "Take Video of Hero Section Desktop",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screenshot for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screenshot. Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\nGPT, commence the brutal audit. Assume the goal is to double their conversion in the next 12 months by fixing this website.\n\nOutput Instructions:\n\nThe output must be structured exactly as requested to allow for subsequent data processing. Do not add any text outside of the defined sections.\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {
+          "detail": "high",
+          "maxTokens": 8000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2928,
+        672
+      ],
+      "id": "b4e59e5a-0269-4728-aa0c-9f7bd88f9ab7",
+      "name": "Desktop Hero Section Website Analysis-GPT",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screen recording . Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\nGemini, commence the brutal audit. Assume the goal is to double their conversion in the next 12 months by fixing this website.\n\nOutput Instructions:\n\nThe output must be structured exactly as requested to allow for subsequent data processing. Do not add any text outside of the defined sections.\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {
+          "maxOutputTokens": 30000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        -336
+      ],
+      "id": "575b622f-44a5-4938-bbb4-cc4ae490a67b",
+      "name": "Desktop Hero Section Website Analysis - GEMINI",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D2RiEDSGL32dfqGg",
+          "name": "Google Gemini(PaLM) Api- FUZAIL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.screenshotone.com/animate",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_key",
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_ACCESS_KEY }}"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('Get Business details').item.json.website }}"
+            },
+            {
+              "name": "format",
+              "value": "mp4"
+            },
+            {
+              "name": "block_ads",
+              "value": "true"
+            },
+            {
+              "name": "block_cookie_banners",
+              "value": "true"
+            },
+            {
+              "name": "block_banners_by_heuristics",
+              "value": "true"
+            },
+            {
+              "name": "block_trackers",
+              "value": "true"
+            },
+            {
+              "name": "delay",
+              "value": "0"
+            },
+            {
+              "name": "timeout",
+              "value": "60"
+            },
+            {
+              "name": "wait_until",
+              "value": "load"
+            },
+            {
+              "name": "viewport_width",
+              "value": "1920"
+            },
+            {
+              "name": "viewport_height",
+              "value": "1080"
+            },
+            {
+              "name": "device_scale_factor",
+              "value": "1"
+            },
+            {
+              "name": "wait_until",
+              "value": "domcontentloaded"
+            },
+            {
+              "name": "scenario",
+              "value": "scroll"
+            },
+            {
+              "name": "duration",
+              "value": "30"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "secret-key",
+              "value": "={{ $vars.ScreenShotOne_TopRatedCoachAI_SECRET }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 20000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1984,
+        -528
+      ],
+      "id": "a2a39abf-3daa-4901-adca-6f44be5dac85",
+      "name": "  Take Full Page Video - Desktop",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": "=7",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -336
+      ],
+      "id": "f6347ef9-b59c-4e7d-99cb-c5df7b0133cc",
+      "name": "Randomize Time",
+      "webhookId": "5d304f19-a9b0-4b42-ba15-71c3caa20f36",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": "=7",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -528
+      ],
+      "id": "3c6d4d73-dd0f-4f78-a76d-8647aba0ef85",
+      "name": "Randomize Time1",
+      "webhookId": "5d304f19-a9b0-4b42-ba15-71c3caa20f36",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        -528
+      ],
+      "id": "4a8ed9cd-7af0-42ea-b32e-c384a877c965",
+      "name": "Parse AI Analysis Output into JSON1"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the FULL LANDING PAGE screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond surface design and evaluate the psychological, strategic, and conversion-focused performance of the FULL LANDING PAGE as a self-contained \"advertising machine.\"\n\nEach evaluation area is scored 0 to 20, where 0 = total failure and 20 = masterful execution.\n\n---\n### Evaluation Areas (FULL LANDING PAGE)\n\n**Criteria 1 - Hero Section Visual Design (0-20)**  \n- Rule: Must be distinctive, niche-targeted, and instantly communicate the offer visually.  \n- If the logo is the primary image → score is 0.  \n\n**Criteria 2 - Hero Section Headlines (0-20)**  \n- Rule: Screaming, benefit-driven headline that captures attention in 3.2 seconds.  \n\n**Criteria 3 - Hero Section Copy (0-20)**  \n- Rule: Prospect-focused, benefit-driven body copy; rapid readability with bullets/sub-headlines.  \n\n**Criteria 4 - Hero Section CTA (0-20)**  \n- Rule: Visible, benefit-oriented, urgency-driven CTA with a secondary low-commitment option.  \n\n**Criteria 5 - Hero Section Social Proof (0-20)**  \n- Rule: Reviews, ratings, credibility badges, or authority signals visible above the fold or immediately after.  \n\n**Criteria 6 - Mid-Page Storytelling & Authority (0-20)**  \n- Rule: Expands the hook into a persuasive narrative; builds authority, credibility, and empathy with the customer.  \n\n**Criteria 7 - Offer & Risk Reversal (0-20)**  \n- Rule: Clear offer stacking, bonuses, and irresistible guarantees that reduce perceived risk; demonstrates why this is the only logical choice.  \n\n**Criteria 8 - Flow & Readability (0-20)**  \n- Rule: Smooth cognitive flow, logical sequencing, scannable formatting, strong visual hierarchy; reduces friction and overwhelm.  \n\n**Criteria 9 - Footer & Navigation Integrity (0-20)**  \n- Rule: Includes trust signals, contact info, compliance/legal data; footer should not sabotage conversions with distractions.  \n\n---\n\n### JSON Output Format\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"[0-20]\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 2 - Hero Headlines Score\": \"[0-20]\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 3 - Hero Copy Score\": \"[0-20]\",\n    \"Criteria 3 - Hero Copy Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 4 - Hero CTA Score\": \"[0-20]\",\n    \"Criteria 4 - Hero CTA Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 5 - Hero Social Proof Score\": \"[0-20]\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"[0-20]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"[0-20]\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 8 - Flow & Readability Score\": \"[0-20]\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"[0-20]\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"[One brutal line explanation]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal high-impact suggestion targeting the worst element]\",\n    \"[One brutal high-impact suggestion]\",\n    \"[One brutal high-impact suggestion]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\"\n  ],\n  \"Summary\": \"[Detailed paragraph describing all weaknesses and opportunities across the full page, structured as content for a persuasive email pitch. Must cover 3-Second Rule violations, weak headlines, lack of authority, bad offer/risk reversal, weak CTAs, and poor social proof.]\",\n  \"Score\": \"[Final total score (0-180) as a number only]\"\n}\n",
+        "inputType": "binary",
+        "simplify": false,
+        "options": {
+          "maxOutputTokens": 30000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        -528
+      ],
+      "id": "f257f211-268a-45ab-8a2f-88fab9d4ad0c",
+      "name": "Desktop Full Page Website Analysis - GEMINI",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "D2RiEDSGL32dfqGg",
+          "name": "Google Gemini(PaLM) Api- FUZAIL"
+        }
+      }
     }
   ],
   "connections": {
@@ -430,7 +795,44 @@
         []
       ]
     },
-    "Desktop Hero Section Website Analysis": {
+    "Take Hero Section ScreenShot Desktop": {
+      "main": [
+        []
+      ]
+    },
+    "Get Business details": {
+      "main": [
+        [
+          {
+            "node": "Randomize Time1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Randomize Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Take Video of Hero Section Desktop": {
+      "main": [
+        [
+          {
+            "node": "Desktop Hero Section Website Analysis - GEMINI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Desktop Hero Section Website Analysis-GPT": {
+      "main": [
+        []
+      ]
+    },
+    "Desktop Hero Section Website Analysis - GEMINI": {
       "main": [
         [
           {
@@ -441,37 +843,44 @@
         ]
       ]
     },
-    "Take Hero Section ScreenShot Desktop": {
+    "Randomize Time": {
       "main": [
         [
           {
-            "node": "Desktop Hero Section Website Analysis",
+            "node": "Take Video of Hero Section Desktop",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Business details": {
+    "Randomize Time1": {
       "main": [
         [
           {
-            "node": "Take Full Page Screenshot Desktop",
+            "node": "  Take Full Page Video - Desktop",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "  Take Full Page Video - Desktop": {
+      "main": [
+        [
           {
-            "node": "Take Hero Section ScreenShot Desktop",
+            "node": "Desktop Full Page Website Analysis - GEMINI",
             "type": "main",
             "index": 0
-          },
+          }
+        ]
+      ]
+    },
+    "Desktop Full Page Website Analysis - GEMINI": {
+      "main": [
+        [
           {
-            "node": "Take Full Page Screenshot Mobile",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Take Hero Section  ScreenShot Mobile",
+            "node": "Parse AI Analysis Output into JSON1",
             "type": "main",
             "index": 0
           }
@@ -483,9 +892,175 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
-  "pinData": {},
-  "versionId": "a9b85fec-0abc-4baa-bb01-8f81c91a797a",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Get Business details": [
+      {
+        "json": {
+          "id": "ChIJ03GydmLj2IgRC5OggGgNrwU",
+          "business_name": "Rumble Boxing",
+          "website": "https://www.rumbleboxinggym.com/location/east-boca-raton?utm_source=google&utm_medium=referral&utm_campaign=yext&utm_term=organic",
+          "business_category": [
+            "establishment",
+            "gym",
+            "health",
+            "point_of_interest"
+          ]
+        }
+      }
+    ],
+    "  Take Full Page Video - Desktop": [
+      {
+        "json": {
+          "headers": {
+            "date": "Fri, 03 Oct 2025 16:26:28 GMT",
+            "content-type": "video/mp4",
+            "content-length": "8671143",
+            "connection": "close",
+            "cf-ray": "988dccac59b28e9a-FRA",
+            "cf-cache-status": "DYNAMIC",
+            "access-control-allow-origin": "*",
+            "cache-control": "private, no-cache, max-age=0, no-transform",
+            "server": "cloudflare",
+            "access-control-allow-methods": "OPTIONS, POST, GET",
+            "access-control-max-age": "86400",
+            "vary": "accept-encoding",
+            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=DeXI1G2uScxCiyl6%2BPhvLCJWCtdsDkQn9qZn9pBFhG1mnsLiL%2BBLvdRWIV4NSQ0i9WDlo8g%2F5fY6St2c2XquPvGXMMuFLFPezyVo92qja9efn2DwrA%3D%3D\"}]}",
+            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "statusCode": 200,
+          "statusMessage": "OK"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "video/mp4",
+            "fileType": "video",
+            "fileExtension": "mp4",
+            "data": "filesystem-v2",
+            "fileName": "animate",
+            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/3865/binary_data/b93d4b90-af63-468d-a19f-5e15a00f2d10",
+            "fileSize": "8.67 MB"
+          }
+        }
+      }
+    ],
+    "Take Video of Hero Section Desktop": [
+      {
+        "json": {
+          "headers": {
+            "date": "Fri, 03 Oct 2025 16:45:18 GMT",
+            "content-type": "video/mp4",
+            "content-length": "2345006",
+            "connection": "close",
+            "cf-ray": "988de8873ae01f99-FRA",
+            "cf-cache-status": "DYNAMIC",
+            "access-control-allow-origin": "*",
+            "cache-control": "private, no-cache, max-age=0, no-transform",
+            "server": "cloudflare",
+            "access-control-allow-methods": "OPTIONS, POST, GET",
+            "access-control-max-age": "86400",
+            "vary": "accept-encoding",
+            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=2UW74LKA%2FDuxlT5OoIdn%2BYBtJ0BHk2RPtxJapLlfWqJrEtlsq%2FtBjnnnsCjOo7Z5nLzB41OzzpsZqaX3GRErNCtOXid3wZOKDMm4MUJGAFHdvN4o%2FA%3D%3D\"}]}",
+            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+            "alt-svc": "h3=\":443\"; ma=86400"
+          },
+          "statusCode": 200,
+          "statusMessage": "OK"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "video/mp4",
+            "fileType": "video",
+            "fileExtension": "mp4",
+            "data": "filesystem-v2",
+            "fileName": "animate",
+            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/3869/binary_data/d87ce0a5-6d35-4aee-8cb0-b40bfd43b58e",
+            "fileSize": "2.35 MB"
+          }
+        }
+      }
+    ],
+    "Desktop Full Page Website Analysis - GEMINI": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "```json\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"8\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"The visual is generic fitness; it doesn't instantly scream a unique, compelling Rumble Boxing offer beyond 'working out.'\",\n    \"Criteria 2 - Hero Headlines Score\": \"0\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"The headline states a location, not a screaming, prospect-grabbing benefit; a fundamental failure of the 3-second rule.\",\n    \"Criteria 3 - Hero Copy Score\": \"0\",\n    \"Criteria 3 - Hero Copy Explanation\": \"Zero prospect-focused, benefit-driven copy above the fold; it's a navigational prompt, not a sales pitch.\",\n    \"Criteria 4 - Hero CTA Score\": \"5\",\n    \"Criteria 4 - Hero CTA Explanation\": \"Generic 'BUY NOW' and 'BOOK NOW' lack benefit or urgency, failing to convert interest into immediate action.\",\n    \"Criteria 5 - Hero Social Proof Score\": \"0\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"No social proof whatsoever is present above the fold or immediately below, utterly failing to build instant trust.\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"12\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"Some storytelling exists in 'The Work/Vibes/Rundown,' but it's too late, and weak trainer profiles fail to establish significant authority or empathy.\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"4\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"The offers are basic pricing tiers with no irresistible stacking, bonuses, or crucial risk reversal, leaving prospects with all the perceived risk.\",\n    \"Criteria 8 - Flow & Readability Score\": \"7\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"Disjointed flow, confusing 'CLASS IS CLOSED' messages, and unclear package pricing create friction and sabotage a smooth cognitive journey.\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"10\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"The footer has standard elements but the top navigation is too broad, offering too many escape routes from the primary conversion goal.\"\n  },\n  \"Improvement Ideas\": [\n    \"Refactor the Hero Section: Replace the location headline with a screaming, benefit-driven statement and integrate a compelling, urgent CTA with clear risk reversal like 'Claim Your Free First Rumble Session & Unleash Your Inner Fighter!'.\",\n    \"Inject Urgency & Remove Friction: Immediately fix the 'CLASS IS CLOSED' debacle by showing available classes or a direct path to booking; introduce scarcity or limited-time bonuses to offers.\",\n    \"Build Credibility & Social Proof: Integrate testimonials, star ratings, or media mentions prominently within the hero section or immediately after to establish instant trust and authority.\"\n  ],\n  \"Great Elements\": [\n    \"The visuals for the 'About Rumble Boxing' section effectively showcase the studio's energetic interior.\",\n    \"The 'THE VIBES' section concisely communicates the core experience with '10 rounds, 2 fists, ZERO experience necessary.'\",\n    \"The membership pricing structure, while lacking incentives, is at least straightforward in its presentation.\"\n  ],\n  \"Summary\": \"Your current Rumble Boxing landing page is a textbook example of lost opportunity, failing the critical 3-Second Rule at every turn. The hero section, instead of screaming a powerful benefit, simply announces a location, offering zero compelling reason for a new prospect to stay, let alone convert. This isn't a sales machine; it's a glorified directory entry.\\n\\nThe weak, generic CTAs ('BUY NOW,' 'BOOK NOW') lack any benefit-driven language or urgency, leaving visitors uninspired. Compounding this, the complete absence of social proof or testimonials above the fold means you're asking for commitment without building an iota of trust. When prospects *do* scroll, they're hit with 'CLASS IS CLOSED' messages, actively discouraging engagement and signaling that your product isn't even available.\\n\\nYour offers, while priced, lack any irresistible stacking or crucial risk reversal – no free trial, no guarantee, no reason why a prospect should choose Rumble over any other fitness option right *now*. The confusing presentation of 'Packages' without immediate pricing adds unnecessary friction. This isn't just suboptimal design; it's actively sabotaging your conversion rates, leaving massive revenue on the table. You're making prospects work to understand why they should care, rather than overwhelming them with value and a clear path to their desired outcome.\",\n  \"Score\": \"46\"\n}\n```"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 5535,
+            "candidatesTokenCount": 1018,
+            "totalTokenCount": 10868,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1064
+              },
+              {
+                "modality": "VIDEO",
+                "tokenCount": 4471
+              }
+            ],
+            "thoughtsTokenCount": 4315
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "k_3faNftMpr2xN8PvpbZ8Qg"
+        }
+      }
+    ],
+    "Desktop Hero Section Website Analysis - GEMINI": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"10\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"The visual is dynamic and relevant to the niche but is blurry, lacks distinctiveness, and fails to communicate the unique value proposition within the 3-second rule.\",\n    \"Criteria 2 - headlines Score\": \"0\",\n    \"Criteria 2 - headlines Explanation\": \"The headline is merely the business name and location; it fails to 'scream,' convey a benefit, or focus on the prospect's needs.\",\n    \"Criterion 3 - copy in the hero section Score\": \"0\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"There is no body copy in the hero section to evaluate, representing a complete failure to engage the prospect beyond the headline.\",\n    \"Criteria 4 - Call to Action Score\": \"5\",\n    \"Criteria 4 - Call to Action Explanation\": \"The CTAs are visible and high-contrast but are command-based, lack irresistible offers, urgency, or a low-commitment option for non-ready buyers.\",\n    \"Criteria 5 - Social Proof Score\": \"0\",\n    \"Criteria 5 - Social Proof Explanation\": \"There is no social proof, testimonials, or credibility data immediately visible, entirely undermining conversion integrity and trust.\"\n  },\n  \"Improvement Ideas\": [\n    \"Scrap the current headline entirely; replace 'RUMBLE BOXING EAST BOCA RATON' with a powerful, benefit-driven 'screaming headline' that instantly hooks prospects by addressing their desired transformation or problem, e.g., 'Unleash Your Power: The Ultimate Boxing Fitness Experience in Boca Raton.'\",\n    \"Immediately inject concise, benefit-focused body copy in bullet points below the headline, highlighting why Rumble Boxing is the superior choice for *their* goals, such as 'Torch Calories & Build Lean Muscle' and 'Master Real Boxing Techniques with Expert Coaches.'\",\n    \"Revamp the CTAs; transform 'BUY NOW' and 'BOOK NOW' into irresistible, urgent offers like 'Claim Your FREE First Class!' for the 97% of non-ready buyers, and prominently feature a secondary low-commitment option like 'Explore Our Class Schedule.'\"\n  ],\n  \"Great Elements\": [\n    \"The branding utilizes a consistent red color palette that evokes energy and intensity.\",\n    \"The primary Call to Action buttons are visually prominent due to their color and placement.\",\n    \"The top navigation bar is clear and logically structured, making other sections of the site accessible.\"\n  ],\n  \"Summary\": \"This website's hero section is a textbook example of lost revenue, failing the 3-Second Rule catastrophically. Visitors are greeted not with a compelling reason to engage, but with a bland location name masquerading as a headline, screaming nothing but a missed opportunity to capture attention. There's a glaring absence of any benefit-driven body copy, leaving prospects with no story to unfold, no pain points addressed, and no understanding of 'what's in it for them.' The Calls to Action are blunt commands, assuming pre-existing desire rather than generating it, and utterly neglecting the 97% of buyers who need persuasive reasons and low-commitment entry points. Crucially, the complete lack of social proof means there's zero external validation or credibility, forcing potential clients to leap on faith into an unknown. To double conversions, this page demands an immediate, radical overhaul: a 'screaming' headline, prospect-centric benefit statements, an irresistible, urgent primary CTA, and a clear display of social proof to build trust and compel immediate action. Without these fundamental strategic fixes, this website will continue to hemorrhage potential clients.\",\n  \"Score\": \"15\"\n}"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 2959,
+            "candidatesTokenCount": 801,
+            "totalTokenCount": 6306,
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1644
+              },
+              {
+                "modality": "VIDEO",
+                "tokenCount": 1315
+              }
+            ],
+            "thoughtsTokenCount": 2546
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "xv3faNt9hoy90g-WtMP5Bg"
+        }
+      }
+    ]
+  },
+  "versionId": "b7f6a303-e6e8-441a-9ac2-b4ce5ed6702d",
   "triggerCount": 0,
   "shared": [
     {
@@ -510,7 +1085,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "updatedAt": "2025-10-04T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -528,7 +1103,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-03",
+              "lastActiveAt": "2025-10-04",
               "isPending": false
             }
           }
