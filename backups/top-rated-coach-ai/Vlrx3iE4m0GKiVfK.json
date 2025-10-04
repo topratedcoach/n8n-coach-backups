@@ -1,10 +1,10 @@
 {
   "createdAt": "2025-08-14T20:16:00.083Z",
-  "updatedAt": "2025-08-26T09:43:40.000Z",
+  "updatedAt": "2025-10-03T11:40:19.000Z",
   "id": "Vlrx3iE4m0GKiVfK",
   "name": "Backup Workflows TopRatedCoachAI",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -304,7 +304,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b99df7dc-2358-45ef-8ed6-41b1e02f99f0",
+  "versionId": "9543c55e-d222-41c5-a7fd-ffaed23a0221",
   "triggerCount": 0,
   "shared": [
     {
@@ -329,7 +329,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "updatedAt": "2025-10-04T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -347,7 +347,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-03",
+              "lastActiveAt": "2025-10-04",
               "isPending": false
             }
           }
