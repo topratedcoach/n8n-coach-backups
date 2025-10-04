@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-10-02T14:19:13.510Z",
-  "updatedAt": "2025-10-03T10:52:48.000Z",
+  "updatedAt": "2025-10-03T11:03:29.000Z",
   "id": "vunHkbizyUk9GJ61",
   "name": "Backup TopRatedCoachAI Workflows to GitHub",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -739,13 +739,17 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger - Daily 3AM": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
   "versionId": "6bdf49c8-aad8-40d0-9f1b-a25dcc61bf66",
-  "triggerCount": 0,
+  "triggerCount": 1,
   "shared": [
     {
       "createdAt": "2025-10-02T14:19:13.515Z",
@@ -769,7 +773,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-03T09:01:13.000Z",
+              "updatedAt": "2025-10-04T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -787,7 +791,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-03",
+              "lastActiveAt": "2025-10-04",
               "isPending": false
             }
           }
