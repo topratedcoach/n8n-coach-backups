@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-25T10:43:47.711Z",
-  "updatedAt": "2025-10-06T06:58:29.000Z",
+  "updatedAt": "2025-10-06T11:58:13.000Z",
   "id": "EfYDJOTVlmhYLVkb",
   "name": "Website Audit TopRatedCoach",
   "active": false,
@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        1184,
-        -640
+        1168,
+        -544
       ],
       "id": "9e4507d9-635d-44f3-8fcb-a7540b895198",
       "name": "When clicking ‘Execute workflow’"
@@ -24,8 +24,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        208
+        2080,
+        -80
       ],
       "id": "49244f02-33a8-464a-85bc-6ae83a608c94",
       "name": "HTML Text Cleaning"
@@ -39,14 +39,14 @@
         "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}\n",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"url\": \"{{ $json.url }}\",\n  \"gotoOptions\": {\n    \"waitUntil\": \"networkidle2\"\n  }\n}\n",
+        "jsonBody": "={\n  \"url\": \"{{ $('Get Business details').item.json.website }}\",\n  \"gotoOptions\": {\n    \"waitUntil\": \"networkidle2\"\n  }\n}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1392,
-        208
+        1632,
+        -80
       ],
       "id": "3c638bed-e9d4-4cee-a3dd-384d5c4e52ba",
       "name": "Website Text Scraping",
@@ -69,8 +69,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        1616,
-        208
+        1856,
+        -80
       ],
       "id": "284ac43b-880d-450a-90d0-be5a513e7170",
       "name": "HTML For Services",
@@ -83,8 +83,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2432,
-        208
+        2656,
+        -80
       ],
       "id": "091fc746-b643-4c5d-8160-f28df09b2fc8",
       "name": "Extract JSON"
@@ -99,8 +99,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1312,
-        160
+        1568,
+        -160
       ],
       "id": "5175cefc-7ac6-4be5-a4f0-38f68dd916b2",
       "name": "Sticky Note1"
@@ -125,8 +125,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        2064,
-        208
+        2304,
+        -80
       ],
       "id": "22ae7035-8b73-404d-9f12-4117b4d4eefd",
       "name": "HTML Analysis",
@@ -139,12 +139,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
+        "jsCode": "const rawOutputItem = $input.first().json;\n\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\nlet jsonString;\n\n// Match JSON inside ```json ... ``` or ``` ... ```\nconst match = rawOutputText.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n\nif (match && match[1]) {\n  jsonString = match[1].trim();\n} else {\n  // If no markdown match, assume raw JSON\n  jsonString = rawOutputText.trim();\n}\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (error) {\n  throw new Error(\"Failed to parse JSON from AI response. Raw content:\\n\" + rawOutputText);\n}\n\nreturn [{ json: parsed }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2304,
+        2320,
         -352
       ],
       "id": "22d7472e-82f0-44bd-acb5-a5ad1d33599f",
@@ -175,8 +175,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2704,
-        464
+        192,
+        -480
       ],
       "id": "fe5ca1dc-d75b-43f7-8f4f-893faf9d2a64",
       "name": "Take Full Page Screenshot Desktop",
@@ -208,8 +208,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2704,
-        272
+        192,
+        -672
       ],
       "id": "d7012064-6d65-4488-9d0d-ae8f95d71286",
       "name": "Take Full Page Screenshot Mobile",
@@ -294,8 +294,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2704,
-        672
+        192,
+        -272
       ],
       "id": "c6fe742e-6b07-4e06-8bf7-6aa82c4ddb5d",
       "name": "Take Hero Section ScreenShot Desktop",
@@ -327,8 +327,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2704,
-        80
+        192,
+        -864
       ],
       "id": "5d6566ac-666b-4194-8ff9-5ff3e055d6b5",
       "name": "Take Hero Section  ScreenShot Mobile",
@@ -369,8 +369,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1408,
-        -640
+        1392,
+        -544
       ],
       "id": "7f7dd00a-223b-4b0c-95dc-631fe5041fa0",
       "name": "Get Business details"
@@ -497,8 +497,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        2928,
-        672
+        416,
+        -272
       ],
       "id": "b4e59e5a-0269-4728-aa0c-9f7bd88f9ab7",
       "name": "Desktop Hero Section Website Analysis-GPT",
@@ -508,6 +508,7 @@
           "name": "OpenAI TOP RATED COACH API KEY"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -520,7 +521,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screen recording . Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\nGemini, commence the brutal audit. Assume the goal is to double their conversion in the next 12 months by fixing this website.\n\nOutput Instructions:\n\nThe output must be structured exactly as requested to allow for subsequent data processing. Do not add any text outside of the defined sections.\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the website screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond the surface design and evaluate the psychological, strategic, and conversion-focused performance of the Hero Section as a self-contained \"advertising piece.\"\nAnalyze the provided website screen recording . Based on the criteria below, provide a success score for each area from 0 to 20, where 0 is the lowest (complete failure to execute the principle) and 20 is the highest (masterful execution).\n\nEvaluation Areas of HERO Section (The Advertising Piece)\nCriteria Core Chet Holmes Principle\n\nCriteria 1 - Visual Design (0-20)\n Rule 1: It Must Be Distinctive, It should target business's niche market.\n Rule 2: Visual Elements present business without having to read the text. It should describe product/service visually without needing text, attract attention, remember 55% of communication is visual and the website must reflect this. \nif website uses logo as the primary image, Immediately give it a zero for this criteria.\n\nCriteria 2 - Headlines (0-20)\n Rule 1: Capture Attention with a Screaming Headline. It must instantly tell viewer what you want to tell in 3.2 seconds.\n\nCriteria 3 - Body Copy/Messaging (0-20)\n Rule 1: After Your Headline Hooks Them, Your Body Copy Has to Keep Them Reading (Focus on Benefits). It should Focus on the prospect, not the business. Emphasize benefits, not features. It should Use bullet points or short sub-headlines for rapid readability.\n\nCriteria 4 - Call to Action (0-20)\n Rule 1: Include a Call to Action (A Reason to Act Now). A CTA must give a reason to choose this business over competitors (offer, bonus, benefit). It must create urgency or limited availability to push immediate action.\n\nCriteria 5 - Conversion Integrity & Social Proof (0-20)\n Rule 1: Social Proof & The 3-Second Rule Integrity. Does it display reviews, testimonials, ratings, or credibility data? Other people’s opinions are more persuasive than anything you say about yourself.\n\nDetailed Scoring Breakdown\nCriteria 1 - Visual Design in Hero Section (0-20):\n Are pictures outstanding, distinctive, and high-quality? (Not generic stock/blurry)\n Does the visual immediately attract attention and interrupt the mind?\n Does the visual composition target their niche market ({{ $('Get Business details').item.json.business_category }}) ?\n Is the visual element and professional design strong enough to pass the 3-Second Rule's immediate trust test? \n\nCriteria 2 - Headlines (0-20):\n Does the headline \"Scream\" and immediately convey a compelling benefit?\n Is the headline right length to be read in in 3.2 seconds (short, 6 words maximum is ideal)?\n Does the headline alone communicate the Core Story and the unique value proposition of the business?\n Does it focus on \"you\" or \"your\" (prospect) and not \"we\" or \"our\" (business)?\n\nCriteria 3 - Body Copy on Hero Section (0-20):\n Does the copy unfold the story and compel the prospect to read on?\n Does the copy focus on the prospect's benefit/pain points—not on the business's features or history?\n Is it formatted for rapid consumption (bullet points, short lines, high readability)?\n\nCriteria 4 - Call to Action (0-20):\n Does the first fold have a visible, high-contrast Call to Action (CTA)?\n Is the CTA text itself a benefit (e.g., \"Get Your Free Training Plan\") rather than a command?\n Is there an irresistible offer, bonus, or reason for taking action NOW (Sense of urgency or limited availability)?\n Is there an obvious secondary, low-commitment CTA for the 97% of non-ready buyers?\n\nCriteria 5 - Social Proof (0-20):\n Is Social Proof (reviews, credibility badges, years of service, media logos) immediately visible in or right after the Hero Section?\n Is the overall message persuasive enough to convince the prospect that this company is the only logical choice?\n\n\n### Scoring Format\n\nReturn results strictly in the following JSON structure:\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[Single-line explanation of the score based on distinctiveness, quality, and 3-Second Rule]\",\n    \"Criteria 2 - headlines Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 2 - headlines Explanation\": \"[Single-line explanation of the score based on screaming headline, length, benefit, and focus on 'you']\",\n    \"Criterion 3 - copy in the hero section Score\": \"[Final Score 0-20, number only]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[Single-line explanation of the score based on focus on prospect benefit/pain, compelling story, and readability]\",\n    \"Criteria 4 - Call to Action Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[Single-line explanation of the score based on visibility, benefit-orientation, urgency/offer, and low-commitment option]\",\n    \"Criteria 5 - Social Proof Score\": \"[Final Score 0-20, number only]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[Single-line explanation of the score based on visibility of social proof, navigation friction, and overall conversion integrity]\"\n  },\n  \"Improvement Ideas\": [\n    \"[Exactly one distinct, brutal, high-impact suggestion focused on the lowest-scoring elements.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\",\n    \"[Exactly one distinct, brutal, high-impact suggestion.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what the site executed successfully.]\",\n    \"[One concise observation]\",\n    \"[One concise observation]\"\n  ],\n  \"Summary\": \"[A detailed paragraph describing all elements that can be improved across the whole website audit, structured as content for a persuasive email pitch. This should cover the failure of the 3-Second Rule, the lack of a screaming headline, the feature-based copy, and the need for a better CTA/Social Proof.]\",\n  \"Score\": \"[Final total score (0-100) as a number only]\"\n}",
         "inputType": "binary",
         "simplify": false,
         "options": {
@@ -641,6 +642,7 @@
       ],
       "id": "a2a39abf-3daa-4901-adca-6f44be5dac85",
       "name": "  Take Full Page Video - Desktop",
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -677,12 +679,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
+        "jsCode": "const rawOutputItem = $input.first().json;\n\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text.trim();\n\nlet jsonString;\n\n// Regex to capture JSON inside ```json ... ``` or ``` ... ```\nconst match = rawOutputText.match(/```(?:json)?[\\r\\n]+([\\s\\S]*?)```/i);\n\nif (match && match[1]) {\n  jsonString = match[1].trim();\n} else {\n  // If no markdown match, assume raw JSON\n  jsonString = rawOutputText;\n}\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (error) {\n  throw new Error(\"Failed to parse JSON from AI response.\\nExtracted string:\\n\" + jsonString);\n}\n\nreturn [{ json: parsed }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2304,
+        2320,
         -544
       ],
       "id": "4a8ed9cd-7af0-42ea-b32e-c384a877c965",
@@ -699,7 +701,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the FULL LANDING PAGE screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond surface design and evaluate the psychological, strategic, and conversion-focused performance of the FULL LANDING PAGE as a self-contained \"advertising machine.\"\n\nEach evaluation area is scored 0 to 20, where 0 = total failure and 20 = masterful execution.\n\n---\n### Evaluation Areas (FULL LANDING PAGE)\n\n**Criteria 1 - Hero Section Visual Design (0-20)**  \n- Rule: Must be distinctive, niche-targeted, and instantly communicate the offer visually.  \n- If the logo is the primary image → score is 0.  \n\n**Criteria 2 - Hero Section Headlines (0-20)**  \n- Rule: Screaming, benefit-driven headline that captures attention in 3.2 seconds.  \n\n**Criteria 3 - Hero Section Copy (0-20)**  \n- Rule: Prospect-focused, benefit-driven body copy; rapid readability with bullets/sub-headlines.  \n\n**Criteria 4 - Hero Section CTA (0-20)**  \n- Rule: Visible, benefit-oriented, urgency-driven CTA with a secondary low-commitment option.  \n\n**Criteria 5 - Hero Section Social Proof (0-20)**  \n- Rule: Reviews, ratings, credibility badges, or authority signals visible above the fold or immediately after.  \n\n**Criteria 6 - Mid-Page Storytelling & Authority (0-20)**  \n- Rule: Expands the hook into a persuasive narrative; builds authority, credibility, and empathy with the customer.  \n\n**Criteria 7 - Offer & Risk Reversal (0-20)**  \n- Rule: Clear offer stacking, bonuses, and irresistible guarantees that reduce perceived risk; demonstrates why this is the only logical choice.  \n\n**Criteria 8 - Flow & Readability (0-20)**  \n- Rule: Smooth cognitive flow, logical sequencing, scannable formatting, strong visual hierarchy; reduces friction and overwhelm.  \n\n**Criteria 9 - Footer & Navigation Integrity (0-20)**  \n- Rule: Includes trust signals, contact info, compliance/legal data; footer should not sabotage conversions with distractions.  \n\n---\n\n### JSON Output Format\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"[0-20]\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 2 - Hero Headlines Score\": \"[0-20]\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 3 - Hero Copy Score\": \"[0-20]\",\n    \"Criteria 3 - Hero Copy Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 4 - Hero CTA Score\": \"[0-20]\",\n    \"Criteria 4 - Hero CTA Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 5 - Hero Social Proof Score\": \"[0-20]\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"[0-20]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"[0-20]\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 8 - Flow & Readability Score\": \"[0-20]\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"[0-20]\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"[One brutal line explanation]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal high-impact suggestion targeting the worst element]\",\n    \"[One brutal high-impact suggestion]\",\n    \"[One brutal high-impact suggestion]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\"\n  ],\n  \"Summary\": \"[Detailed paragraph describing all weaknesses and opportunities across the full page, structured as content for a persuasive email pitch. Must cover 3-Second Rule violations, weak headlines, lack of authority, bad offer/risk reversal, weak CTAs, and poor social proof.]\",\n  \"Score\": \"[Final total score (0-180) as a number only]\"\n}\n",
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the FULL LANDING PAGE screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond surface design and evaluate the psychological, strategic, and conversion-focused performance of the FULL LANDING PAGE as a self-contained \"advertising machine.\"\n\nEach evaluation area is scored 0 to 20, where 0 = total failure and 20 = masterful execution.\n\n---\n### Evaluation Areas (FULL LANDING PAGE)\n\n**Criteria 1 - Hero Section Visual Design (0-20)**  \n- Rule: Must be distinctive, niche-targeted, and instantly communicate the offer visually.  \n- If the logo is the primary image → score is 0.  \n\n**Criteria 2 - Hero Section Headlines (0-20)**  \n- Rule: Screaming, benefit-driven headline that captures attention in 3.2 seconds.  \n\n**Criteria 3 - Hero Section Copy (0-20)**  \n- Rule: Prospect-focused, benefit-driven body copy; rapid readability with bullets/sub-headlines.  \n\n**Criteria 4 - Hero Section CTA (0-20)**  \n- Rule: Visible, benefit-oriented, urgency-driven CTA with a secondary low-commitment option.  \n\n**Criteria 5 - Hero Section Social Proof (0-20)**  \n- Rule: Reviews, ratings, credibility badges, or authority signals visible above the fold or immediately after.  \n\n**Criteria 6 - Mid-Page Storytelling & Authority (0-20)**  \n- Rule: Expands the hook into a persuasive narrative; builds authority, credibility, and empathy with the customer.  \n\n**Criteria 7 - Offer & Risk Reversal (0-20)**  \n- Rule: Clear offer stacking, bonuses, and irresistible guarantees that reduce perceived risk; demonstrates why this is the only logical choice.  \n\n**Criteria 8 - Flow & Readability (0-20)**  \n- Rule: Smooth cognitive flow, logical sequencing, scannable formatting, strong visual hierarchy; reduces friction and overwhelm.  \n\n**Criteria 9 - Footer & Navigation Integrity (0-20)**  \n- Rule: Includes trust signals, contact info, compliance/legal data; footer should not sabotage conversions with distractions.  \n\n---\n\n### JSON Output Format\n\n\nReturn results strictly in the following JSON structure:\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"[0-20]\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 2 - Hero Headlines Score\": \"[0-20]\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 3 - Hero Copy Score\": \"[0-20]\",\n    \"Criteria 3 - Hero Copy Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 4 - Hero CTA Score\": \"[0-20]\",\n    \"Criteria 4 - Hero CTA Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 5 - Hero Social Proof Score\": \"[0-20]\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"[0-20]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"[0-20]\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 8 - Flow & Readability Score\": \"[0-20]\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"[0-20]\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"[One brutal line explanation]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal high-impact suggestion targeting the worst element]\",\n    \"[One brutal high-impact suggestion]\",\n    \"[One brutal high-impact suggestion]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\"\n  ],\n  \"Summary\": \"[Detailed paragraph describing all weaknesses and opportunities across the full page, structured as content for a persuasive email pitch. Must cover 3-Second Rule violations, weak headlines, lack of authority, bad offer/risk reversal, weak CTAs, and poor social proof.]\",\n  \"Score\": \"[Final total score (0-180) as a number only]\"\n}\n",
         "inputType": "binary",
         "simplify": false,
         "options": {
@@ -724,12 +726,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
+        "jsCode": "const rawOutputItem = $input.first().json;\n\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\nlet jsonString;\n\n// Match JSON inside ```json ... ``` or ``` ... ```\nconst match = rawOutputText.match(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/i);\n\nif (match && match[1]) {\n  jsonString = match[1].trim();\n} else {\n  // If no markdown match, assume raw JSON\n  jsonString = rawOutputText.trim();\n}\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (error) {\n  throw new Error(\"Failed to parse JSON from AI response. Raw content:\\n\" + rawOutputText);\n}\n\nreturn [{ json: parsed }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2304,
+        2320,
         -736
       ],
       "id": "7ca3dcbf-c7a0-4fb1-abf4-9edb09ae11b2",
@@ -769,12 +771,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const rawOutputItem = $input.first().json;\n\n// 1. Traverse the object structure to get the text containing the JSON string.\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text;\n\n// 2. Use a regular expression to extract the string content that is inside \n//    the triple backticks and tagged with 'json'.\n//    - [\\s\\S]*? matches all characters (including newlines) non-greedily.\nconst match = rawOutputText.match(/```json\\n([\\s\\S]*?)\\n```/);\n\n// 3. Check if a match was found and the content was successfully captured (group 1).\nif (!match || !match[1]) {\n    // This will stop the workflow and show a clear error\n    throw new Error(\"Could not find or extract JSON content between ```json\\\\n and \\\\n``` tags in the AI response.\");\n}\n\nconst jsonString = match[1];\n\n// 4. Parse the clean JSON string into a JavaScript object.\nconst parsed = JSON.parse(jsonString);\n\n// 5. Return the result in the expected format.\nreturn [{ json: parsed }];"
+        "jsCode": "const rawOutputItem = $input.first().json;\n\nconst rawOutputText = rawOutputItem.candidates[0].content.parts[0].text.trim();\n\nlet jsonString;\n\n// Regex to capture JSON inside ```json ... ``` or ``` ... ```\nconst match = rawOutputText.match(/```(?:json)?[\\r\\n]+([\\s\\S]*?)```/i);\n\nif (match && match[1]) {\n  jsonString = match[1].trim();\n} else {\n  // If no markdown match, assume raw JSON\n  jsonString = rawOutputText;\n}\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (error) {\n  throw new Error(\"Failed to parse JSON from AI response.\\nExtracted string:\\n\" + jsonString);\n}\n\nreturn [{ json: parsed }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2304,
+        2320,
         -928
       ],
       "id": "1494c199-3166-4e43-a293-600f6f4c1bbc",
@@ -989,6 +991,7 @@
       ],
       "id": "e9a973dd-965f-48af-bb29-a84946601561",
       "name": "  Take Full Page Video - Mobile",
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -1001,7 +1004,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=Act as CHET HOLMES, the legendary strategist and author of The Ultimate Sales Machine. You are auditing the FULL LANDING PAGE screen recording for the business {{ $('Get Business details').item.json.business_name }}. Your tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates. Your analysis must be grounded in the 3-Second Rule and the 4 Rules for High-Response-Generating Advertising.\n\nCrucial Instruction: Your analysis will look beyond surface design and evaluate the psychological, strategic, and conversion-focused performance of the FULL LANDING PAGE as a self-contained \"advertising machine.\"\n\nEach evaluation area is scored 0 to 20, where 0 = total failure and 20 = masterful execution.\n\n---\n### Evaluation Areas (FULL LANDING PAGE)\n\n**Criteria 1 - Hero Section Visual Design (0-20)**  \n- Rule: Must be distinctive, niche-targeted, and instantly communicate the offer visually.  \n- If the logo is the primary image → score is 0.  \n\n**Criteria 2 - Hero Section Headlines (0-20)**  \n- Rule: Screaming, benefit-driven headline that captures attention in 3.2 seconds.  \n\n**Criteria 3 - Hero Section Copy (0-20)**  \n- Rule: Prospect-focused, benefit-driven body copy; rapid readability with bullets/sub-headlines.  \n\n**Criteria 4 - Hero Section CTA (0-20)**  \n- Rule: Visible, benefit-oriented, urgency-driven CTA with a secondary low-commitment option.  \n\n**Criteria 5 - Hero Section Social Proof (0-20)**  \n- Rule: Reviews, ratings, credibility badges, or authority signals visible above the fold or immediately after.  \n\n**Criteria 6 - Mid-Page Storytelling & Authority (0-20)**  \n- Rule: Expands the hook into a persuasive narrative; builds authority, credibility, and empathy with the customer.  \n\n**Criteria 7 - Offer & Risk Reversal (0-20)**  \n- Rule: Clear offer stacking, bonuses, and irresistible guarantees that reduce perceived risk; demonstrates why this is the only logical choice.  \n\n**Criteria 8 - Flow & Readability (0-20)**  \n- Rule: Smooth cognitive flow, logical sequencing, scannable formatting, strong visual hierarchy; reduces friction and overwhelm.  \n\n**Criteria 9 - Footer & Navigation Integrity (0-20)**  \n- Rule: Includes trust signals, contact info, compliance/legal data; footer should not sabotage conversions with distractions.  \n\n---\n\n### JSON Output Format\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"[0-20]\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 2 - Hero Headlines Score\": \"[0-20]\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 3 - Hero Copy Score\": \"[0-20]\",\n    \"Criteria 3 - Hero Copy Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 4 - Hero CTA Score\": \"[0-20]\",\n    \"Criteria 4 - Hero CTA Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 5 - Hero Social Proof Score\": \"[0-20]\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"[0-20]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"[0-20]\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 8 - Flow & Readability Score\": \"[0-20]\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"[0-20]\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"[One brutal line explanation]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal high-impact suggestion targeting the worst element]\",\n    \"[One brutal high-impact suggestion]\",\n    \"[One brutal high-impact suggestion]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\"\n  ],\n  \"Summary\": \"[Detailed paragraph describing all weaknesses and opportunities across the full page, structured as content for a persuasive email pitch. Must cover 3-Second Rule violations, weak headlines, lack of authority, bad offer/risk reversal, weak CTAs, and poor social proof.]\",\n  \"Score\": \"[Final total score (0-180) as a number only]\"\n}\n",
+        "text": "=Act as **CHET HOLMES**, the legendary strategist and author of *The Ultimate Sales Machine*. You are auditing the **MOBILE VERSION** of the full landing page screen recording for the business {{ $('Get Business details').item.json.business_name }}.\n\nYour tone must be **BRUTAL, HONEST**, and **focused solely on revenue-driving efficacy and conversion rates**.\n\nYour analysis must evaluate the **mobile landing page** as a self-contained *advertising machine* that must hook, persuade, and convert within **a 3-second mobile attention span**.\n\nEach evaluation area is scored **0 to 20**, where 0 = total failure and 20 = masterful execution.\n\n\n### Evaluation Areas (MOBILE VERSION)\n\n**Criteria 1 - Hero Section Visual Design (0-20)**\n\n* Rule: Must visually communicate the offer within the first mobile viewport — no scrolling required. The hero image or visual must reinforce the niche and value instantly.\n* If logo or irrelevant stock photo dominates the hero → score is 0.\n\n**Criteria 2 - Hero Section Headlines (0-20)**\n\n* Rule: Must fit cleanly within one to two mobile lines, legible without zooming, and deliver a clear, emotional benefit in under 3 seconds.\n\n**Criteria 3 - Hero Section Copy (0-20)**\n\n* Rule: Brevity is survival. Copy must be scannable, benefit-driven, and formatted for mobile readability (short paragraphs, line breaks, or bullets).\n\n**Criteria 4 - Hero Section CTA (0-20)**\n\n* Rule: CTA button must appear within the first scroll (ideally above the fold), be thumb-accessible, benefit-oriented, and repeated down the page.\n\n**Criteria 5 - Hero Section Social Proof (0-20)**\n\n* Rule: Ratings, testimonials, trust badges, or recognizable logos must be visible or one scroll away — not buried at the bottom.\n\n**Criteria 6 - Mid-Page Storytelling & Authority (0-20)**\n\n* Rule: Narrative should deepen trust with concise storytelling, clear visual hierarchy, and minimal text walls; highlight authority or credibility without breaking mobile flow.\n\n**Criteria 7 - Offer & Risk Reversal (0-20)**\n\n* Rule: Offer must be obvious, irresistibly stacked, and reinforced by guarantees or proof that reduce risk perception on mobile screens.\n\n**Criteria 8 - Flow & Readability (0-20)**\n\n* Rule: Smooth scrolling rhythm with generous spacing, clean hierarchy, and no cramped tap zones. Every swipe should build momentum, not friction.\n\n**Criteria 9 - Footer & Navigation Integrity (0-20)**\n\n* Rule: Compact, compliant, and trust-building — must include contact info and legal links without clutter or secondary menu overload.\n\n**Criteria 10 - Mobile Responsiveness & Load Speed (0-20)**\n\n* Rule: Page must load quickly (<3s), maintain stable layout, and avoid intrusive pop-ups or layout shifts that destroy first impressions.\n\n\n### JSON Output Format\n\n\nReturn results strictly in the following JSON structure:\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - Hero Visual Design Score\": \"[0-20]\",\n    \"Criteria 1 - Hero Visual Design Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 2 - Hero Headlines Score\": \"[0-20]\",\n    \"Criteria 2 - Hero Headlines Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 3 - Hero Copy Score\": \"[0-20]\",\n    \"Criteria 3 - Hero Copy Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 4 - Hero CTA Score\": \"[0-20]\",\n    \"Criteria 4 - Hero CTA Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 5 - Hero Social Proof Score\": \"[0-20]\",\n    \"Criteria 5 - Hero Social Proof Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Score\": \"[0-20]\",\n    \"Criteria 6 - Mid-Page Storytelling & Authority Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 7 - Offer & Risk Reversal Score\": \"[0-20]\",\n    \"Criteria 7 - Offer & Risk Reversal Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 8 - Flow & Readability Score\": \"[0-20]\",\n    \"Criteria 8 - Flow & Readability Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 9 - Footer & Navigation Integrity Score\": \"[0-20]\",\n    \"Criteria 9 - Footer & Navigation Integrity Explanation\": \"[One brutal line explanation]\",\n    \"Criteria 10 - Mobile Responsiveness & Load Speed Score\": \"[0-20]\",\n    \"Criteria 10 - Mobile Responsiveness & Load Speed Explanation\": \"[One brutal line explanation]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal high-impact suggestion targeting the worst element]\",\n    \"[One brutal high-impact suggestion]\",\n    \"[One brutal high-impact suggestion]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\",\n    \"[One concise observation of strength]\"\n  ],\n  \"Summary\": \"[Detailed paragraph describing all weaknesses and opportunities across the full mobile page. Must explain how mobile attention flow, visual sequencing, and scroll rhythm either support or sabotage conversions. Cover 3-Second Rule violations, weak headlines, poor CTA visibility, lack of authority or proof, unclear offers, and risk reversal issues. Write as if pitching a CRO overhaul — persuasive, sharp, and direct.]\",\n  \"Score\": \"[Final total score (0-200) as a number only]\"\n}",
         "inputType": "binary",
         "simplify": false,
         "options": {
@@ -1034,7 +1037,7 @@
           "mode": "list",
           "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=Act as CHET HOLMES, the legendary strategist and author of *The Ultimate Sales Machine*. You are auditing the HERO SECTION of the mobile version of the website for {{ $('Get Business details').item.json.business_name }} ({{ $('Get Business details').item.json.business_category }}).  \n\nYour tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates.  \n\nYour analysis must view the Hero Section as a **standalone advertising piece** — not a design. Judge it by how fast it sells, builds trust, and commands action within the **first 3 seconds** on a **mobile device**.  \n\nGround your evaluation in **The 3-Second Rule** and **Chet Holmes’ 4 Rules for High-Response-Generating Advertising.**\n\n---\n\n### 🔍 Evaluation Areas of MOBILE HERO SECTION (0–20 each)\n\n#### **Criteria 1 – Visual Design (0–20)**\n**Core Principle:** It Must Be Distinctive and Visually Communicate the Offer Instantly.  \n- Visuals must immediately communicate *what the business offers* without reading text.  \n- Must target the business’s specific niche ({{ $('Get Business details').item.json.business_category }}).  \n- Visual composition must be *optimized for mobile clarity* — fast-loading, emotionally resonant, not cluttered or cropped.  \n- If the hero uses a **logo** as the main image, score **0** here.  \n- Must pass the *3-Second Trust Test* on a small screen.\n\n#### **Criteria 2 – Headline (0–20)**\n**Core Principle:** Grab Attention and Communicate the Core Benefit in 3 Seconds.  \n- Headline must instantly tell the user *what’s in it for them* — not what the business does.  \n- Should be concise (under ~6 words) and visible **without scrolling**.  \n- Must use prospect-centric language (“you”, “your”) not “we”, “our”.  \n- Must create curiosity, relevance, or emotional impact even on a quick scroll.  \n- If the main headline is below the fold, deduct 5 points minimum.\n\n#### **Criteria 3 – Body Copy / Messaging (0–20)**\n**Core Principle:** Short, Benefit-Driven Copy Optimized for Small-Screen Readability.  \n- Copy must unfold the benefit story fast — focused on pain, desire, or transformation, not product specs.  \n- Must be visually scannable: short lines, proper spacing, clear font, and no walls of text.  \n- Use bullet points or mini-subheadlines for rapid reading.  \n- Copy must *keep thumbs still* — engaging enough that the user doesn’t scroll away.\n\n#### **Criteria 4 – Call to Action (0–20)**\n**Core Principle:** Visible, Thumb-Friendly, and Urgent.  \n- CTA must be **above the fold**, large enough to tap easily, and high contrast.  \n- Text must convey *benefit* (“Get My Free Plan”) not a command (“Submit”).  \n- Include urgency or scarcity: bonus, countdown, or limited availability.  \n- A secondary, lower-commitment CTA should exist for non-ready buyers (“Watch Demo”, “See Plans”).  \n- If primary CTA is hidden below fold or hard to tap — score under 10.\n\n#### **Criteria 5 – Social Proof & Conversion Integrity (0–20)**\n**Core Principle:** Establish Instant Trust Within the First Fold.  \n- Must display visible trust elements: testimonials, star ratings, badges, “As Seen In” logos, etc.  \n- Social proof should be seen **without scrolling** or easily accessible (e.g., micro-badges, sticky trust icons).  \n- Visual credibility must survive mobile compression — sharp, readable, no tiny text.  \n- Overall: would a cold visitor trust this brand within 3 seconds on mobile?\n\n---\n\n### 🧮 Scoring Format\n\nReturn results strictly in the following JSON structure:\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[0–20]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 2 - headlines Score\": \"[0–20]\",\n    \"Criteria 2 - headlines Explanation\": \"[1-line brutal summary]\",\n    \"Criterion 3 - copy in the hero section Score\": \"[0–20]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 4 - Call to Action Score\": \"[0–20]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 5 - Social Proof Score\": \"[0–20]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[1-line brutal summary]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal, high-impact suggestion focused on the weakest scoring element.]\",\n    \"[One distinct, high-impact suggestion to drive conversions.]\",\n    \"[One final improvement suggestion focused on mobile attention flow.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what’s working well.]\",\n    \"[One concise observation.]\",\n    \"[One concise observation.]\"\n  ],\n  \"Summary\": \"[A persuasive paragraph explaining how the current mobile hero fails the 3-Second Rule, lacks a screaming headline, relies too much on features, and fails to drive immediate action — written as a direct pitch to fix it fast for conversion growth.]\",\n  \"Score\": \"[Total out of 100]\"\n}",
+        "text": "=Act as CHET HOLMES, the legendary strategist and author of *The Ultimate Sales Machine*. You are auditing the HERO SECTION of the mobile version of the website for {{ $('Get Business details').item.json.business_name }} ({{ $('Get Business details').item.json.business_category }}).  \n\nYour tone must be BRUTAL, HONEST, and focused solely on revenue-driving efficacy and conversion rates.  \n\nYour analysis must view the Hero Section as a **standalone advertising piece** — not a design. Judge it by how fast it sells, builds trust, and commands action within the **first 3 seconds** on a **mobile device**.  \n\nGround your evaluation in **The 3-Second Rule** and **Chet Holmes’ 4 Rules for High-Response-Generating Advertising.**\n\n---\n\n### Evaluation Areas of MOBILE HERO SECTION (0–20 each)\n\n#### **Criteria 1 – Visual Design (0–20)**\n**Core Principle:** It Must Be Distinctive and Visually Communicate the Offer Instantly.  \n- Visuals must immediately communicate *what the business offers* without reading text.  \n- Must target the business’s specific niche ({{ $('Get Business details').item.json.business_category }}).  \n- Visual composition must be *optimized for mobile clarity* — fast-loading, emotionally resonant, not cluttered or cropped.  \n- If the hero uses a **logo** as the main image, score **0** here.  \n- Must pass the *3-Second Trust Test* on a small screen.\n\n#### **Criteria 2 – Headline (0–20)**\n**Core Principle:** Grab Attention and Communicate the Core Benefit in 3 Seconds.  \n- Headline must instantly tell the user *what’s in it for them* — not what the business does.  \n- Should be concise (under ~6 words) and visible **without scrolling**.  \n- Must use prospect-centric language (“you”, “your”) not “we”, “our”.  \n- Must create curiosity, relevance, or emotional impact even on a quick scroll.  \n- If the main headline is below the fold, deduct 5 points minimum.\n\n#### **Criteria 3 – Body Copy / Messaging (0–20)**\n**Core Principle:** Short, Benefit-Driven Copy Optimized for Small-Screen Readability.  \n- Copy must unfold the benefit story fast — focused on pain, desire, or transformation, not product specs.  \n- Must be visually scannable: short lines, proper spacing, clear font, and no walls of text.  \n- Use bullet points or mini-subheadlines for rapid reading.  \n- Copy must *keep thumbs still* — engaging enough that the user doesn’t scroll away.\n\n#### **Criteria 4 – Call to Action (0–20)**\n**Core Principle:** Visible, Thumb-Friendly, and Urgent.  \n- CTA must be **above the fold**, large enough to tap easily, and high contrast.  \n- Text must convey *benefit* (“Get My Free Plan”) not a command (“Submit”).  \n- Include urgency or scarcity: bonus, countdown, or limited availability.  \n- A secondary, lower-commitment CTA should exist for non-ready buyers (“Watch Demo”, “See Plans”).  \n- If primary CTA is hidden below fold or hard to tap — score under 10.\n\n#### **Criteria 5 – Social Proof & Conversion Integrity (0–20)**\n**Core Principle:** Establish Instant Trust Within the First Fold.  \n- Must display visible trust elements: testimonials, star ratings, badges, “As Seen In” logos, etc.  \n- Social proof should be seen **without scrolling** or easily accessible (e.g., micro-badges, sticky trust icons).  \n- Visual credibility must survive mobile compression — sharp, readable, no tiny text.  \n- Overall: would a cold visitor trust this brand within 3 seconds on mobile?\n\n---\n\n### Scoring Format\n\nReturn results strictly in the following JSON structure:\n\n{\n  \"Evaluation\": {\n    \"Criteria 1 - visual design in hero section Score\": \"[0–20]\",\n    \"Criteria 1 - visual design in hero section Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 2 - headlines Score\": \"[0–20]\",\n    \"Criteria 2 - headlines Explanation\": \"[1-line brutal summary]\",\n    \"Criterion 3 - copy in the hero section Score\": \"[0–20]\",\n    \"Criterion 3 - copy in the hero section Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 4 - Call to Action Score\": \"[0–20]\",\n    \"Criteria 4 - Call to Action Explanation\": \"[1-line brutal summary]\",\n    \"Criteria 5 - Social Proof Score\": \"[0–20]\",\n    \"Criteria 5 - Social Proof Explanation\": \"[1-line brutal summary]\"\n  },\n  \"Improvement Ideas\": [\n    \"[One brutal, high-impact suggestion focused on the weakest scoring element.]\",\n    \"[One distinct, high-impact suggestion to drive conversions.]\",\n    \"[One final improvement suggestion focused on mobile attention flow.]\"\n  ],\n  \"Great Elements\": [\n    \"[One concise observation about what’s working well.]\",\n    \"[One concise observation.]\",\n    \"[One concise observation.]\"\n  ],\n  \"Summary\": \"[A persuasive paragraph explaining how the current mobile hero fails the 3-Second Rule, lacks a screaming headline, relies too much on features, and fails to drive immediate action — written as a direct pitch to fix it fast for conversion growth.]\",\n  \"Score\": \"[Total out of 100]\"\n}",
         "inputType": "binary",
         "simplify": false,
         "options": {
@@ -1143,6 +1146,11 @@
           },
           {
             "node": "Randomize Time3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Website Text Scraping",
             "type": "main",
             "index": 0
           }
@@ -1285,6 +1293,11 @@
           }
         ]
       ]
+    },
+    "Parse AI Analysis Output into JSON3": {
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
@@ -1295,152 +1308,23 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Take Video of Hero Section Desktop": [
+    "Get Business details": [
       {
         "json": {
-          "headers": {
-            "date": "Mon, 06 Oct 2025 05:45:25 GMT",
-            "content-type": "video/mp4",
-            "content-length": "2190571",
-            "connection": "close",
-            "cf-ray": "98a2da06a9b4927a-FRA",
-            "cf-cache-status": "DYNAMIC",
-            "access-control-allow-origin": "*",
-            "cache-control": "private, no-cache, max-age=0, no-transform",
-            "server": "cloudflare",
-            "access-control-allow-methods": "OPTIONS, POST, GET",
-            "access-control-max-age": "86400",
-            "vary": "accept-encoding",
-            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=MYz6k4HPRgeNCBrbaAU%2B4RqATc1RiMZ8HKl41NL2j4OPrYfhZSICxDPMIdZLDm6gNfnaE5hCpSoP63rl4XEjAWE548yIdF2IxM8WFNmrdyNLjjaXtg%3D%3D\"}]}",
-            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
-            "alt-svc": "h3=\":443\"; ma=86400"
-          },
-          "statusCode": 200,
-          "statusMessage": "OK"
-        },
-        "binary": {
-          "data": {
-            "mimeType": "video/mp4",
-            "fileType": "video",
-            "fileExtension": "mp4",
-            "data": "filesystem-v2",
-            "fileName": "animate",
-            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/4516/binary_data/411321d3-6f05-48c9-a376-fcfbed49e7a8",
-            "fileSize": "2.19 MB"
-          }
-        }
-      }
-    ],
-    "Take Video of Hero Section Mobile": [
-      {
-        "json": {
-          "headers": {
-            "date": "Mon, 06 Oct 2025 05:44:56 GMT",
-            "content-type": "video/mp4",
-            "content-length": "237119",
-            "connection": "close",
-            "cf-ray": "98a2d94c1ade927a-FRA",
-            "cf-cache-status": "DYNAMIC",
-            "access-control-allow-origin": "*",
-            "cache-control": "private, no-cache, max-age=0, no-transform",
-            "server": "cloudflare",
-            "access-control-allow-methods": "OPTIONS, POST, GET",
-            "access-control-max-age": "86400",
-            "vary": "accept-encoding",
-            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=vvGB08U201xGYeFUMkGdHJi4yqnL2zIobu8Y0C5btTj0AbUAuNy0EXcILqfyWg4k3YDiAtM1mIvjAk81CZxZLx5QFF9GypYc0Jdz7yLyDSzZ%2FT2jAg%3D%3D\"}]}",
-            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
-            "alt-svc": "h3=\":443\"; ma=86400"
-          },
-          "statusCode": 200,
-          "statusMessage": "OK"
-        },
-        "binary": {
-          "data": {
-            "mimeType": "video/mp4",
-            "fileType": "video",
-            "fileExtension": "mp4",
-            "data": "filesystem-v2",
-            "fileName": "animate",
-            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/4516/binary_data/4c07b2b5-8544-4327-adf8-13cfe55d274a",
-            "fileSize": "237 kB"
-          }
-        }
-      }
-    ],
-    "  Take Full Page Video - Desktop": [
-      {
-        "json": {
-          "headers": {
-            "date": "Mon, 06 Oct 2025 06:14:10 GMT",
-            "content-type": "video/mp4",
-            "content-length": "8878084",
-            "connection": "close",
-            "cf-ray": "98a303e1f972d3a2-FRA",
-            "cf-cache-status": "DYNAMIC",
-            "access-control-allow-origin": "*",
-            "cache-control": "private, no-cache, max-age=0, no-transform",
-            "server": "cloudflare",
-            "access-control-allow-methods": "OPTIONS, POST, GET",
-            "access-control-max-age": "86400",
-            "vary": "accept-encoding",
-            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=yit%2B8b1zTsFwyoHbwuQkPoF3FQEluc%2B6WXbkZiFhjn5rlVjh2T%2FW9AVfHrpZkqciqrJQJqaRSmy48TKbLNs4o60n1rQoUk0farda3XnkctryYO53FQ%3D%3D\"}]}",
-            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
-            "alt-svc": "h3=\":443\"; ma=86400"
-          },
-          "statusCode": 200,
-          "statusMessage": "OK"
-        },
-        "binary": {
-          "data": {
-            "mimeType": "video/mp4",
-            "fileType": "video",
-            "fileExtension": "mp4",
-            "data": "filesystem-v2",
-            "fileName": "animate",
-            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/4526/binary_data/8fb26a11-0f2f-4aae-86c0-3eb2618a64f3",
-            "fileSize": "8.88 MB"
-          }
-        }
-      }
-    ],
-    "  Take Full Page Video - Mobile": [
-      {
-        "json": {
-          "headers": {
-            "date": "Mon, 06 Oct 2025 06:23:46 GMT",
-            "content-type": "video/mp4",
-            "content-length": "3238633",
-            "connection": "close",
-            "cf-ray": "98a311d3f9c8d3a2-FRA",
-            "cf-cache-status": "DYNAMIC",
-            "access-control-allow-origin": "*",
-            "cache-control": "private, no-cache, max-age=0, no-transform",
-            "server": "cloudflare",
-            "access-control-allow-methods": "OPTIONS, POST, GET",
-            "access-control-max-age": "86400",
-            "vary": "accept-encoding",
-            "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=%2FA3Bl4xbbyhYyhqGTq0jiHNAI8TaeR1x8O6ue2w%2F7o%2ByhcGj7%2B%2BSvh%2BEmIOrh%2FevTbRhHUU2hoR7jiUO%2FUTQQX%2Fe%2BwXBwYSlexTNIaUjBXJqg6TrpQ%3D%3D\"}]}",
-            "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
-            "alt-svc": "h3=\":443\"; ma=86400"
-          },
-          "statusCode": 200,
-          "statusMessage": "OK"
-        },
-        "binary": {
-          "data": {
-            "mimeType": "video/mp4",
-            "fileType": "video",
-            "fileExtension": "mp4",
-            "data": "filesystem-v2",
-            "fileName": "animate",
-            "id": "filesystem-v2:workflows/EfYDJOTVlmhYLVkb/executions/4529/binary_data/102fe835-01fe-4985-a748-79fd116454d2",
-            "fileSize": "3.24 MB"
-          }
+          "id": "ChIJ03GydmLj2IgRC5OggGgNrwU",
+          "business_name": "Rumble Boxing",
+          "website": "https://www.rumbleboxinggym.com/location/east-boca-raton?utm_source=google&utm_medium=referral&utm_campaign=yext&utm_term=organic",
+          "business_category": [
+            "establishment",
+            "gym",
+            "health",
+            "point_of_interest"
+          ]
         }
       }
     ]
   },
-  "versionId": "de8433d9-f7c0-4289-840b-3b41c46f8bb2",
+  "versionId": "c8b72156-bd4a-4786-814b-fb19a967b6d0",
   "triggerCount": 0,
   "shared": [
     {
@@ -1465,7 +1349,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-06T04:57:34.000Z",
+              "updatedAt": "2025-10-07T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1483,7 +1367,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-06",
+              "lastActiveAt": "2025-10-07",
               "isPending": false
             }
           }
