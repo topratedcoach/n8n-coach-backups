@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-02T09:37:47.000Z",
+  "updatedAt": "2025-10-08T15:09:37.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -372,7 +372,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"business_id\": \"{{ $('List Last 90 Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('List Last 591 Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -562,50 +562,6 @@
     },
     {
       "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/businesses",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "order",
-              "value": "=created_at.desc"
-            },
-            {
-              "name": "limit",
-              "value": "90"
-            },
-            {
-              "name": "select",
-              "value": "id"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{$vars.Supabase_API_Key}}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -496,
-        2240
-      ],
-      "id": "8e829e3e-a9d7-410f-a9f6-063f481e8e8c",
-      "name": "List Last 90 Businesses"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "=https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits",
         "sendHeaders": true,
@@ -638,6 +594,50 @@
       ],
       "id": "a724ee70-0245-4b1b-8f04-d07ce7e350db",
       "name": "Create Audit for User Business2"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "order",
+              "value": "=created_at.desc"
+            },
+            {
+              "name": "limit",
+              "value": "591"
+            },
+            {
+              "name": "select",
+              "value": "id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -496,
+        2224
+      ],
+      "id": "8e829e3e-a9d7-410f-a9f6-063f481e8e8c",
+      "name": "List Last 591 Businesses"
     }
   ],
   "connections": {
@@ -645,7 +645,7 @@
       "main": [
         [
           {
-            "node": "List UnAudited Businesses",
+            "node": "List Last 591 Businesses",
             "type": "main",
             "index": 0
           }
@@ -738,7 +738,7 @@
         ]
       ]
     },
-    "List Last 90 Businesses": {
+    "List Last 591 Businesses": {
       "main": [
         [
           {
@@ -804,7 +804,7 @@
       }
     ]
   },
-  "versionId": "cf5ee5ff-8fe4-44c8-b484-e141c11fe80d",
+  "versionId": "04547f56-ddc0-4ddc-bdfe-7ca67aea85e5",
   "triggerCount": 0,
   "shared": [
     {
@@ -829,7 +829,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-08T07:00:00.000Z",
+              "updatedAt": "2025-10-09T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -847,7 +847,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-08",
+              "lastActiveAt": "2025-10-09",
               "isPending": false
             }
           }
