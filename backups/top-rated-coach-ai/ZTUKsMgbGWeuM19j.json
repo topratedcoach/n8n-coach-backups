@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-09T12:27:21.079Z",
-  "updatedAt": "2025-10-03T10:55:31.000Z",
+  "updatedAt": "2025-10-08T14:56:42.000Z",
   "id": "ZTUKsMgbGWeuM19j",
   "name": "Scrape Google Maps Places Data- Fuzail",
   "active": false,
@@ -14,8 +14,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        480,
-        -16
+        272,
+        -64
       ],
       "typeVersion": 1,
       "id": "e00a4449-2e6d-452d-96ac-81e330ff0a49",
@@ -28,7 +28,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
+        -112,
         0
       ],
       "id": "ecdb3024-70ac-4439-8a64-246ac5dc7ae0",
@@ -47,7 +47,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        0,
+        -336,
         0
       ],
       "id": "beea5509-965e-4b45-af4e-919c9715df35",
@@ -58,8 +58,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -240,
-        1264
+        -320,
+        960
       ],
       "id": "396409a1-40b8-4477-9ef0-5ba15728bdd1",
       "name": "When clicking ‘Execute workflow’"
@@ -89,7 +89,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        672,
+        560,
         224
       ],
       "id": "90f90566-0b22-4361-a34f-1ad78123fff9"
@@ -119,7 +119,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        448,
+        336,
         224
       ],
       "id": "42fb2ddb-ff56-43de-bc77-23eb8d165c7c",
@@ -149,7 +149,7 @@
               "fieldValue": "={{ $('Get Place Details').item.json?.result?.name ?? '' }}"
             },
             {
-              "column": "business_category\r",
+              "column": "business_category",
               "fieldValue": "={{ $('Get Place Details').item.json.result.types??[] }}"
             },
             {
@@ -228,7 +228,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        896,
+        784,
         224
       ],
       "id": "bba7035e-2043-4ff8-8f3e-ff1f277266b5",
@@ -246,7 +246,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
+        112,
         224
       ],
       "id": "2a747063-d777-40cd-87ae-5c4cb36e6835",
@@ -280,8 +280,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        80,
-        816
+        -112,
+        448
       ],
       "id": "a894ba1c-0dd0-4224-b02d-88d4b5236da3",
       "credentials": {
@@ -294,15 +294,15 @@
     {
       "parameters": {
         "sheetId": "12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c",
-        "range": "Sheet1!A:Z",
+        "range": "Sheet1!A:A",
         "options": {}
       },
       "name": "Get Businesses",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 2,
       "position": [
-        -16,
-        1264
+        -112,
+        672
       ],
       "id": "b192974e-3a10-4490-9272-725bc8153b5b",
       "credentials": {
@@ -322,7 +322,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 2,
       "position": [
-        0,
+        -112,
         224
       ],
       "id": "5b1236ae-9943-4e04-b6e7-95e538a9d552",
@@ -335,24 +335,11 @@
     },
     {
       "parameters": {
-        "content": "## Add business category \n"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        1120,
-        192
-      ],
-      "typeVersion": 1,
-      "id": "7c5ed9ff-cd6b-4664-89b2-4acc15816783",
-      "name": "Sticky Note1"
-    },
-    {
-      "parameters": {
         "rule": {
           "interval": [
             {
               "field": "seconds",
-              "secondsInterval": 5
+              "secondsInterval": 10
             }
           ]
         }
@@ -361,10 +348,11 @@
       "typeVersion": 1.2,
       "position": [
         -336,
-        192
+        224
       ],
       "id": "dfd33e3e-bfff-4d3f-948a-685f270641f0",
-      "name": "Schedule Trigger"
+      "name": "Schedule Trigger",
+      "disabled": true
     },
     {
       "parameters": {
@@ -395,8 +383,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -144,
-        816
+        -336,
+        448
       ],
       "id": "d0c9065a-c3a2-42d2-a4e8-27aac215df0c",
       "name": "If business is in CA",
@@ -440,12 +428,168 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        176,
-        1264
+        128,
+        464
       ],
       "id": "bea323ce-22ec-44f0-a9b4-2d74bfa5938a",
       "name": "Update business",
       "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Businesses').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "id"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        656
+      ],
+      "id": "14a1d262-82c2-4c1b-a486-addf1d645901",
+      "name": "Get Businesses id from DB",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c394b6a0-fc9f-4496-9282-55418c93c1cd",
+              "leftValue": "={{$json.isEmpty()}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        672
+      ],
+      "id": "28433b58-89d0-43b2-9147-4de295d3c989",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        64,
+        672
+      ],
+      "id": "ba4f645e-a0a6-4961-8b73-753cbafa5833",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1gTuBe3INOgzjCwWgzq5gZahHqcyNfOPlHA2X7LRMzxo",
+          "mode": "list",
+          "cachedResultName": "Hi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gTuBe3INOgzjCwWgzq5gZahHqcyNfOPlHA2X7LRMzxo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Get Businesses id from DB').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "={{ $('Get Businesses id from DB').item.json?.result?.name ?? '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Google Sheets - Write Data1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        848,
+        688
+      ],
+      "id": "96a280c6-a359-4cf8-926f-39977bb66390",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        688
+      ],
+      "id": "362e7e43-b1b2-40c6-b93d-c9cc15e06e9a",
+      "name": "Schedule Trigger1"
     }
   ],
   "connections": {
@@ -462,13 +606,7 @@
     },
     "When clicking ‘Execute workflow’": {
       "main": [
-        [
-          {
-            "node": "Get Businesses",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Get Time Zone": {
@@ -508,7 +646,7 @@
       "main": [
         [
           {
-            "node": "Update business",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -528,13 +666,7 @@
     },
     "Schedule Trigger": {
       "main": [
-        [
-          {
-            "node": "Get Businesses Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "If business is in CA": {
@@ -542,6 +674,58 @@
         [
           {
             "node": "Add Owner Id for businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Businesses id from DB": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Write Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Businesses id from DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get Businesses",
             "type": "main",
             "index": 0
           }
@@ -555,13 +739,16 @@
   "staticData": {
     "node:Schedule Trigger": {
       "recurrenceRules": []
+    },
+    "node:Schedule Trigger1": {
+      "recurrenceRules": []
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b8e3e217-a5ed-4b63-9357-42a6d13d511e",
+  "versionId": "79be8c1f-ed8c-4836-a853-ebfec0326092",
   "triggerCount": 1,
   "shared": [
     {
@@ -586,7 +773,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-08T07:00:00.000Z",
+              "updatedAt": "2025-10-09T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -604,7 +791,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-08",
+              "lastActiveAt": "2025-10-09",
               "isPending": false
             }
           }
