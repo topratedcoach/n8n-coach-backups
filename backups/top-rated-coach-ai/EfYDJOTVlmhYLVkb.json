@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-25T10:43:47.711Z",
-  "updatedAt": "2025-10-06T11:58:13.000Z",
+  "updatedAt": "2025-10-09T10:13:39.000Z",
   "id": "EfYDJOTVlmhYLVkb",
   "name": "Website Audit TopRatedCoach",
   "active": false,
@@ -24,8 +24,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2080,
-        -80
+        2288,
+        -96
       ],
       "id": "49244f02-33a8-464a-85bc-6ae83a608c94",
       "name": "HTML Text Cleaning"
@@ -45,8 +45,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1632,
-        -80
+        1840,
+        -96
       ],
       "id": "3c638bed-e9d4-4cee-a3dd-384d5c4e52ba",
       "name": "Website Text Scraping",
@@ -69,8 +69,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        1856,
-        -80
+        2064,
+        -96
       ],
       "id": "284ac43b-880d-450a-90d0-be5a513e7170",
       "name": "HTML For Services",
@@ -83,8 +83,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2656,
-        -80
+        2864,
+        -96
       ],
       "id": "091fc746-b643-4c5d-8160-f28df09b2fc8",
       "name": "Extract JSON"
@@ -93,7 +93,7 @@
       "parameters": {
         "content": "Website HTML Analysis",
         "height": 260,
-        "width": 1260,
+        "width": 1484,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -125,8 +125,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        2304,
-        -80
+        2512,
+        -96
       ],
       "id": "22ae7035-8b73-404d-9f12-4117b4d4eefd",
       "name": "HTML Analysis",
@@ -175,8 +175,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        192,
-        -480
+        1808,
+        -2464
       ],
       "id": "fe5ca1dc-d75b-43f7-8f4f-893faf9d2a64",
       "name": "Take Full Page Screenshot Desktop",
@@ -208,8 +208,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        192,
-        -672
+        1808,
+        -2656
       ],
       "id": "d7012064-6d65-4488-9d0d-ae8f95d71286",
       "name": "Take Full Page Screenshot Mobile",
@@ -294,8 +294,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        192,
-        -272
+        1808,
+        -2256
       ],
       "id": "c6fe742e-6b07-4e06-8bf7-6aa82c4ddb5d",
       "name": "Take Hero Section ScreenShot Desktop",
@@ -327,8 +327,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        192,
-        -864
+        1808,
+        -2848
       ],
       "id": "5d6566ac-666b-4194-8ff9-5ff3e055d6b5",
       "name": "Take Hero Section  ScreenShot Mobile",
@@ -497,8 +497,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        416,
-        -272
+        2032,
+        -2256
       ],
       "id": "b4e59e5a-0269-4728-aa0c-9f7bd88f9ab7",
       "name": "Desktop Hero Section Website Analysis-GPT",
@@ -1058,6 +1058,35 @@
           "name": "Google Gemini(PaLM) Api- FUZAIL"
         }
       }
+    },
+    {
+      "parameters": {
+        "amount": "=7",
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        -96
+      ],
+      "id": "38aed95b-611f-4912-b0fc-623e106226ad",
+      "name": "Randomize Time4",
+      "webhookId": "5d304f19-a9b0-4b42-ba15-71c3caa20f36",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        272
+      ],
+      "id": "d7cf7fcc-a348-42f9-9b65-184ca3b3d341",
+      "name": "HTTP Request"
     }
   ],
   "connections": {
@@ -1150,7 +1179,7 @@
             "index": 0
           },
           {
-            "node": "Website Text Scraping",
+            "node": "Randomize Time4",
             "type": "main",
             "index": 0
           }
@@ -1298,6 +1327,17 @@
       "main": [
         []
       ]
+    },
+    "Randomize Time4": {
+      "main": [
+        [
+          {
+            "node": "Website Text Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1324,7 +1364,7 @@
       }
     ]
   },
-  "versionId": "c8b72156-bd4a-4786-814b-fb19a967b6d0",
+  "versionId": "bf492253-eefb-4d89-9cff-f5f8b4846e11",
   "triggerCount": 0,
   "shared": [
     {
@@ -1349,7 +1389,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-09T07:00:00.000Z",
+              "updatedAt": "2025-10-10T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1367,7 +1407,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-09",
+              "lastActiveAt": "2025-10-10",
               "isPending": false
             }
           }
