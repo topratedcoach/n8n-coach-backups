@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-08T15:09:37.000Z",
+  "updatedAt": "2025-10-12T13:58:01.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -372,7 +372,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"business_id\": \"{{ $('List Last 591 Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "jsonBody": "={\n  \"business_id\": \"{{ $('List UnAudited Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -519,8 +519,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -624,
-        2576
+        -496,
+        2224
       ],
       "id": "ed22dcde-f139-495c-b4ab-58749bb1b0db",
       "name": "List UnAudited Businesses"
@@ -594,50 +594,6 @@
       ],
       "id": "a724ee70-0245-4b1b-8f04-d07ce7e350db",
       "name": "Create Audit for User Business2"
-    },
-    {
-      "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/businesses",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "order",
-              "value": "=created_at.desc"
-            },
-            {
-              "name": "limit",
-              "value": "591"
-            },
-            {
-              "name": "select",
-              "value": "id"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{$vars.Supabase_API_Key}}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -496,
-        2224
-      ],
-      "id": "8e829e3e-a9d7-410f-a9f6-063f481e8e8c",
-      "name": "List Last 591 Businesses"
     }
   ],
   "connections": {
@@ -645,7 +601,7 @@
       "main": [
         [
           {
-            "node": "List Last 591 Businesses",
+            "node": "List UnAudited Businesses",
             "type": "main",
             "index": 0
           }
@@ -731,17 +687,6 @@
       "main": [
         [
           {
-            "node": "Create Audit for User Business2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "List Last 591 Businesses": {
-      "main": [
-        [
-          {
             "node": "Create Audit for User Business",
             "type": "main",
             "index": 0
@@ -802,9 +747,67 @@
           "is_anonymous": false
         }
       }
+    ],
+    "Login": [
+      {
+        "json": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsImtpZCI6Im0zTWJxdmUvajA3Q1lxenEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Z2Y2ltdXF3cW1zZ2JyeWJpb2dnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhYzIyMmQzMy04YzM1LTQ0MTEtODY1NS1jNDAyN2JkMzQxOTgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYwMjgxMDQ2LCJpYXQiOjE3NjAyNzc0NDYsImVtYWlsIjoiZnV6YWlsc29oYWlsNDBAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjAyNzc0NDZ9XSwic2Vzc2lvbl9pZCI6IjdhYmJlZTU3LTNhOTYtNGJiZC1hMWFjLTc0MDQ4ZmUzMTA5NiIsImlzX2Fub255bW91cyI6ZmFsc2V9.SRHK3KZTAZVJygIuZvaJ4cEHHXHIgzFdyBO6khIfLqA",
+          "token_type": "bearer",
+          "expires_in": 3600,
+          "expires_at": 1760281046,
+          "refresh_token": "vfeqojclgovt",
+          "user": {
+            "id": "ac222d33-8c35-4411-8655-c4027bd34198",
+            "aud": "authenticated",
+            "role": "authenticated",
+            "email": "fuzailsohail40@gmail.com",
+            "email_confirmed_at": "2025-07-08T12:26:22.421769Z",
+            "phone": "",
+            "confirmed_at": "2025-07-08T12:26:22.421769Z",
+            "recovery_sent_at": "2025-09-11T20:33:19.209625Z",
+            "last_sign_in_at": "2025-10-12T13:57:26.188853781Z",
+            "app_metadata": {
+              "provider": "email",
+              "providers": [
+                "email"
+              ]
+            },
+            "user_metadata": {
+              "email_verified": true
+            },
+            "identities": [
+              {
+                "identity_id": "b241569f-bc58-4006-a5ad-8635136a97f2",
+                "id": "ac222d33-8c35-4411-8655-c4027bd34198",
+                "user_id": "ac222d33-8c35-4411-8655-c4027bd34198",
+                "identity_data": {
+                  "email": "fuzailsohail40@gmail.com",
+                  "email_verified": false,
+                  "phone_verified": false,
+                  "sub": "ac222d33-8c35-4411-8655-c4027bd34198"
+                },
+                "provider": "email",
+                "last_sign_in_at": "2025-07-08T12:26:22.417828Z",
+                "created_at": "2025-07-08T12:26:22.417882Z",
+                "updated_at": "2025-07-08T12:26:22.417882Z",
+                "email": "fuzailsohail40@gmail.com"
+              }
+            ],
+            "created_at": "2025-07-08T12:26:22.409701Z",
+            "updated_at": "2025-10-12T13:57:26.225505Z",
+            "is_anonymous": false
+          },
+          "weak_password": {
+            "message": "Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};':\"|<>?,./`~.",
+            "reasons": [
+              "characters"
+            ]
+          }
+        }
+      }
     ]
   },
-  "versionId": "04547f56-ddc0-4ddc-bdfe-7ca67aea85e5",
+  "versionId": "1636e04e-37d0-46b2-adcd-65b97236cdef",
   "triggerCount": 0,
   "shared": [
     {
@@ -829,7 +832,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-12T07:00:00.000Z",
+              "updatedAt": "2025-10-13T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -847,7 +850,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-12",
+              "lastActiveAt": "2025-10-13",
               "isPending": false
             }
           }
