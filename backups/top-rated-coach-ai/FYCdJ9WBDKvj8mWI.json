@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-20T09:51:03.701Z",
-  "updatedAt": "2025-09-10T09:44:37.000Z",
+  "updatedAt": "2025-10-12T10:32:58.000Z",
   "id": "FYCdJ9WBDKvj8mWI",
   "name": "Agent: Inbound Call Processor (Fuzail)",
   "active": false,
@@ -464,7 +464,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"business_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').first()?.json?.business_id || '' }}\",\n  \"audit_id\": \"{{ $('Update Audit Status to in_progress and Started AT Time').first()?.json?.id || '' }}\",\n  \"task_group_id\": \"{{ $('Updating TaskGroups Row To In-Progress').first()?.json?.id || '' }}\",\n  \"overall_summary\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.overall_summary || '' }}\",\n  \"engagement_level\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_level || '' }}\",\n  \"professionalism\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.professionalism || '' }}\",\n  \"script_adherence\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.script_adherence || '' }}\",\n  \"issues_detected\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.issues_detected || '' }}\",\n  \"positive_highlight\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.positive_highlights || '' }}\",\n  \"engagement_and_relationship_building_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Parse AI Analysis Output into JSON').item?.json?.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.improvement_ideas || []) }},\n  \"agent_name\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.agent_name || '' }}\",\n   \"appointment_booked\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.appointment_booked || false }}\",\n  \"initial_wait_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.initial_wait_time || '' }}\",\n  \"on_hold_time\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.wait_times?.on_hold_time || '' }}\",\n  \"representative_tone\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.representative_tone || '' }}\",\n  \"tone_consistency\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.tone_consistency || '' }}\",\n  \"clarity\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.clarity || '' }}\",\n  \"accuracy\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.accuracy || '' }}\",\n  \"helpfulness\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.response_quality?.helpfulness || '' }}\",\n  \"call_opening\": \"{{ $('Parse AI Analysis Output into JSON').item?.json?.call_opening || '' }}\"\n}",
+        "jsonBody": "={\n  \"business_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.business_id || '') }},\n  \"audit_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.id || '') }},\n  \"task_group_id\": {{ JSON.stringify($('Updating TaskGroups Row To In-Progress').first()?.json?.id || '') }},\n  \"overall_summary\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.overall_summary || '') }},\n  \"engagement_level\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.engagement_level || '') }},\n  \"professionalism\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.professionalism || '') }},\n  \"script_adherence\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.script_adherence || '') }},\n  \"issues_detected\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.issues_detected || '') }},\n  \"positive_highlight\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.positive_highlights || '') }},\n  \"engagement_and_relationship_building_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Parse AI Analysis Output into JSON').item?.json?.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.improvement_ideas || []) }},\n  \"agent_name\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.agent_name || '') }},\n  \"appointment_booked\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.appointment_booked || false) }},\n  \"initial_wait_time\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.wait_times?.initial_wait_time || '') }},\n  \"on_hold_time\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.wait_times?.on_hold_time || '') }},\n  \"representative_tone\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.representative_tone || '') }},\n  \"tone_consistency\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.tone_consistency || '') }},\n  \"clarity\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.clarity || '') }},\n  \"accuracy\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.accuracy || '') }},\n  \"helpfulness\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.helpfulness || '') }},\n  \"call_opening\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.call_opening || '') }}\n}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1418,7 +1418,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "11c4ce68-d9e5-4d7d-8227-42f0b918392b",
+  "versionId": "b90c8e81-35a8-4f64-9381-2abc65429b69",
   "triggerCount": 1,
   "shared": [
     {
@@ -1443,7 +1443,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-12T07:00:00.000Z",
+              "updatedAt": "2025-10-13T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1461,7 +1461,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-12",
+              "lastActiveAt": "2025-10-13",
               "isPending": false
             }
           }
