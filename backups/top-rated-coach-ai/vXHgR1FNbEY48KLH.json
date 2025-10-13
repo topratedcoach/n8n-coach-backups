@@ -1,0 +1,1430 @@
+{
+  "createdAt": "2025-10-12T10:51:31.709Z",
+  "updatedAt": "2025-10-12T13:50:42.000Z",
+  "id": "vXHgR1FNbEY48KLH",
+  "name": "Clean Up Mess DB Elevenlabs Credits failure",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "scheduled_at",
+              "value": "=gte.2025-10-09 13:25:00.395+00"
+            },
+            {
+              "name": "order",
+              "value": "scheduled_at.desc"
+            },
+            {
+              "name": "task_name",
+              "value": "eq.Outbound_Call_Analysis"
+            },
+            {
+              "name": "error_message",
+              "value": "eq.Call duration was too low to be considered a successful call."
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2896,
+        -1760
+      ],
+      "id": "62f4534e-f317-4316-96b5-a75745288a6b",
+      "name": "Get Initial Task Groups"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2672,
+        -1760
+      ],
+      "id": "0583e56f-cb6a-4243-97e9-9e56bdcbbd39",
+      "name": "Loop Over Task Groups"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Loop Over Task Groups').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2448,
+        -1760
+      ],
+      "id": "918bfaea-d425-447e-bced-134147559a2f",
+      "name": "Get All Task Groups by Audit ID"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2224,
+        -1760
+      ],
+      "id": "52b8923d-9f9d-4d25-93a5-5d4afe1f8607",
+      "name": "Loop Over Audit Task Groups"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Loop Over Audit Task Groups').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2000,
+        -1824
+      ],
+      "id": "cb55322a-2494-401a-8413-610481083839",
+      "name": "Get Calls",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1552,
+        -1760
+      ],
+      "id": "46c6a7fe-e4d9-4e65-8fda-74d9438cf195",
+      "name": "Get Transcripts",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/call_transcripts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1104,
+        -1824
+      ],
+      "id": "18ad2cc6-9f1c-4639-8909-bbd359bd88d3",
+      "name": "Delete Transcript",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        -1760
+      ],
+      "id": "c3662491-f176-4ba3-a86f-3af2d8bd7488",
+      "name": "Get Call Report Evaluations",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        -1824
+      ],
+      "id": "d87949cf-4f27-4f2b-b8fc-a020893b9e2a",
+      "name": "Delete Call Report Evaluations",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -208,
+        -1760
+      ],
+      "id": "61fae552-85a7-4d40-be88-99ae08103e91",
+      "name": "Get Generated Call Reports",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        -1824
+      ],
+      "id": "ca59f83d-9ded-4a23-87d1-9e2d34d9a0fb",
+      "name": "Delete Generated Call Reports",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        -1760
+      ],
+      "id": "66314865-2839-4cc4-b8aa-5743abf87b13",
+      "name": "Delete Call",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Audit Task Groups').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        -1680
+      ],
+      "id": "1efda7fd-0923-4f6b-a563-a90cf57fa3d9",
+      "name": "Delete Task Group",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Task Groups').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1776,
+        -2016
+      ],
+      "id": "a8f7694f-f2bc-4f51-96bf-5e32b786e246",
+      "name": "Get Audit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e6f47702-8f9f-4318-9710-8583d73500d0",
+              "leftValue": "={{ $('Get Audit').json.length > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue",
+                "name": "filter.operator.isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1552,
+        -2016
+      ],
+      "id": "241f7871-356d-4969-95d9-f8b3d8b5822b",
+      "name": "If Audit Exists"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Task Groups').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1328,
+        -2016
+      ],
+      "id": "c5bec2d9-a874-45dd-8196-0d84e450fe62",
+      "name": "Delete Audit"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Initial Task Groups').item.json.body.data.business_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "={\ncurrent_audit_id:\"\"\n}",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2000,
+        -2016
+      ],
+      "id": "ad02066c-3597-408a-8abf-24e226df1e5e",
+      "name": "Get a specific business"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f59a43f6-25ee-493e-8a60-5075d402dd68",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        -1760
+      ],
+      "id": "c301af8c-706d-4b82-bd68-51caf251cd0a",
+      "name": "If Calls Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f59a43f6-25ee-493e-8a60-5075d402dd68",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1328,
+        -1760
+      ],
+      "id": "14644493-c5c6-46d7-99ea-eaaa8df4a978",
+      "name": "If Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f59a43f6-25ee-493e-8a60-5075d402dd68",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        -1760
+      ],
+      "id": "c763922a-1147-42ca-8bd2-f68d04932def",
+      "name": "If Exists1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f59a43f6-25ee-493e-8a60-5075d402dd68",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -1760
+      ],
+      "id": "f263ce94-3205-4292-a85d-e8cf0c2644f7",
+      "name": "If Exists2"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "scheduled_at",
+              "value": "=gte.2025-10-09 13:25:00.395+00"
+            },
+            {
+              "name": "order",
+              "value": "scheduled_at.desc"
+            },
+            {
+              "name": "task_name",
+              "value": "eq.Outbound_Call_Analysis"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2160,
+        -624
+      ],
+      "id": "31a5764b-fe86-46af-95f3-27bd1ebe28ab",
+      "name": "Get Initial Task Groups1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1936,
+        -624
+      ],
+      "id": "48cca777-4ea9-4afc-8758-24f5f7fb68e6",
+      "name": "Loop Over Task Groups1"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Loop Over Task Groups1').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1712,
+        -624
+      ],
+      "id": "6ec41981-395e-4dbc-8808-df334b034eec",
+      "name": "Get All Task Groups by Audit ID1"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "audit_id",
+              "value": "=eq.{{ $('Loop Over Task Groups1').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1264,
+        -624
+      ],
+      "id": "76d904e3-fdd1-49b5-8127-86448eae1e0c",
+      "name": "Delete Task Group1"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Initial Task Groups1').item.json.audit_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -816,
+        -624
+      ],
+      "id": "08eb22bf-d0c9-4387-baeb-a2aea69f8df5",
+      "name": "Delete Audit1"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Get Initial Task Groups1').item.json.business_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"current_audit_id\": null\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        -624
+      ],
+      "id": "ff5b20cc-0485-4f47-980a-a859720a49e8",
+      "name": "Remove AUdit id form Business"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/micro_tasks",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Loop Over Task Groups1').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1488,
+        -624
+      ],
+      "id": "ab45941a-9d18-4212-b016-4cc60a5b35b0",
+      "name": "Delete MicroTasks"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2368,
+        -624
+      ],
+      "id": "220a8a66-14b8-4970-98da-ad35490ffa4b",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Get Initial Task Groups": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Task Groups": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get All Task Groups by Audit ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Task Groups by Audit ID": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Audit Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Audit Task Groups": {
+      "main": [
+        [
+          {
+            "node": "Get a specific business",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Calls",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calls": {
+      "main": [
+        [
+          {
+            "node": "If Calls Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transcripts": {
+      "main": [
+        [
+          {
+            "node": "If Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Transcript": {
+      "main": [
+        [
+          {
+            "node": "Get Call Report Evaluations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Report Evaluations": {
+      "main": [
+        [
+          {
+            "node": "If Exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Call Report Evaluations": {
+      "main": [
+        [
+          {
+            "node": "Get Generated Call Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Generated Call Reports": {
+      "main": [
+        [
+          {
+            "node": "If Exists2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Generated Call Reports": {
+      "main": [
+        [
+          {
+            "node": "Delete Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Call": {
+      "main": [
+        [
+          {
+            "node": "Delete Task Group",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Task Group": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Audit Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audit": {
+      "main": [
+        [
+          {
+            "node": "If Audit Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Audit Exists": {
+      "main": [
+        [
+          {
+            "node": "Delete Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a specific business": {
+      "main": [
+        [
+          {
+            "node": "Get Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Calls Exists": {
+      "main": [
+        [
+          {
+            "node": "Get Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Audit Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Exists": {
+      "main": [
+        [
+          {
+            "node": "Delete Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Call Report Evaluations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Exists1": {
+      "main": [
+        [
+          {
+            "node": "Delete Call Report Evaluations",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Generated Call Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Exists2": {
+      "main": [
+        [
+          {
+            "node": "Delete Generated Call Reports",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delete Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Initial Task Groups1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Task Groups1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Task Groups1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get All Task Groups by Audit ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Task Groups by Audit ID1": {
+      "main": [
+        [
+          {
+            "node": "Delete MicroTasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Task Group1": {
+      "main": [
+        [
+          {
+            "node": "Remove AUdit id form Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove AUdit id form Business": {
+      "main": [
+        [
+          {
+            "node": "Delete Audit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Audit1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Task Groups1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete MicroTasks": {
+      "main": [
+        [
+          {
+            "node": "Delete Task Group1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Initial Task Groups1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "35e9f148-ab82-425b-aeb7-1dee9e9a5e42",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-10-12T10:51:31.713Z",
+      "updatedAt": "2025-10-12T10:51:31.713Z",
+      "role": "workflow:owner",
+      "workflowId": "vXHgR1FNbEY48KLH",
+      "projectId": "LuK1n39yspgZn4ID",
+      "project": {
+        "createdAt": "2025-06-03T10:24:12.778Z",
+        "updatedAt": "2025-06-03T11:30:21.622Z",
+        "id": "LuK1n39yspgZn4ID",
+        "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "projectRelations": [
+          {
+            "createdAt": "2025-06-03T10:24:12.781Z",
+            "updatedAt": "2025-06-03T10:24:12.781Z",
+            "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+            "projectId": "LuK1n39yspgZn4ID",
+            "user": {
+              "createdAt": "2025-06-03T10:24:12.776Z",
+              "updatedAt": "2025-10-13T07:00:00.000Z",
+              "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
+              "email": "fuzailsohail40@gmail.com",
+              "firstName": "Fuzail",
+              "lastName": "Sohail",
+              "personalizationAnswers": null,
+              "settings": {
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "CcHBrELrSsWhXNYT",
+                "userActivated": true,
+                "userActivatedAt": 1750330808510,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1753277941726
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": true,
+              "lastActiveAt": "2025-10-13",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [
+    {
+      "createdAt": "2025-08-14T20:27:52.072Z",
+      "updatedAt": "2025-08-14T20:27:52.072Z",
+      "id": "CbQQ2nfApBR0i0Ru",
+      "name": "TopRatedCoachAI"
+    }
+  ]
+}
