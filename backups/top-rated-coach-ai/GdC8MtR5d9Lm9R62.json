@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-07T07:13:24.569Z",
-  "updatedAt": "2025-09-18T14:16:28.000Z",
+  "updatedAt": "2025-10-13T10:29:34.000Z",
   "id": "GdC8MtR5d9Lm9R62",
   "name": "Cron Job To update Audit Status (Depreciated-Shifted to Cron job Supabase)",
   "active": false,
@@ -266,6 +266,492 @@
         896,
         -64
       ]
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Switch').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=direction,call_initiate_time,call_accepted_time,call_duration,interruptions,termination_reason"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        656
+      ],
+      "id": "a5e24cb9-6432-44e0-9369-ef0ebe8b3a9e",
+      "name": "Get InboundCall Details"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/calls",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Switch').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "=direction,call_initiate_time,call_accepted_time,call_duration,interruptions,termination_reason"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        848
+      ],
+      "id": "d37ce60a-8784-425b-bbe7-e7a2ea9a7cec",
+      "name": "Get OutboundCall Details"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6a97e116-ff02-4500-8d16-bf0fad5995d4",
+              "leftValue": "={{ $('Switch').item.json.status }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        848
+      ],
+      "id": "55b9332c-e7a3-4a01-a6a3-613994ffe2d4",
+      "name": "If not failed1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6a97e116-ff02-4500-8d16-bf0fad5995d4",
+              "leftValue": "={{ $('Switch').item.json.status }}",
+              "rightValue": "failed",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        656
+      ],
+      "id": "777666a4-9d94-4582-a501-f96cd859212e",
+      "name": "If not failed"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Updated Task Groups').item.json.task_name }}",
+                    "rightValue": "={{ $vars.InboundAnalysisDbKEY }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4eb25306-f7ec-4790-8334-b676b29c4ef0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=Inbound_Call_Analysis"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bbb27ae3-9ae4-4f68-8bdd-4d7bc24cf367",
+                    "leftValue": "={{ $('Get Updated Task Groups').item.json.task_name }}",
+                    "rightValue": "={{ $vars.OutboundAnalysisDbKEY }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Outbound_Call_Analysis"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        112,
+        752
+      ],
+      "id": "b188bfb0-b3a9-4346-b7e2-3f5c31d41b31",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        752
+      ],
+      "id": "09244385-e4bd-47d9-8048-a3d2f6d1f75e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "eq.4620f35c-5e19-4335-8c55-9d820e9d46ea"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "300af7d1-b22e-4e9b-a8b6-4c411b210677",
+      "name": "Get Completed Audit",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -336,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/task_groups",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=audit_id",
+              "value": "=eq.{{ $('Get Completed Audit').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$vars.Supabase_Service_Role}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b0856238-0a82-4664-846c-0cfd958a3f69",
+      "name": "Get Updated Task Groups",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -112,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get InboundCall Report done During this Audit').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1008,
+        656
+      ],
+      "id": "837f36c3-2d84-4ab2-83e4-6ac11ed44964",
+      "name": "Get InboundCall Questionaire done During this Audit"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Switch').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        656
+      ],
+      "id": "7a19482d-ae54-4a09-93c8-b36905e66715",
+      "name": "Get InboundCall Report done During this Audit"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define keys to strip\nconst stripReportKeys = [\"id\", \"business_id\", \"audit_id\", \"task_group_id\", \"created_at\"];\nconst stripQuestionaireKeys = [\"id\", \"report_id\"];\n\n// Access report from specific node\nconst reportRaw = $('Get InboundCall Report done During this Audit').first().json;\n\n// Access questionaire list correctly from all items\nconst questionaireItems = $('Get InboundCall Questionaire done During this Audit').all().map(i => i.json);\n\n// Guard clauses\nif (!reportRaw) {\n  throw new Error(\"❌ Report node returned no data.\");\n}\nif (!Array.isArray(questionaireItems)) {\n  throw new Error(\"❌ Questionaire node did not return an array.\");\n}\n\n// Strip report keys\nconst report = Object.fromEntries(\n  Object.entries(reportRaw).filter(([key]) => !stripReportKeys.includes(key))\n);\n\n// Clean each questionaire item\nconst cleanedQuestionaire = questionaireItems.map(q =>\n  Object.fromEntries(Object.entries(q).filter(([key]) => !stripQuestionaireKeys.includes(key)))\n);\n\n// Merge into final output\nreport.questionaire = cleanedQuestionaire;\n\nreturn [{ json: report }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        656
+      ],
+      "id": "194ad17d-9afd-4909-b257-6aa90c48145f",
+      "name": "Combine1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define keys to strip\nconst stripReportKeys = [\"id\", \"business_id\", \"audit_id\", \"task_group_id\", \"created_at\"];\nconst stripQuestionaireKeys = [\"id\", \"report_id\"];\n\n// Access report from specific node\nconst reportRaw = $('Get OutboundCall Report done During this Audit').first().json;\n\n// Access questionaire list correctly from all items\nconst questionaireItems = $('Get OutboundCall Questionaire done During this Audit').all().map(i => i.json);\n\n// Guard clauses\nif (!reportRaw) {\n  throw new Error(\"❌ Report node returned no data.\");\n}\nif (!Array.isArray(questionaireItems)) {\n  throw new Error(\"❌ Questionaire node did not return an array.\");\n}\n\n// Strip report keys\nconst report = Object.fromEntries(\n  Object.entries(reportRaw).filter(([key]) => !stripReportKeys.includes(key))\n);\n\n// Clean each questionaire item\nconst cleanedQuestionaire = questionaireItems.map(q =>\n  Object.fromEntries(Object.entries(q).filter(([key]) => !stripQuestionaireKeys.includes(key)))\n);\n\n// Merge into final output\nreport.questionaire = cleanedQuestionaire;\n\nreturn [{ json: report }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        848
+      ],
+      "id": "bc09e69c-1424-4125-a24f-cc711e7d4f5a",
+      "name": "Combine",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Get OutboundCall Report done During this Audit').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1008,
+        848
+      ],
+      "id": "60d450bd-d1eb-4a04-9804-52587980beca",
+      "name": "Get OutboundCall Questionaire done During this Audit"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/generated_call_reports",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "task_group_id",
+              "value": "=eq.{{ $('Switch').item.json.id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        848
+      ],
+      "id": "dd2f20ff-bcfa-41c9-a5c9-e5a79b6afd35",
+      "name": "Get OutboundCall Report done During this Audit"
     }
   ],
   "connections": {
@@ -339,6 +825,155 @@
           }
         ]
       ]
+    },
+    "Mark Inbound as Failed only if its Outbound Failed": {
+      "main": [
+        []
+      ]
+    },
+    "Update Audit": {
+      "main": [
+        []
+      ]
+    },
+    "If not failed1": {
+      "main": [
+        [
+          {
+            "node": "Get OutboundCall Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If not failed": {
+      "main": [
+        [
+          {
+            "node": "Get InboundCall Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "If not failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If not failed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Completed Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Completed Audit": {
+      "main": [
+        [
+          {
+            "node": "Get Updated Task Groups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Updated Task Groups": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get InboundCall Details": {
+      "main": [
+        [
+          {
+            "node": "Get InboundCall Report done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get InboundCall Report done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Get InboundCall Questionaire done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get InboundCall Questionaire done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Combine1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OutboundCall Details": {
+      "main": [
+        [
+          {
+            "node": "Get OutboundCall Report done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OutboundCall Questionaire done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Combine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OutboundCall Report done During this Audit": {
+      "main": [
+        [
+          {
+            "node": "Get OutboundCall Questionaire done During this Audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -354,7 +989,7 @@
   },
   "meta": null,
   "pinData": {},
-  "versionId": "e4caef0a-2272-4f4f-b5ce-b9060b63e4ba",
+  "versionId": "6301912f-b655-4018-9710-d013e9ec321c",
   "triggerCount": 1,
   "shared": [
     {
@@ -379,7 +1014,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-13T07:00:00.000Z",
+              "updatedAt": "2025-10-14T05:03:13.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -397,7 +1032,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-13",
+              "lastActiveAt": "2025-10-14",
               "isPending": false
             }
           }
