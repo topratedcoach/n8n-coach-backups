@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-12T13:58:01.000Z",
+  "updatedAt": "2025-10-14T05:03:23.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -385,17 +385,6 @@
       "name": "Create Audit for User Business"
     },
     {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -944,
-        2224
-      ],
-      "id": "44bead32-99bc-4180-9641-810bd877d323",
-      "name": "When clicking ‘Execute workflow’"
-    },
-    {
       "parameters": {
         "url": "={{$vars.ElevenLabsBaseURL}}conversations/conv_9001k2tkw1m8ew69wawywpzcq853/audio",
         "sendHeaders": true,
@@ -594,6 +583,111 @@
       ],
       "id": "a724ee70-0245-4b1b-8f04-d07ce7e350db",
       "name": "Create Audit for User Business2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/functions/v1/batch-audit-scoring",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"audit_id\": \"{{ $json.id }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        832,
+        1536
+      ],
+      "id": "1bcb1122-7dbe-47a6-b9c8-eb7cc8a7ccb5",
+      "name": "run batch audit scoring1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "overall_score",
+              "value": "=is.null"
+            },
+            {
+              "name": "select",
+              "value": "id"
+            },
+            {
+              "name": "status",
+              "value": "not.in.(pending,in_progress)"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        1536
+      ],
+      "id": "9511078b-2944-410a-8bf4-334a89222f61",
+      "name": "List Unscored Audits"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        608,
+        1536
+      ],
+      "id": "2e9e8188-74b4-4288-8b6e-d33eeccad2e3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        1536
+      ],
+      "id": "b1a21614-d12b-4b6c-81f9-22d7de59eb8f",
+      "name": "Schedule Trigger"
     }
   ],
   "connections": {
@@ -672,17 +766,6 @@
         []
       ]
     },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Login",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "List UnAudited Businesses": {
       "main": [
         [
@@ -693,12 +776,63 @@
           }
         ]
       ]
+    },
+    "List Unscored Audits": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "run batch audit scoring1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "run batch audit scoring1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Unscored Audits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        0
+      ]
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
@@ -807,8 +941,8 @@
       }
     ]
   },
-  "versionId": "1636e04e-37d0-46b2-adcd-65b97236cdef",
-  "triggerCount": 0,
+  "versionId": "13dd6309-92f3-41e0-b921-3de957b6aaa2",
+  "triggerCount": 1,
   "shared": [
     {
       "createdAt": "2025-07-09T09:28:14.856Z",
@@ -832,7 +966,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-13T07:00:00.000Z",
+              "updatedAt": "2025-10-14T05:03:13.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -850,7 +984,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-13",
+              "lastActiveAt": "2025-10-14",
               "isPending": false
             }
           }
