@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-21T07:27:36.375Z",
-  "updatedAt": "2025-09-15T18:38:02.000Z",
+  "updatedAt": "2025-10-14T06:25:09.000Z",
   "id": "zooWvwHynZXh9MrM",
   "name": "Make Audit Data report sheet",
   "active": false,
@@ -13,8 +13,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        288,
-        192
+        -288,
+        128
       ],
       "id": "1f17be5b-8fbd-4040-99f8-4c32edf71e5d",
       "name": "Loop Over Items",
@@ -50,7 +50,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        736,
+        832,
         112
       ],
       "id": "624b3807-1f74-42bc-90fb-7460ae991752",
@@ -87,7 +87,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1184,
+        1280,
         16
       ],
       "id": "208819ab-9946-41dd-99b4-4f4e72683bf7",
@@ -124,7 +124,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1408,
+        1504,
         16
       ],
       "id": "cd4ad906-d5d0-4e75-8356-6ca0de5474d3",
@@ -173,7 +173,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        512,
+        608,
         112
       ],
       "id": "d08a813b-f238-4435-bf9e-c2726e440dcb",
@@ -210,7 +210,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2528,
+        2624,
         208
       ],
       "id": "19093d4b-721f-4f31-a821-02074a29b4b1",
@@ -247,7 +247,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2752,
+        2848,
         208
       ],
       "id": "01f92831-3fea-4497-9308-17a8adfb4429",
@@ -296,7 +296,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1856,
+        1952,
         112
       ],
       "id": "fe6ca307-16dc-417f-b472-6c0612d91512",
@@ -333,7 +333,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2080,
+        2176,
         112
       ],
       "id": "444b8188-011d-47fe-8318-f43021ec8f43",
@@ -348,7 +348,7 @@
           "parameters": [
             {
               "name": "select",
-              "value": "id,business_name,website,phone_number,email,address,street_number,city,state_province,postal_code,country,country_code,timezone,current_audit_id"
+              "value": "id,business_name,website,phone_number,email,address,street_number,city,state_province,postal_code,country,country_code,timezone,current_audit_id,brand_id"
             }
           ]
         },
@@ -370,8 +370,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        64,
-        192
+        -512,
+        352
       ],
       "id": "bda54e68-0f2e-4853-8325-9a3a58078a82",
       "name": "Get all businesses",
@@ -404,7 +404,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2304,
+        2400,
         112
       ],
       "id": "7b04dc66-7cf6-41ef-b03a-7ac814783b96",
@@ -437,7 +437,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        960,
+        1056,
         112
       ],
       "id": "ec2b092d-6485-4821-9dee-9a0574c44258",
@@ -450,7 +450,7 @@
           "__rl": true,
           "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
           "mode": "list",
-          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultName": "New Audit Data TopRatedCoach 10/14/25",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
         },
         "sheetName": {
@@ -529,6 +529,10 @@
             {
               "column": "termination_reason",
               "fieldValue": "={{ $('Get Inbound Calls').item.json.termination_reason || '' }}"
+            },
+            {
+              "column": "Brand Name",
+              "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
             }
           ]
         },
@@ -538,7 +542,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        2976,
+        3072,
         16
       ],
       "id": "c40bbf41-feb0-4b0e-ae92-3dc0d1ebe074",
@@ -554,7 +558,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        3200,
+        3296,
         208
       ],
       "id": "34a50eb1-9675-4757-8994-5bd65e4b9ffb",
@@ -567,7 +571,7 @@
           "__rl": true,
           "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
           "mode": "list",
-          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultName": "New Audit Data TopRatedCoach 10/14/25",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
         },
         "sheetName": {
@@ -742,6 +746,10 @@
             {
               "column": "appointment_booked",
               "fieldValue": "={{ $json?.appointment_booked??'' }}"
+            },
+            {
+              "column": "Brand Name",
+              "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
             }
           ]
         },
@@ -751,7 +759,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        1632,
+        1728,
         16
       ],
       "id": "2fb160ba-ffd6-444a-9a8a-16aeaec52ad4",
@@ -769,7 +777,7 @@
           "__rl": true,
           "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
           "mode": "list",
-          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultName": "New Audit Data TopRatedCoach 10/14/25",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
         },
         "sheetName": {
@@ -944,6 +952,10 @@
             {
               "column": "appointment_booked",
               "fieldValue": "={{ $json?.appointment_booked??'' }}"
+            },
+            {
+              "column": "Brand Name",
+              "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
             }
           ]
         },
@@ -953,7 +965,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        2976,
+        3072,
         208
       ],
       "id": "f10e4641-a708-4192-babe-f7f0dcc3fed6",
@@ -971,7 +983,7 @@
           "__rl": true,
           "value": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
           "mode": "list",
-          "cachedResultName": "Copy of Audit Data TopRatedCoach",
+          "cachedResultName": "New Audit Data TopRatedCoach 10/14/25",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E/edit?usp=drivesdk"
         },
         "sheetName": {
@@ -1050,6 +1062,10 @@
             {
               "column": "termination_reason",
               "fieldValue": "={{ $('Get Outbound Calls').item.json.termination_reason || '' }}"
+            },
+            {
+              "column": "Brand Name",
+              "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
             }
           ]
         },
@@ -1059,7 +1075,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        1632,
+        1728,
         208
       ],
       "id": "3b8ffe6b-a108-4ef6-b39d-f734ec0229a9",
@@ -1073,7 +1089,7 @@
     {
       "parameters": {
         "operation": "lookup",
-        "sheetId": "197_UgO1LD7wEs5ooIY2UEJCdS59gdj8LtqBZ0Bt4PhQ",
+        "sheetId": "1pCQBHNJCFZkWft4_D9UT74jyTuZeMtlsxUgq2HPzY1E",
         "range": "AllDataOutbound!A:A",
         "lookupColumn": "id",
         "lookupValue": "={{ $('Loop Over Items').item.json.id }}",
@@ -1083,8 +1099,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 2,
       "position": [
-        -160,
-        -208
+        -64,
+        112
       ],
       "id": "641faceb-1e5a-4f6d-b45d-2d62d3519762",
       "executeOnce": true,
@@ -1124,8 +1140,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        64,
-        -208
+        160,
+        112
       ],
       "id": "17308c3f-0da4-49cc-ade4-5689d33d0b22",
       "name": "If"
@@ -1143,11 +1159,52 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -160,
-        192
+        -736,
+        352
       ],
       "id": "c7e41e95-b421-4f9d-aeeb-de77fce4656d",
       "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/brands",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "select",
+              "value": "id,brand_name"
+            },
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.brand_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        112
+      ],
+      "id": "1904f58c-4f51-4a06-bbbb-b73f889e8541",
+      "name": "Get Brand Name",
+      "executeOnce": false
     }
   ],
   "connections": {
@@ -1156,7 +1213,7 @@
         [],
         [
           {
-            "node": "Get Outbound Task Group",
+            "node": "Get Business IDs from Google Sheets",
             "type": "main",
             "index": 0
           }
@@ -1366,8 +1423,20 @@
     },
     "If": {
       "main": [
-        [],
-        []
+        [
+          {
+            "node": "Get Brand Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Schedule Trigger": {
@@ -1375,6 +1444,17 @@
         [
           {
             "node": "Get all businesses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Brand Name": {
+      "main": [
+        [
+          {
+            "node": "Get Outbound Task Group",
             "type": "main",
             "index": 0
           }
@@ -1394,7 +1474,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e72c3c38-7053-4e38-b0f3-0eff0cce1dad",
+  "versionId": "749f1a10-bc0e-4e6d-a1df-f693624e8676",
   "triggerCount": 1,
   "shared": [
     {
@@ -1419,7 +1499,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-13T07:00:00.000Z",
+              "updatedAt": "2025-10-14T05:03:13.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1437,7 +1517,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-13",
+              "lastActiveAt": "2025-10-14",
               "isPending": false
             }
           }
