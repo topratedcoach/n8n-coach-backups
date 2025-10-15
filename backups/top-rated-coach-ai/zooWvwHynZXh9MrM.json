@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-08-21T07:27:36.375Z",
-  "updatedAt": "2025-10-14T06:25:09.000Z",
+  "updatedAt": "2025-10-14T13:19:16.000Z",
   "id": "zooWvwHynZXh9MrM",
   "name": "Make Audit Data report sheet",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -14,7 +14,7 @@
       "typeVersion": 3,
       "position": [
         -288,
-        128
+        56
       ],
       "id": "1f17be5b-8fbd-4040-99f8-4c32edf71e5d",
       "name": "Loop Over Items",
@@ -50,8 +50,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        832,
-        112
+        608,
+        -16
       ],
       "id": "624b3807-1f74-42bc-90fb-7460ae991752",
       "name": "Get Outbound Calls",
@@ -87,8 +87,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1280,
-        16
+        1056,
+        -112
       ],
       "id": "208819ab-9946-41dd-99b4-4f4e72683bf7",
       "name": "Get Call Transcript",
@@ -124,8 +124,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1504,
-        16
+        1280,
+        -112
       ],
       "id": "cd4ad906-d5d0-4e75-8356-6ca0de5474d3",
       "name": "Get Call Report",
@@ -173,8 +173,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        608,
-        112
+        384,
+        -16
       ],
       "id": "d08a813b-f238-4435-bf9e-c2726e440dcb",
       "name": "Get Outbound Task Group",
@@ -210,8 +210,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2624,
-        208
+        2400,
+        80
       ],
       "id": "19093d4b-721f-4f31-a821-02074a29b4b1",
       "name": "Get Call Transcript1",
@@ -247,8 +247,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2848,
-        208
+        2624,
+        80
       ],
       "id": "01f92831-3fea-4497-9308-17a8adfb4429",
       "name": "Get Call Report1",
@@ -296,8 +296,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1952,
-        112
+        1728,
+        -16
       ],
       "id": "fe6ca307-16dc-417f-b472-6c0612d91512",
       "name": "Get Inbound Task Group",
@@ -333,8 +333,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2176,
-        112
+        1952,
+        -16
       ],
       "id": "444b8188-011d-47fe-8318-f43021ec8f43",
       "name": "Get Inbound Calls",
@@ -349,6 +349,10 @@
             {
               "name": "select",
               "value": "id,business_name,website,phone_number,email,address,street_number,city,state_province,postal_code,country,country_code,timezone,current_audit_id,brand_id"
+            },
+            {
+              "name": "brand_id",
+              "value": "in.(130e61cc-c1d4-402d-a9b3-bd5f63dddfb7,cb5fb695-2012-45bd-8e2f-09c6ce5fe019,aa49ad4c-1d94-4e8b-a088-f02258f39864,a8317634-d211-4bfd-973d-a6c6b0dcbad4,77a6fb08-bbff-4b85-bad5-2bfb71430c29,8629c448-23bc-43b6-8011-75e44d4dd7be,64427be6-7e26-409d-a9a9-d02967141e4b,cff92e90-c978-41e1-aa15-a0cc25405820,7345b241-6150-4671-9f2b-d30ff0d21e69,b087164f-6ef7-42cd-a960-5f806807dfeb,85b8b4c5-7ef4-4743-90fb-e8c489dc9a76,d237a6ae-0d76-4431-829d-d8e6263287ac,8ac8a22d-51e4-474f-95b8-fc633d725357)"
             }
           ]
         },
@@ -371,7 +375,7 @@
       "typeVersion": 4.2,
       "position": [
         -512,
-        352
+        56
       ],
       "id": "bda54e68-0f2e-4853-8325-9a3a58078a82",
       "name": "Get all businesses",
@@ -404,8 +408,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2400,
-        112
+        2176,
+        -16
       ],
       "id": "7b04dc66-7cf6-41ef-b03a-7ac814783b96",
       "name": "If its not empty"
@@ -437,8 +441,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1056,
-        112
+        832,
+        -16
       ],
       "id": "ec2b092d-6485-4821-9dee-9a0574c44258",
       "name": "If its not empty1"
@@ -533,6 +537,18 @@
             {
               "column": "Brand Name",
               "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
+            },
+            {
+              "column": "audit_score",
+              "fieldValue": "={{$('Get Audit Details').item.json.overall_score??''}}"
+            },
+            {
+              "column": "audit_insights",
+              "fieldValue": "={{$('Get Audit Details').item.json.insights??''}}"
+            },
+            {
+              "column": "audit_recommendations",
+              "fieldValue": "={{$('Get Audit Details').item.json.recommendations??''}}"
             }
           ]
         },
@@ -542,8 +558,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        3072,
-        16
+        2848,
+        -112
       ],
       "id": "c40bbf41-feb0-4b0e-ae92-3dc0d1ebe074",
       "credentials": {
@@ -558,8 +574,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        3296,
-        208
+        3072,
+        80
       ],
       "id": "34a50eb1-9675-4757-8994-5bd65e4b9ffb",
       "name": "No Operation, do nothing"
@@ -708,7 +724,7 @@
               "fieldValue": "={{ $json?.closing_for_appointment_and_call_to_action_score??'' }}"
             },
             {
-              "column": "overall_success_rate_out_of_100",
+              "column": "call_score_out_of_100",
               "fieldValue": "={{ $json?.overall_success_rate_out_of_100??'' }}"
             },
             {
@@ -750,6 +766,18 @@
             {
               "column": "Brand Name",
               "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
+            },
+            {
+              "column": "audit_score",
+              "fieldValue": "={{$('Get Audit Details').item.json.overall_score??''}}"
+            },
+            {
+              "column": "audit_insights",
+              "fieldValue": "={{$('Get Audit Details').item.json.insights??''}}"
+            },
+            {
+              "column": "audit_recommendations",
+              "fieldValue": "={{$('Get Audit Details').item.json.recommendations??''}}"
             }
           ]
         },
@@ -759,8 +787,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        1728,
-        16
+        1504,
+        -112
       ],
       "id": "2fb160ba-ffd6-444a-9a8a-16aeaec52ad4",
       "credentials": {
@@ -914,7 +942,7 @@
               "fieldValue": "={{ $json?.closing_for_appointment_and_call_to_action_score??'' }}"
             },
             {
-              "column": "overall_success_rate_out_of_100",
+              "column": "call_score_out_of_100",
               "fieldValue": "={{ $json?.overall_success_rate_out_of_100??'' }}"
             },
             {
@@ -956,6 +984,18 @@
             {
               "column": "Brand Name",
               "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
+            },
+            {
+              "column": "audit_score",
+              "fieldValue": "={{$('Get Audit Details').item.json.overall_score??''}}"
+            },
+            {
+              "column": "audit_insights",
+              "fieldValue": "={{$('Get Audit Details').item.json.insights??''}}"
+            },
+            {
+              "column": "audit_recommendations",
+              "fieldValue": "={{$('Get Audit Details').item.json.recommendations??''}}"
             }
           ]
         },
@@ -965,8 +1005,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        3072,
-        208
+        2848,
+        80
       ],
       "id": "f10e4641-a708-4192-babe-f7f0dcc3fed6",
       "credentials": {
@@ -1066,6 +1106,18 @@
             {
               "column": "Brand Name",
               "fieldValue": "={{$('Get Brand Name').item.json.brand_name}}"
+            },
+            {
+              "column": "audit_score",
+              "fieldValue": "={{$('Get Audit Details').item.json.overall_score??''}}"
+            },
+            {
+              "column": "audit_insights",
+              "fieldValue": "={{$('Get Audit Details').item.json.insights??''}}"
+            },
+            {
+              "column": "audit_recommendations",
+              "fieldValue": "={{$('Get Audit Details').item.json.recommendations??''}}"
             }
           ]
         },
@@ -1075,8 +1127,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 3,
       "position": [
-        1728,
-        208
+        1504,
+        80
       ],
       "id": "3b8ffe6b-a108-4ef6-b39d-f734ec0229a9",
       "credentials": {
@@ -1099,8 +1151,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 2,
       "position": [
-        -64,
-        112
+        -272,
+        -480
       ],
       "id": "641faceb-1e5a-4f6d-b45d-2d62d3519762",
       "executeOnce": true,
@@ -1140,8 +1192,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        160,
-        112
+        -64,
+        -464
       ],
       "id": "17308c3f-0da4-49cc-ade4-5689d33d0b22",
       "name": "If"
@@ -1151,7 +1203,8 @@
         "rule": {
           "interval": [
             {
-              "field": "seconds"
+              "field": "hours",
+              "hoursInterval": 4
             }
           ]
         }
@@ -1160,7 +1213,7 @@
       "typeVersion": 1.2,
       "position": [
         -736,
-        352
+        56
       ],
       "id": "c7e41e95-b421-4f9d-aeeb-de77fce4656d",
       "name": "Schedule Trigger"
@@ -1199,12 +1252,53 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        384,
-        112
+        -64,
+        -16
       ],
       "id": "1904f58c-4f51-4a06-bbbb-b73f889e8541",
       "name": "Get Brand Name",
       "executeOnce": false
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/audits",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Loop Over Items').item.json.current_audit_id }}"
+            },
+            {
+              "name": "select",
+              "value": "id,overall_score,insights,recommendations"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        -16
+      ],
+      "id": "68ff7863-c94d-4ef1-a280-24b43a950904",
+      "name": "Get Audit Details",
+      "alwaysOutputData": true
     }
   ],
   "connections": {
@@ -1213,7 +1307,7 @@
         [],
         [
           {
-            "node": "Get Business IDs from Google Sheets",
+            "node": "Get Brand Name",
             "type": "main",
             "index": 0
           }
@@ -1423,20 +1517,8 @@
     },
     "If": {
       "main": [
-        [
-          {
-            "node": "Get Brand Name",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [],
+        []
       ]
     },
     "Schedule Trigger": {
@@ -1454,6 +1536,17 @@
       "main": [
         [
           {
+            "node": "Get Audit Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audit Details": {
+      "main": [
+        [
+          {
             "node": "Get Outbound Task Group",
             "type": "main",
             "index": 0
@@ -1467,14 +1560,16 @@
   },
   "staticData": {
     "node:Schedule Trigger": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        0
+      ]
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "749f1a10-bc0e-4e6d-a1df-f693624e8676",
+  "versionId": "897299f5-e558-4d26-ac47-517395a89602",
   "triggerCount": 1,
   "shared": [
     {
@@ -1499,7 +1594,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-14T05:03:13.000Z",
+              "updatedAt": "2025-10-15T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1517,7 +1612,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-14",
+              "lastActiveAt": "2025-10-15",
               "isPending": false
             }
           }
