@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-12T11:47:08.775Z",
-  "updatedAt": "2025-09-17T14:51:01.000Z",
+  "updatedAt": "2025-10-17T14:38:11.000Z",
   "id": "E7kXqgU4iMB7Gzl5",
   "name": "Delete USER  - DANGER",
   "active": false,
@@ -62,7 +62,7 @@
           "parameters": [
             {
               "name": "user_id",
-              "value": "=eq.cc3d6426-5b17-499a-9deb-a61f47796415"
+              "value": "=eq.ac222d33-8c35-4411-8655-c4027bd34198"
             }
           ]
         },
@@ -89,43 +89,6 @@
       ],
       "id": "30ae5d3d-3c20-4ebb-8f1c-1607bd086518",
       "name": "GET Chat Session"
-    },
-    {
-      "parameters": {
-        "method": "DELETE",
-        "url": "={{$vars.SupabaseDBUrl}}/chat_archived_summaries",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "user_id",
-              "value": "=eq.{{ $('GET Chat Session').item.json.user_id }}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $vars.Supabase_API_Key }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        672,
-        0
-      ],
-      "id": "e517b51c-d889-4b1b-800f-8e08e4754ca9",
-      "name": "DELETE ALL CHAT SUMMARIES"
     },
     {
       "parameters": {
@@ -158,7 +121,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        896,
+        672,
         0
       ],
       "id": "249f2ecb-5dc9-408e-a191-6b855a1cb5a3",
@@ -195,7 +158,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1120,
+        896,
         0
       ],
       "id": "13740d4c-203f-49d3-a2f8-6dc3187055ae",
@@ -232,11 +195,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1344,
+        1120,
         0
       ],
       "id": "a523cd4b-2541-4cce-8c0a-352d0c3bd241",
-      "name": "DELETE USER PERSONALITY"
+      "name": "DELETE USER PERSONALITY",
+      "disabled": true
     },
     {
       "parameters": {
@@ -269,7 +233,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1568,
+        1344,
         0
       ],
       "id": "c746fed2-bb8c-44d9-b0b5-46c54e544db4",
@@ -306,11 +270,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2016,
+        1792,
         0
       ],
       "id": "b80d342f-2450-4c6e-80dd-09b9fcdf6036",
-      "name": "DELETE USER"
+      "name": "DELETE USER",
+      "disabled": true
     },
     {
       "parameters": {
@@ -343,7 +308,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1792,
+        1568,
         0
       ],
       "id": "e484f4ed-5b63-403e-8ba6-17c58b2dcade",
@@ -366,7 +331,7 @@
       "main": [
         [
           {
-            "node": "DELETE ALL CHAT SUMMARIES",
+            "node": "DELETE PERSONALITY ANALYSIS LOG",
             "type": "main",
             "index": 0
           }
@@ -378,17 +343,6 @@
         [
           {
             "node": "DELETE ALL CHAT MESSAGES",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "DELETE ALL CHAT SUMMARIES": {
-      "main": [
-        [
-          {
-            "node": "DELETE PERSONALITY ANALYSIS LOG",
             "type": "main",
             "index": 0
           }
@@ -457,7 +411,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "19e1fe02-f9bb-4160-a11d-22da4b1c2c67",
+  "versionId": "407a8bf5-df13-43c2-b217-34b280219ae4",
   "triggerCount": 0,
   "shared": [
     {
@@ -482,7 +436,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-17T07:00:00.000Z",
+              "updatedAt": "2025-10-18T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -500,7 +454,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-17",
+              "lastActiveAt": "2025-10-18",
               "isPending": false
             }
           }
