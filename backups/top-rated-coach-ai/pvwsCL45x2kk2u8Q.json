@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-11T10:15:21.615Z",
-  "updatedAt": "2025-10-12T13:59:27.000Z",
+  "updatedAt": "2025-10-24T22:59:10.000Z",
   "id": "pvwsCL45x2kk2u8Q",
   "name": "Add Task Groups based on Audit Types",
   "active": true,
@@ -132,7 +132,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "=[\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Outbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  },\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Inbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  }\n]",
+        "jsonBody": "=[\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Outbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  },\n{\n  \"audit_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.id }}\",\n    \"business_id\": \"{{ $('Get Unprocessed Audits Real Time').item.json.body.data.business_id }}\",\n    \"task_name\": \"{{ $('Set Lead Gen Steps Names').item.json['Inbound Call Analysis'] }}\",\n    \"scheduled_at\": \"{{ $('Time to Schedule Max Limit of Waiting for Inbound Call 5 days from outbound call time').item.json.scheduled_at }}\",\n    \"status\": \"pending\"\n  }\n]",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -186,7 +186,7 @@
     },
     {
       "parameters": {
-        "jsCode": "function getOffsetInMinutes(timeZone) {\n  const now = new Date();\n  const formatter = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    hour12: false,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n  });\n\n  const parts = formatter.formatToParts(now).reduce((acc, part) => {\n    if (part.type !== 'literal') acc[part.type] = part.value;\n    return acc;\n  }, {});\n\n  const localTimeStr = `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}`;\n  const localTime = new Date(localTimeStr);\n  const offsetMs = now.getTime() - localTime.getTime();\n  return -offsetMs / (60 * 1000);\n}\n\nfunction getNextWorkingTimeInTimezone(tz) {\n  const offsetMinutes = getOffsetInMinutes(tz);\n  const now = new Date();\n  const localNow = new Date(now.getTime() + offsetMinutes * 60 * 1000);\n\n  // limit to 24-hour limit\n  const maxDate = new Date(localNow.getTime() + 24 * 60 * 60 * 1000);\n\n  let attempt = 0;\n  while (attempt < 1000) {\n    const candidate = new Date(localNow);\n\n    const randomOffsetMs = Math.floor(Math.random() * (maxDate.getTime() - localNow.getTime()));\n    candidate.setTime(localNow.getTime() + randomOffsetMs);\n\n    // MODIFICATION 2: Skip Sundays (0) AND Saturdays (6)\n    if (candidate.getDay() === 0 || candidate.getDay() === 6) {\n      attempt++;\n      continue;\n    }\n\n    // Enforce business hours 09:00 to 17:59\n    let hour = candidate.getHours();\n    if (hour < 9) {\n      candidate.setHours(9, Math.floor(Math.random() * 60), 0, 0);\n    } else if (hour >= 18) {\n      candidate.setDate(candidate.getDate() + 1);\n\n      // MODIFICATION 3: Logic to skip Sat/Sun and land on Monday (day 1)\n      let day = candidate.getDay();\n      if (day === 0) { // If it rolled to Sunday (0), advance 1 more day\n          candidate.setDate(candidate.getDate() + 1);\n      } else if (day === 6) { // If it rolled to Saturday (6), advance 2 more days\n          candidate.setDate(candidate.getDate() + 2);\n      }\n      \n      candidate.setHours(9, Math.floor(Math.random() * 60), 0, 0);\n    } else {\n      candidate.setMinutes(Math.floor(Math.random() * 60), 0, 0);\n    }\n\n    // Skip if in past\n    if (candidate <= localNow) {\n      attempt++;\n      continue;\n    }\n\n    // Skip if beyond 24h window\n    if (candidate > maxDate) {\n      attempt++;\n      continue;\n    }\n\n    const utcDate = new Date(candidate.getTime() - offsetMinutes * 60 * 1000);\n    return utcDate.toISOString();\n  }\n\n  //Update the error message to reflect the new window/days\n  throw new Error(\"Couldn't generate valid scheduled time within 24-hour business-day (Mon-Fri) window\");\n}\n\n// Main\nreturn items.map(item => {\n  const tz = $('Get a specific business').first().json.timezone || 'America/New_York';\n  const scheduledAt = getNextWorkingTimeInTimezone(tz);\n\n  return {\n    json: {\n      scheduled_at: scheduledAt\n    },\n  };\n});"
+        "jsCode": "function isValidTimeZone(tz) {\n  try {\n    new Intl.DateTimeFormat(undefined, { timeZone: tz });\n    return true;\n  } catch (e) {\n    return false;\n  }\n}\n\n// Helper to get local date/time components from UTC date in given timezone\nfunction getLocalParts(utcDate, tz) {\n  const opts = {\n    timeZone: tz,\n    year: 'numeric',\n    month: 'numeric',\n    day: 'numeric',\n    hour: 'numeric',\n    minute: 'numeric',\n    second: 'numeric',\n    hourCycle: 'h23',\n  };\n  const formatter = new Intl.DateTimeFormat('en-US', opts);\n  const parts = formatter.formatToParts(utcDate);\n  const map = {};\n  parts.forEach(p => {\n    if (p.type !== 'literal') map[p.type] = parseInt(p.value, 10);\n  });\n  // Add weekday\n  const naiveDate = new Date(map.year, map.month - 1, map.day);\n  map.weekday = naiveDate.getDay(); // 0=Sun, 6=Sat\n  return map;\n}\n\n// Helper to parse offset string like 'GMT-04:00' or 'GMT-4' to milliseconds\nfunction parseOffset(offsetStr) {\n  if (offsetStr === 'GMT' || offsetStr === 'UTC') return 0;\n  const match = offsetStr.match(/^GMT([+-])(\\d{1,2})(?::(\\d{2}))?$/);\n  if (!match) throw new Error(`Invalid offset format: ${offsetStr}`);\n  const sign = match[1] === '+' ? 1 : -1;\n  const hours = parseInt(match[2], 10);\n  const minutes = parseInt(match[3] || 0, 10);\n  return sign * (hours * 3600000 + minutes * 60000);\n}\n\n// Helper to get offset in ms for a given UTC date in timezone\nfunction getOffsetMs(utcDate, tz) {\n  const offsetOpts = {\n    timeZone: tz,\n    timeZoneName: 'shortOffset',\n  };\n  const formatter = new Intl.DateTimeFormat('en-US', offsetOpts);\n  const parts = formatter.formatToParts(utcDate);\n  const offsetPart = parts.find(p => p.type === 'timeZoneName');\n  if (!offsetPart) throw new Error('No timezone name found');\n  return parseOffset(offsetPart.value);\n}\n\n// Helper to create UTC Date from local components in timezone\nfunction localPartsToUtc(parts, tz) {\n  const candidateMs = Date.UTC(\n    parts.year,\n    parts.month - 1,\n    parts.day,\n    parts.hour,\n    parts.minute,\n    parts.second || 0\n  );\n  // Use candidate as approximate UTC to get offset (handles DST)\n  const offsetMs = getOffsetMs(new Date(candidateMs), tz);\n  const utcMs = candidateMs - offsetMs;\n  const utcDate = new Date(utcMs);\n\n  // Optional: Verify (commented out for efficiency, enable if DST issues expected)\n  const verifiedParts = getLocalParts(utcDate, tz);\n  if (verifiedParts.hour !== parts.hour || verifiedParts.minute !== parts.minute ||\n      verifiedParts.day !== parts.day || verifiedParts.month !== parts.month) {\n    // Mismatch due to DST skip/ambiguity - adjust logic here (e.g., add 1 hour)\n    // For now, proceed as-is since working hours rarely hit transitions\n  }\n\n  return utcDate;\n}\n\n// Helper to add days to local date components (handles month/year rollover)\nfunction addDaysToLocal(parts, days) {\n  const naive = new Date(parts.year, parts.month - 1, parts.day + days);\n  return {\n    year: naive.getFullYear(),\n    month: naive.getMonth() + 1,\n    day: naive.getDate(),\n    weekday: naive.getDay(),\n  };\n}\n\nfunction getNextWorkingTimeInTimezone(timeZone) {\n  let tz = timeZone;\n  if (!isValidTimeZone(tz)) {\n    console.warn(`Invalid timezone ${timeZone}, defaulting to America/New_York`);\n    tz = 'America/New_York';\n  }\n\n  const WORK_START_HOUR = 9;\n  const WORK_END_HOUR = 18;\n\n  const nowUtc = new Date();\n  let local = getLocalParts(nowUtc, tz);\n\n  // Minutes since midnight\n  let minutesNow = local.hour * 60 + local.minute;\n\n  const workStartMin = WORK_START_HOUR * 60;\n  const workEndMin = WORK_END_HOUR * 60;\n\n  let targetLocal = { ...local, second: 0 }; // Copy current local parts\n\n  // If weekend, move to next Monday\n  let isWeekend = targetLocal.weekday === 0 || targetLocal.weekday === 6;\n  if (isWeekend || minutesNow >= workEndMin) {\n    let daysToAdd = 1;\n    if (isWeekend) {\n      // If Saturday (6), add 2 to Monday; Sunday (0), add 1\n      daysToAdd = targetLocal.weekday === 6 ? 2 : 1;\n    }\n    let nextDay = addDaysToLocal(targetLocal, daysToAdd);\n    while (nextDay.weekday === 0 || nextDay.weekday === 6) {\n      nextDay = addDaysToLocal(nextDay, 1);\n    }\n    targetLocal.year = nextDay.year;\n    targetLocal.month = nextDay.month;\n    targetLocal.day = nextDay.day;\n    targetLocal.weekday = nextDay.weekday;\n    // Reset to start of day for random\n    minutesNow = 0;\n  }\n\n  // Set start min: max(current +1 min if in workday, work start)\n  let startMin = Math.max(minutesNow + 1, workStartMin);\n  if (startMin >= workEndMin) {\n    // If no time left today, move to next workday\n    let nextDay = addDaysToLocal(targetLocal, 1);\n    while (nextDay.weekday === 0 || nextDay.weekday === 6) {\n      nextDay = addDaysToLocal(nextDay, 1);\n    }\n    targetLocal.year = nextDay.year;\n    targetLocal.month = nextDay.month;\n    targetLocal.day = nextDay.day;\n    targetLocal.weekday = nextDay.weekday;\n    startMin = workStartMin;\n  }\n\n  // Now pick random in [startMin, workEndMin)\n  const rangeMin = workEndMin - startMin;\n  if (rangeMin <= 0) {\n    throw new Error('Invalid time range');\n  }\n  const randomMinTotal = startMin + Math.floor(Math.random() * rangeMin);\n  targetLocal.hour = Math.floor(randomMinTotal / 60);\n  targetLocal.minute = randomMinTotal % 60;\n\n  // Convert to UTC\n  const nextUtc = localPartsToUtc(targetLocal, tz);\n\n  return nextUtc.toISOString();\n}\n\nconst tz = $('Get a specific business').first().json.timezone || 'America/New_York';\n\nconst scheduledAt = getNextWorkingTimeInTimezone(tz);\n\nreturn { scheduled_at: scheduledAt } ;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -195,11 +195,14 @@
         0
       ],
       "id": "b3a579ec-d6dd-4a0b-9ba7-d1f754364352",
-      "name": "Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri"
+      "name": "Time to Schedule call based on Business Timezone Within 24 hours - Mon - Fri",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
-        "jsCode": "return items.map(item => {\n  const prevScheduledAt = new Date($input.first().json.scheduled_at);\n  const newScheduledAt = new Date(prevScheduledAt.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days\n\n  return {\n    json: {\n      scheduled_at: newScheduledAt.toISOString()\n    }\n  };\n});\n"
+        "jsCode": "return items.map(item => {\n  const prevScheduledAt = new Date($input.first().json.scheduled_at);\n  const newScheduledAt = new Date(prevScheduledAt.getTime() + 5 * 24 * 60 * 60 * 1000); // +7 days\n\n  return {\n    json: {\n      scheduled_at: newScheduledAt.toISOString()\n    }\n  };\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -208,7 +211,7 @@
         0
       ],
       "id": "6a8e2dc5-5ec3-4b1d-8d90-0d3737fa9b2b",
-      "name": "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time"
+      "name": "Time to Schedule Max Limit of Waiting for Inbound Call 5 days from outbound call time"
     }
   ],
   "connections": {
@@ -265,14 +268,14 @@
       "main": [
         [
           {
-            "node": "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time",
+            "node": "Time to Schedule Max Limit of Waiting for Inbound Call 5 days from outbound call time",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Time to Schedule Max Limit of Waiting for Inbound Call 7 days from outbound call time": {
+    "Time to Schedule Max Limit of Waiting for Inbound Call 5 days from outbound call time": {
       "main": [
         [
           {
@@ -292,7 +295,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "278d5eb1-2bd4-4517-b06f-37023482060b",
+  "versionId": "877bbf43-c30e-49f9-91be-a6e5145a4ebf",
   "triggerCount": 1,
   "shared": [
     {
@@ -317,7 +320,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-24T07:00:00.000Z",
+              "updatedAt": "2025-10-25T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -335,7 +338,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-24",
+              "lastActiveAt": "2025-10-25",
               "isPending": false
             }
           }
