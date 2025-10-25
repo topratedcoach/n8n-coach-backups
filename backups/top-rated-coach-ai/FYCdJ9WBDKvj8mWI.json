@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-20T09:51:03.701Z",
-  "updatedAt": "2025-10-12T10:32:58.000Z",
+  "updatedAt": "2025-10-24T23:32:30.000Z",
   "id": "FYCdJ9WBDKvj8mWI",
   "name": "Agent: Inbound Call Processor (Fuzail)",
   "active": false,
@@ -24,31 +24,6 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4.1",
-          "mode": "list",
-          "cachedResultName": "gpt-4.1"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -1056,
-        -1216
-      ],
-      "id": "7ed88e4a-72e8-4107-91fc-097c6d2f51dc",
-      "name": "CHATGPT",
-      "credentials": {
-        "openAiApi": {
-          "id": "GwlwzOiOthioGCVV",
-          "name": "OpenAI TOP RATED COACH API KEY"
-        }
-      }
-    },
-    {
-      "parameters": {
         "content": "## Generate Questionaire json and add in Call_Report_Evaluations in DB",
         "height": 400,
         "width": 880,
@@ -56,8 +31,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -96,
-        -1568
+        -432,
+        -1536
       ],
       "typeVersion": 1,
       "id": "5d680fda-da0d-4608-9291-f6ed1af349a5",
@@ -67,7 +42,7 @@
       "parameters": {
         "content": "## Save AI GENERATED REPORT to Supabase",
         "height": 460,
-        "width": 1080,
+        "width": 744,
         "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -78,34 +53,6 @@
       "typeVersion": 1,
       "id": "5f7c9552-9953-4441-9b07-5aebfe76ed58",
       "name": "Workflow Overview14"
-    },
-    {
-      "parameters": {
-        "jsCode": "const rawOutput = $('Call Analysis AI').first().json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -784,
-        -1440
-      ],
-      "id": "4046202d-e3c2-4e0e-bbad-d7554572236d",
-      "name": "Parse AI Analysis Output into JSON"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=You are an expert customer experience auditor. This is a follow-up inbound call between a customer (our AI agent) and a business. The customer had previously spoken with the same business in an outbound call.\n\nBelow is the detailed audit report of that previous outbound call for context:\n{{ JSON.stringify($('Combine').item.json) }}\n\nNow, you will be provided with the transcript of the follow-up inbound call.\n\nYour job is to objectively audit the business representative’s performance in this inbound call, comparing it where helpful to the prior outbound interaction. You are evaluating how the business treated the customer, not the customer’s behavior.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\n\nInstructions:\n- Do NOT wrap your output in any object like \"output\": or brackets [].\n- Start your output with { and end with } (no Markdown, no quotes around the whole output, no extra notes).\n- Keep the structure exactly as specified below.\n- Only use information from the transcript and the prior outbound report. Do not assume or invent anything.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or empty array [].\n- Be objective, concise, and actionable.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the business representative’s responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the customer’s questions?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive toward the customer?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the representative polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the customer\",\n      \"answer\": \"Response from the business representative\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags in the representative’s behavior (e.g., rude tone, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments from the representative\"\n  ],\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n\"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n\"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building — e.g., introduction, friendliness, rapport, empathy, use of customer’s name.\n    - Product/Service Knowledge and Education — e.g., clear, accurate, and detailed service info.\n    - Answering Questions — e.g., professionalism, thorough answers, asking if a customer needs further help.\n    - Ability to Upsell and Cross-Sell — e.g., mentioning/promoting relevant services.\n    - Closing for Appointment and Call to Action — e.g., next steps, follow-up request, securing a commitment.\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').first().json) }}",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2,
-      "position": [
-        -1136,
-        -1440
-      ],
-      "id": "2c58d1b7-0189-4b3e-b401-bfcc12587cc8",
-      "name": "Call Analysis AI"
     },
     {
       "parameters": {
@@ -464,14 +411,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"business_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.business_id || '') }},\n  \"audit_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.id || '') }},\n  \"task_group_id\": {{ JSON.stringify($('Updating TaskGroups Row To In-Progress').first()?.json?.id || '') }},\n  \"overall_summary\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.overall_summary || '') }},\n  \"engagement_level\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.engagement_level || '') }},\n  \"professionalism\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.professionalism || '') }},\n  \"script_adherence\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.script_adherence || '') }},\n  \"issues_detected\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.issues_detected || '') }},\n  \"positive_highlight\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.positive_highlights || '') }},\n  \"engagement_and_relationship_building_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Parse AI Analysis Output into JSON').item?.json?.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Parse AI Analysis Output into JSON').item?.json?.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.improvement_ideas || []) }},\n  \"agent_name\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.agent_name || '') }},\n  \"appointment_booked\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.appointment_booked || false) }},\n  \"initial_wait_time\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.wait_times?.initial_wait_time || '') }},\n  \"on_hold_time\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.wait_times?.on_hold_time || '') }},\n  \"representative_tone\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.representative_tone || '') }},\n  \"tone_consistency\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.tone_analysis?.tone_consistency || '') }},\n  \"clarity\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.clarity || '') }},\n  \"accuracy\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.accuracy || '') }},\n  \"helpfulness\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.response_quality?.helpfulness || '') }},\n  \"call_opening\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item?.json?.call_opening || '') }}\n}\n",
+        "jsonBody": "={\n  \"business_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.business_id || '') }},\n  \"audit_id\": {{ JSON.stringify($('Update Audit Status to in_progress and Started AT Time').first()?.json?.id || '') }},\n  \"task_group_id\": {{ JSON.stringify($('Updating TaskGroups Row To In-Progress').first()?.json?.id || '') }},\n  \"overall_summary\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.overall_summary || '') }},\n  \"engagement_level\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.engagement_level || '') }},\n  \"professionalism\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.professionalism || '') }},\n  \"script_adherence\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.script_adherence || '') }},\n  \"issues_detected\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.issues_detected || '') }},\n  \"positive_highlight\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.positive_highlights || '') }},\n  \"engagement_and_relationship_building_score\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.engagement_and_relationship_building_score || 0 }},\n  \"product_service_knowledge_and_education_score\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.product_service_knowledge_and_education_score || 0 }},\n  \"answering_questions_score\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.answering_questions_score || 0 }},\n  \"ability_to_upsell_and_cross_sell_score\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.ability_to_upsell_and_cross_sell_score || 0 }},\n  \"closing_for_appointment_and_call_to_action_score\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.closing_for_appointment_and_call_to_action_score || 0 }},\n  \"overall_success_rate_out_of_100\": {{ $('Call Analysis AI').item?.json?.choices[0]?.message?.content.overall_success_rate_out_of_100 || 0 }},\n  \"improvement_ideas\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.improvement_ideas || []) }},\n  \"agent_name\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.agent_name || '') }},\n  \"appointment_booked\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.appointment_booked || false) }},\n  \"initial_wait_time\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.wait_times?.initial_wait_time || '') }},\n  \"on_hold_time\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.wait_times?.on_hold_time || '') }},\n  \"representative_tone\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.tone_analysis?.representative_tone || '') }},\n  \"tone_consistency\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.tone_analysis?.tone_consistency || '') }},\n  \"clarity\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.response_quality?.clarity || '') }},\n  \"accuracy\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.response_quality?.accuracy || '') }},\n  \"helpfulness\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.response_quality?.helpfulness || '') }},\n  \"call_opening\": {{ JSON.stringify($('Call Analysis AI').item?.json?.choices[0]?.message?.content.call_opening || '') }}\n}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -320,
-        -1440
+        -656,
+        -1408
       ],
       "id": "b27ff15c-a84b-4f3f-aa4d-96b6ded94bbf",
       "name": "Create Generated Reports Entry In DB"
@@ -486,20 +433,20 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 1,
       "position": [
-        192,
-        -1440
+        -144,
+        -1408
       ],
       "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "return [{\n  json: {\n    question_handling: $('Parse AI Analysis Output into JSON').first().json.question_handling\n  }\n}];\n"
+        "jsCode": "return [{\n  json: {\n    question_handling: $('Call Analysis AI').first().json.choices[0].message.content.question_handling\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -48,
-        -1440
+        -352,
+        -1408
       ],
       "id": "19b2e323-1dd1-4d2c-b8c7-fea186706445",
       "name": "Parse question handling",
@@ -523,8 +470,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        -1440
+        64,
+        -1408
       ],
       "id": "424b9be1-4557-42d6-b6e3-69200715f4b0",
       "name": "Attach report_id"
@@ -558,8 +505,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        624,
-        -1440
+        288,
+        -1408
       ],
       "id": "73d8ce27-900c-4435-968c-c6f1f673fa9c",
       "name": "Create Call Report Evaluations Entry In DB"
@@ -798,14 +745,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Parse AI Analysis Output into JSON').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":0\n}",
+        "jsonBody": "={\n  \"status\": \"completed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"result_data\": {{ JSON.stringify($('Call Analysis AI').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":0\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -560,
-        -1440
+        -832,
+        -1408
       ],
       "id": "1cc14744-836f-4b49-aa57-bb647f8bc5eb",
       "name": "End AI Analysis Task in DB"
@@ -848,8 +795,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1120,
-        -1424
+        784,
+        -1392
       ],
       "id": "beb0de0c-3e6e-40ee-af2a-4594445bcd69",
       "name": "Updating TaskGroups Row To Completed",
@@ -893,8 +840,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        912,
-        -1424
+        576,
+        -1392
       ],
       "id": "8e6b2596-9c65-4b4c-8556-90a6b2beb99c",
       "name": "Update Call Table With Report Id"
@@ -922,8 +869,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        800,
-        -1568
+        464,
+        -1536
       ],
       "typeVersion": 1,
       "id": "5ba75527-c740-401f-a1d7-48470d559bfc",
@@ -963,59 +910,6 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-4.1",
-          "mode": "list",
-          "cachedResultName": "gpt-4.1"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -3200,
-        -1440
-      ],
-      "id": "168ef2a7-3618-47a4-8cdb-252827f756fe",
-      "name": "OpenAI Chat Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "GwlwzOiOthioGCVV",
-          "name": "OpenAI TOP RATED COACH API KEY"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=You are an expert AI call transcript analyzer. Your task is to determine whether the USER's messages in the transcript indicate a real human conversation or a voicemail.\nImportant Instructions:\nONLY analyze the USER’s responses. Ignore all AGENT messages.\n\n\nClassify as “voicemail” only if the USER messages contain no real human responses — for example, if they are limited to automated system messages, menu options, or silent/incomplete entries.\n\n\nClassify as “human” if the USER messages show signs of a natural human conversation, such as greetings, specific answers, questions, elaboration, or engagement.\n\n\nDo not classify as voicemail if the USER responds meaningfully after hearing an IVR or pressing keys — even if the conversation begins with an automated system.\n\n\nYour analysis should be resilient to false positives, especially in cases where the conversation starts with automation but transitions to real human interaction.\n\n\nOutput:\n Only return raw JSON in the following format:\n{\n  \"classification\": \"voicemail\" | \"human\",\n  \"reason\": \"Short explanation for classification\"\n}\n\nTranscript:\n {{ JSON.stringify($('Get Call Details').item.json.body.data.transcript )}}",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2,
-      "position": [
-        -3184,
-        -1616
-      ],
-      "id": "50d4368f-d55c-4726-baba-6f6ea672538c",
-      "name": "Voicemail Detector Agent"
-    },
-    {
-      "parameters": {
-        "jsCode": "const rawOutput = $input.item.json.output;\nconst parsed = JSON.parse(rawOutput);\n\nreturn [{ json: parsed }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -2784,
-        -1728
-      ],
-      "id": "2f76b508-b9e5-4667-857b-fa8f2c8a6731",
-      "name": "Parse Voicemail Analysis Output into JSON"
-    },
-    {
-      "parameters": {
         "content": "## Detect Voicemail",
         "height": 440,
         "width": 660,
@@ -1042,7 +936,7 @@
           "conditions": [
             {
               "id": "c06f78f8-db9b-432e-8687-6e358ab043e7",
-              "leftValue": "={{ $('Parse Voicemail Analysis Output into JSON').item.json.classification }}",
+              "leftValue": "={{ $('Voicemail Detector Agent').item.json.choices[0].message.content.classification }}",
               "rightValue": "voicemail",
               "operator": {
                 "type": "string",
@@ -1058,7 +952,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2848,
+        -2928,
         -1488
       ],
       "id": "535f9723-42a8-407c-b283-ce94e341703f",
@@ -1071,47 +965,82 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3440,
-        -1568
+        -3184,
+        -1600
       ],
       "id": "832f3af7-ba5a-4ce9-bf05-2ea9308fa51a",
       "name": "Get Call Details"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert AI call transcript analyzer. Your task is to determine whether the USER's messages in the transcript indicate a real human conversation or a voicemail.\nImportant Instructions:\nONLY analyze the USER’s responses. Ignore all AGENT messages.\n\n\nClassify as “voicemail” only if the USER messages contain no real human responses — for example, if they are limited to automated system messages, menu options, or silent/incomplete entries.\n\n\nClassify as “human” if the USER messages show signs of a natural human conversation, such as greetings, specific answers, questions, elaboration, or engagement.\n\n\nDo not classify as voicemail if the USER responds meaningfully after hearing an IVR or pressing keys — even if the conversation begins with an automated system.\n\n\nYour analysis should be resilient to false positives, especially in cases where the conversation starts with automation but transitions to real human interaction.\n\n\nOutput:\n Only return raw JSON in the following format:\n{\n  \"classification\": \"voicemail\" | \"human\",\n  \"reason\": \"Short explanation for classification\"\n}\n\nTranscript:\n {{ JSON.stringify($('Get Call Details').item.json.body.data.transcript )}}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2992,
+        -1696
+      ],
+      "id": "fcd810df-c5c9-4abc-87e7-c77dd6f51bfd",
+      "name": "Voicemail Detector Agent",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert customer experience auditor. This is a follow-up inbound call between a customer (our AI agent) and a business. The customer had previously spoken with the same business in an outbound call.\n\nBelow is the detailed audit report of that previous outbound call for context:\n{{ JSON.stringify($('Combine').item.json) }}\n\nNow, you will be provided with the transcript of the follow-up inbound call.\n\nYour job is to objectively audit the business representative’s performance in this inbound call, comparing it where helpful to the prior outbound interaction. You are evaluating how the business treated the customer, not the customer’s behavior.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\n\nInstructions:\n- Do NOT wrap your output in any object like \"output\": or brackets [].\n- Start your output with { and end with } (no Markdown, no quotes around the whole output, no extra notes).\n- Keep the structure exactly as specified below.\n- Only use information from the transcript and the prior outbound report. Do not assume or invent anything.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or empty array [].\n- Be objective, concise, and actionable.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the business representative’s responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the customer’s questions?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive toward the customer?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the representative polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the customer\",\n      \"answer\": \"Response from the business representative\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags in the representative’s behavior (e.g., rude tone, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments from the representative\"\n  ],\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n\"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n\"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building — e.g., introduction, friendliness, rapport, empathy, use of customer’s name.\n    - Product/Service Knowledge and Education — e.g., clear, accurate, and detailed service info.\n    - Answering Questions — e.g., professionalism, thorough answers, asking if a customer needs further help.\n    - Ability to Upsell and Cross-Sell — e.g., mentioning/promoting relevant services.\n    - Closing for Appointment and Call to Action — e.g., next steps, follow-up request, securing a commitment.\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').first().json) }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1152,
+        -1408
+      ],
+      "id": "ef77c18f-6d65-494f-aaed-fd8cd863da08",
+      "name": "Call Analysis AI",
+      "credentials": {
+        "openAiApi": {
+          "id": "GwlwzOiOthioGCVV",
+          "name": "OpenAI TOP RATED COACH API KEY"
+        }
+      }
     }
   ],
   "connections": {
-    "CHATGPT": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Call Analysis AI",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse AI Analysis Output into JSON": {
-      "main": [
-        [
-          {
-            "node": "End AI Analysis Task in DB",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call Analysis AI": {
-      "main": [
-        [
-          {
-            "node": "Parse AI Analysis Output into JSON",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get a specific business": {
       "main": [
         [
@@ -1354,39 +1283,6 @@
         ]
       ]
     },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Voicemail Detector Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Voicemail Detector Agent": {
-      "main": [
-        [
-          {
-            "node": "Parse Voicemail Analysis Output into JSON",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse Voicemail Analysis Output into JSON": {
-      "main": [
-        [
-          {
-            "node": "Continue if its not a voicemail",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Continue if its not a voicemail": {
       "main": [
         [
@@ -1408,6 +1304,28 @@
           }
         ]
       ]
+    },
+    "Voicemail Detector Agent": {
+      "main": [
+        [
+          {
+            "node": "Continue if its not a voicemail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Analysis AI": {
+      "main": [
+        [
+          {
+            "node": "End AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1418,7 +1336,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b90c8e81-35a8-4f64-9381-2abc65429b69",
+  "versionId": "fbfd0370-2b0a-4935-a236-98a91359feed",
   "triggerCount": 1,
   "shared": [
     {
@@ -1443,7 +1361,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-24T07:00:00.000Z",
+              "updatedAt": "2025-10-25T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1461,7 +1379,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-24",
+              "lastActiveAt": "2025-10-25",
               "isPending": false
             }
           }
