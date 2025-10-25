@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-25T14:55:53.036Z",
-  "updatedAt": "2025-10-02T09:39:02.000Z",
+  "updatedAt": "2025-10-24T22:09:44.000Z",
   "id": "sT8U3ZSacStxBYdJ",
   "name": "Delete Template Business (DANGER)",
   "active": false,
@@ -25,7 +25,7 @@
           "parameters": [
             {
               "name": "id",
-              "value": "=eq.Bruh Bruh"
+              "value": "=eq.Fuzail Fitness"
             }
           ]
         },
@@ -315,8 +315,7 @@
       ],
       "id": "2e66b2c3-ca05-4491-9a48-f204eb0f052f",
       "name": "Delete Call Transcripts",
-      "alwaysOutputData": true,
-      "disabled": true
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -392,8 +391,7 @@
       ],
       "id": "b15b1bad-654b-4083-b2a1-e0e58bb65bfb",
       "name": "Delete Questionaires",
-      "alwaysOutputData": true,
-      "disabled": true
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -625,65 +623,8 @@
   },
   "staticData": null,
   "meta": null,
-  "pinData": {
-    "GET Businesses": [
-      {
-        "json": {
-          "id": "Bruh Bruh",
-          "business_name": "Bruh Fitness",
-          "website": "https://www.crunch.com/",
-          "phone_number": "+19547993801",
-          "email": "fuzailsohail40@gmail.com",
-          "address": "801 University Dr",
-          "latitude": 26.243696,
-          "longitude": -80.252073,
-          "formatted_address": "801 N University Dr, Coral Springs, FL 33071",
-          "street_number": "801",
-          "street_name": "University Dr",
-          "city": "Coral Springs",
-          "state_province": "Florida",
-          "postal_code": "33071",
-          "country": "USA",
-          "country_code": "US",
-          "plus_code": null,
-          "timezone": "America/New_York",
-          "location_metadata": {},
-          "google_maps_url": "https://maps.app.goo.gl/ZVjmzEw2DcJQEYVDA",
-          "facebook_handle": null,
-          "instagram_handle": null,
-          "linkedin_handle": null,
-          "twitter_handle": null,
-          "youtube_channel": null,
-          "owner_id": "ac222d33-8c35-4411-8655-c4027bd34198",
-          "created_at": "2025-10-02T09:30:30.376926+00:00",
-          "updated_at": "2025-10-02T09:32:29.157401+00:00",
-          "current_audit_id": "50f4bce2-3d6c-4233-b74c-b3b61c5f2e3f",
-          "last_audited_at": "2025-10-02T09:32:29.157401+00:00",
-          "is_claimed": true,
-          "logo": null,
-          "business_category": [
-            "gym"
-          ]
-        }
-      }
-    ],
-    "Get GeneratedCallReports": [
-      {
-        "json": {}
-      }
-    ],
-    "GET Calls": [
-      {
-        "json": {}
-      }
-    ],
-    "Delete Calls": [
-      {
-        "json": {}
-      }
-    ]
-  },
-  "versionId": "2af7e44f-0ef7-431b-80ad-0de7fb5192d4",
+  "pinData": {},
+  "versionId": "c6d0daea-0088-4f04-a97b-eb3804af66df",
   "triggerCount": 0,
   "shared": [
     {
@@ -708,7 +649,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-24T07:00:00.000Z",
+              "updatedAt": "2025-10-25T07:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -726,7 +667,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-24",
+              "lastActiveAt": "2025-10-25",
               "isPending": false
             }
           }
