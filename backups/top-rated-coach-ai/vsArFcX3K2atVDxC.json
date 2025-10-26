@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-12T11:29:58.203Z",
-  "updatedAt": "2025-10-24T23:22:20.000Z",
+  "updatedAt": "2025-10-26T06:12:56.000Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
   "active": true,
@@ -268,7 +268,7 @@
     {
       "parameters": {
         "content": "## ERROR ZONE\n",
-        "height": 500,
+        "height": 644,
         "width": 4040,
         "color": 3
       },
@@ -290,8 +290,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -2096,
-        1024
+        -2128,
+        1216
       ],
       "typeVersion": 1,
       "id": "81cc73d1-5160-4a05-9b2d-1695f11f800c",
@@ -1183,8 +1183,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2096,
-        848
+        -2112,
+        880
       ],
       "id": "ee1137da-0964-4b6a-8880-425be0cb7b31",
       "name": "Fail ElevenLabs Task in DB"
@@ -1227,8 +1227,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1888,
-        848
+        -1456,
+        864
       ],
       "id": "d75a9e07-7f1f-4fab-be94-6cf76d87ae64",
       "name": "Fail Outbound TaskGroup"
@@ -2199,7 +2199,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        592,
+        544,
         832
       ],
       "id": "42acee3d-e706-414f-8851-ad9e576f933a",
@@ -2400,7 +2400,7 @@
       "typeVersion": 4.2,
       "position": [
         1488,
-        992
+        1040
       ],
       "id": "f3e96e5c-9ec9-48a5-8e5b-e82448f27546",
       "name": "Fail Outbound Task1"
@@ -2453,7 +2453,7 @@
       "typeVersion": 2.2,
       "position": [
         1264,
-        1024
+        1040
       ],
       "alwaysOutputData": false
     },
@@ -2582,8 +2582,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -1680,
-        848
+        -1232,
+        864
       ],
       "id": "61a85d35-8943-4e83-9d65-dbb57703344c",
       "name": "No Operation, do nothing"
@@ -2705,7 +2705,7 @@
         "messages": {
           "values": [
             {
-              "content": "=You are an expert customer experience auditor. You are analyzing a phone call between a customer (our AI agent) and a business. I will provide you with the transcript of the entire call. Based on this transcript, your job is to audit the customer experience quality by extracting and evaluating key metrics.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\nYour output must:\n- Be in valid JSON format.\n- Start with { and end with } (no Markdown, no quotes around the whole output, no extra text).\n- Contain all the fields below exactly as named.\n- Keep the structure exactly as specified.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or an empty array [].\n- Be objective, concise, and actionable.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the questions asked?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the rep polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the agent\",\n      \"answer\": \"Response from the business\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags detected during the call (e.g., rude behavior, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments in the interaction\"\n  ],\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n  \"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n  \"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building\n    - Product/Service Knowledge and Education\n    - Answering Questions\n    - Ability to Upsell and Cross-Sell\n    - Closing for Appointment and Call to Action\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nOnly use the information from the transcript. Do not assume or invent details.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').item.json) }}"
+              "content": "=You are an expert customer experience auditor. You are analyzing a phone call between a customer (our AI agent) and a business. I will provide you with the transcript of the entire call. Based on this transcript, your job is to audit the customer experience quality by extracting and evaluating key metrics.\n\nConduct a highly detailed and rigorous analysis. Do not overlook any details, no matter how minor, and analyze both common and easily neglected aspects of the interaction.\n\nYour output must:\n- Be in valid JSON format.\n- Start with { and end with } (no Markdown, no quotes around the whole output, no extra text).\n- Contain all the fields below exactly as named.\n- Keep the structure exactly as specified.\n- If a field cannot be filled due to lack of data, use an empty string \"\" or an empty array [].\n- Be objective, concise, and actionable.\n\n\nCONTEXT to keep in mind for this analysis:\nBusiness Representative is one with role \"USER\" in the transcript.\nCUSTOMER is one with role \"AGENT\" in the transcript.\n\nJSON structure to output:\n{\n  \"overall_summary\": \"Brief summary of the interaction and the business’s overall behavior.\",\n  \"tone_analysis\": {\n    \"representative_tone\": \"Describe the tone of the business representative (e.g., friendly, rushed, indifferent, enthusiastic).\",\n    \"tone_consistency\": \"Was the tone consistent throughout the call?\"\n  },\n  \"response_quality\": {\n    \"clarity\": \"Were the responses clear and easy to understand?\",\n    \"accuracy\": \"Did the answers match the questions asked?\",\n    \"helpfulness\": \"Was the representative helpful or dismissive?\"\n  },\n  \"engagement_level\": \"Did the representative show interest in helping the customer?\",\n  \"professionalism\": \"Was the rep polite, respectful, and professional?\",\n  \"script_adherence\": \"If applicable, did the representative follow any visible script or structure?\",\n  \"call_opening\": \"Evaluation of how the call was opened by the representative (e.g., professional greeting, clear identification).\",\n  \"wait_times\": {\n    \"initial_wait_time\": \"How long before the business answered the call?\",\n    \"on_hold_time\": \"Was there any hold time during the call?\"\n  },\n  \"question_handling\": [\n    {\n      \"question\": \"Original question asked by the agent\",\n      \"answer\": \"Response from the business\",\n      \"evaluation\": \"Was the question fully answered, partially answered, or avoided?\"\n    }\n  ],\n  \"issues_detected\": [\n    \"List of any problems or red flags detected during the call (e.g., rude behavior, lack of product knowledge)\"\n  ],\n  \"positive_highlights\": [\n    \"List of any good practices or positive moments in the interaction\"\n  ],\n  \"engagement_and_relationship_building_score\": 0,\n  \"product_service_knowledge_and_education_score\": 0,\n  \"answering_questions_score\": 0,\n  \"ability_to_upsell_and_cross_sell_score\": 0,\n  \"closing_for_appointment_and_call_to_action_score\": 0,\n  \"overall_success_rate_out_of_100\": 0,\n  \"appointment_booked\": \"Did the call outcome result in Ana booking the visit? (true/false)\",\n  \"improvement_ideas\": [\n    \"Improvement idea 1\",\n    \"Improvement idea 2\",\n    \"Improvement idea 3\"\n  ],\n  \"agent_name\": \"Name of the business representative (NOT OUR AI AGENT \"ANA\") if provided in the transcript, otherwise empty\"\n}\n\nScoring guidelines for numeric fields:\n- The five *_score fields (each out of 20) are based on:\n    - Engagement and Relationship Building\n    - Product/Service Knowledge and Education\n    - Answering Questions\n    - Ability to Upsell and Cross-Sell\n    - Closing for Appointment and Call to Action\n- Sum these five scores to get `overall_success_rate_out_of_100`.\n- Improvement ideas should be 3 concise, actionable bullet points based on the lowest scoring areas.\n\nOnly use the information from the transcript. Do not assume or invent details.\n\nCall Data And Transcript:\n{{ JSON.stringify($('Convert Transcript Object into AI Friendly').item.json) }}"
             }
           ]
         },
@@ -2727,6 +2727,148 @@
           "name": "OpenAI TOP RATED COACH API KEY"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "## 429 error `too_many_concurrent_requests`.",
+        "height": 100,
+        "width": 740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2128,
+        1328
+      ],
+      "typeVersion": 1,
+      "id": "e3a6d3eb-bc0d-44f3-aac4-41f0340df358",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "HTTP 400 error",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "c7819473-8575-45ae-affa-67706c6e94f8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HTTP 400 error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6734e6df-32e4-4c99-98b5-074d8c35bf60",
+                    "leftValue": "={{ $json.error.status }}",
+                    "rightValue": 500,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "500 server error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a69a867e-8b19-48a1-8af7-b4f9dc1603a8",
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "429",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Busy Error"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1664,
+        944
+      ],
+      "id": "48de09cd-ce66-4bc6-8a07-14f65c0d8049",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b3414326-2127-4752-ab20-bf74b5df6a76",
+              "leftValue": "={{ $('Increment Counter').item.json.counter }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "id": "4e9bfa67-5979-4a4e-bd7e-69076e2ea59b",
+      "name": "If calling retries are = 3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1888,
+        880
+      ],
+      "alwaysOutputData": false
     }
   ],
   "connections": {
@@ -3080,7 +3222,7 @@
       "main": [
         [
           {
-            "node": "Fail Outbound TaskGroup",
+            "node": "If calling retries are = 3",
             "type": "main",
             "index": 0
           }
@@ -3570,17 +3712,66 @@
           }
         ]
       ]
+    },
+    "If calling retries are = 3": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound TaskGroup",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Fail Outbound TaskGroup",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get  5 mins Ahead of Rescheduling Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get  5 mins Ahead of Rescheduling Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveExecutionProgress": true,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4d6d4301-5bec-4164-99b6-9bdbf629722c",
+  "versionId": "8e31906b-2e97-4cb6-b505-d31a75209925",
   "triggerCount": 1,
   "shared": [
     {
@@ -3605,7 +3796,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-25T07:00:00.000Z",
+              "updatedAt": "2025-10-26T05:15:48.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -3623,7 +3814,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-25",
+              "lastActiveAt": "2025-10-26",
               "isPending": false
             }
           }
