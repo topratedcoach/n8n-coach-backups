@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-09T12:27:21.079Z",
-  "updatedAt": "2025-10-08T14:56:42.000Z",
+  "updatedAt": "2025-10-25T20:04:05.000Z",
   "id": "ZTUKsMgbGWeuM19j",
   "name": "Scrape Google Maps Places Data- Fuzail",
   "active": false,
@@ -62,7 +62,8 @@
         960
       ],
       "id": "396409a1-40b8-4477-9ef0-5ba15728bdd1",
-      "name": "When clicking ‘Execute workflow’"
+      "name": "When clicking ‘Execute workflow’",
+      "disabled": true
     },
     {
       "parameters": {
@@ -92,7 +93,9 @@
         560,
         224
       ],
-      "id": "90f90566-0b22-4361-a34f-1ad78123fff9"
+      "id": "90f90566-0b22-4361-a34f-1ad78123fff9",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -123,7 +126,9 @@
         224
       ],
       "id": "42fb2ddb-ff56-43de-bc77-23eb8d165c7c",
-      "executeOnce": false
+      "executeOnce": false,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -232,6 +237,8 @@
         224
       ],
       "id": "bba7035e-2043-4ff8-8f3e-ff1f277266b5",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "AJHc2KUB2ZeWQuHg",
@@ -301,8 +308,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 2,
       "position": [
-        -112,
-        672
+        -160,
+        688
       ],
       "id": "b192974e-3a10-4490-9272-725bc8153b5b",
       "credentials": {
@@ -326,6 +333,8 @@
         224
       ],
       "id": "5b1236ae-9943-4e04-b6e7-95e538a9d552",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "AJHc2KUB2ZeWQuHg",
@@ -338,8 +347,7 @@
         "rule": {
           "interval": [
             {
-              "field": "seconds",
-              "secondsInterval": 10
+              "field": "seconds"
             }
           ]
         }
@@ -447,7 +455,7 @@
             },
             {
               "name": "select",
-              "value": "id"
+              "value": "id,business_name"
             }
           ]
         },
@@ -478,7 +486,7 @@
       ],
       "id": "14a1d262-82c2-4c1b-a486-addf1d645901",
       "name": "Get Businesses id from DB",
-      "executeOnce": true,
+      "executeOnce": false,
       "alwaysOutputData": true
     },
     {
@@ -534,10 +542,10 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1gTuBe3INOgzjCwWgzq5gZahHqcyNfOPlHA2X7LRMzxo",
+          "value": "1_7MEum1QlBEYQcPc6gWSmjGVuNkw76-__0m0MnqZ2Bk",
           "mode": "list",
-          "cachedResultName": "Hi",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gTuBe3INOgzjCwWgzq5gZahHqcyNfOPlHA2X7LRMzxo/edit?usp=drivesdk"
+          "cachedResultName": "Existing IDs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_7MEum1QlBEYQcPc6gWSmjGVuNkw76-__0m0MnqZ2Bk/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -550,7 +558,7 @@
           "values": [
             {
               "column": "business_name",
-              "fieldValue": "={{ $('Get Businesses id from DB').item.json?.result?.name ?? '' }}"
+              "fieldValue": "={{ $('Get Businesses id from DB').item.json?.business_name ?? '' }}"
             }
           ]
         },
@@ -577,7 +585,7 @@
           "interval": [
             {
               "field": "seconds",
-              "secondsInterval": 10
+              "secondsInterval": 20
             }
           ]
         }
@@ -585,11 +593,168 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -304,
-        688
+        -352,
+        704
       ],
       "id": "362e7e43-b1b2-40c6-b93d-c9cc15e06e9a",
-      "name": "Schedule Trigger1"
+      "name": "Schedule Trigger1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sheetId": "1_7MEum1QlBEYQcPc6gWSmjGVuNkw76-__0m0MnqZ2Bk",
+        "range": "Sheet1!A:A",
+        "options": {}
+      },
+      "name": "Get Businesses1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 2,
+      "position": [
+        128,
+        1120
+      ],
+      "id": "aa5f07bd-6c51-4c19-ac38-59fe79d53cde",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        1136
+      ],
+      "id": "7467c2a0-ba77-4ce0-9c51-4ed503fe6e8c",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c",
+          "mode": "list",
+          "cachedResultName": "Business Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12o9jzlPCtOgOXoyCHgtNM_p2IEBPgfw7YrpK5j-5s0c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "valueToMatchOn": "={{ $('Get Businesses1').item.json.id }}",
+        "fieldsUi": {
+          "values": [
+            {
+              "column": "business_name",
+              "fieldValue": "="
+            },
+            {
+              "column": "business_category",
+              "fieldValue": "="
+            },
+            {
+              "column": "website",
+              "fieldValue": "="
+            },
+            {
+              "column": "phone_number",
+              "fieldValue": "="
+            },
+            {
+              "column": "address",
+              "fieldValue": "="
+            },
+            {
+              "column": "latitude",
+              "fieldValue": "="
+            },
+            {
+              "column": "longitude",
+              "fieldValue": "="
+            },
+            {
+              "column": "formatted_address",
+              "fieldValue": "="
+            },
+            {
+              "column": "street_number",
+              "fieldValue": "="
+            },
+            {
+              "column": "city",
+              "fieldValue": "="
+            },
+            {
+              "column": "state_province",
+              "fieldValue": "="
+            },
+            {
+              "column": "postal_code",
+              "fieldValue": "="
+            },
+            {
+              "column": "country",
+              "fieldValue": "="
+            },
+            {
+              "column": "country_code",
+              "fieldValue": "="
+            },
+            {
+              "column": "plus_code",
+              "fieldValue": "="
+            },
+            {
+              "column": "timezone",
+              "fieldValue": "="
+            },
+            {
+              "column": "google_maps_url",
+              "fieldValue": "="
+            },
+            {
+              "column": "owner_id"
+            },
+            {
+              "column": "street_name",
+              "fieldValue": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Google Sheets - Write Data2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        352,
+        1104
+      ],
+      "id": "8af1d4d1-5cc3-47be-9e97-edd14deb71f9",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AJHc2KUB2ZeWQuHg",
+          "name": "Fuzail Sheets Account"
+        }
+      }
     }
   ],
   "connections": {
@@ -666,7 +831,13 @@
     },
     "Schedule Trigger": {
       "main": [
-        []
+        [
+          {
+            "node": "Get Businesses Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "If business is in CA": {
@@ -731,6 +902,39 @@
           }
         ]
       ]
+    },
+    "Google Sheets - Write Data1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get Businesses1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Businesses1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Write Data2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -742,13 +946,34 @@
     },
     "node:Schedule Trigger1": {
       "recurrenceRules": []
+    },
+    "node:Schedule Trigger2": {
+      "recurrenceRules": []
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "79be8c1f-ed8c-4836-a853-ebfec0326092",
+  "pinData": {
+    "Schedule Trigger1": [
+      {
+        "json": {
+          "timestamp": "2025-10-25T15:37:40.002-04:00",
+          "Readable date": "October 25th 2025, 3:37:40 pm",
+          "Readable time": "3:37:40 pm",
+          "Day of week": "Saturday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "25",
+          "Hour": "15",
+          "Minute": "37",
+          "Second": "40",
+          "Timezone": "America/New_York (UTC-04:00)"
+        }
+      }
+    ]
+  },
+  "versionId": "3cc28096-d022-49ef-a0b6-7410cf610c43",
   "triggerCount": 1,
   "shared": [
     {
@@ -773,7 +998,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-25T07:00:00.000Z",
+              "updatedAt": "2025-10-26T05:15:48.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -791,7 +1016,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-25",
+              "lastActiveAt": "2025-10-26",
               "isPending": false
             }
           }
