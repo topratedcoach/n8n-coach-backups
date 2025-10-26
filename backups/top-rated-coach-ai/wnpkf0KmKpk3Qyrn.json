@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-24T21:15:09.000Z",
+  "updatedAt": "2025-10-26T06:36:50.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -46,8 +46,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -880,
-        2000
+        -784,
+        2240
       ],
       "id": "50ac813b-3101-4eb9-bfd1-d08fd61c6caf",
       "name": "Login"
@@ -480,42 +480,6 @@
     },
     {
       "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/businesses",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "current_audit_id",
-              "value": "=is.null"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{$vars.Supabase_API_Key}}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -496,
-        2224
-      ],
-      "id": "ed22dcde-f139-495c-b4ab-58749bb1b0db",
-      "name": "List UnAudited Businesses"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "https://fvcimuqwqmsgbrybiogg.supabase.co/rest/v1/audits",
         "sendHeaders": true,
@@ -695,11 +659,63 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1104,
-        2000
+        -1008,
+        2240
       ],
       "id": "cc19abcc-21e8-4299-b870-6acd5fc3cedf",
       "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/businesses",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "current_audit_id",
+              "value": "is.null"
+            },
+            {
+              "name": "created_at",
+              "value": "gt.2025-10-08 15:06:36.874865+00"
+            },
+            {
+              "name": "country_code",
+              "value": "in.(US,CA)"
+            },
+            {
+              "name": "phone_number",
+              "value": "not.is.null"
+            },
+            {
+              "name": "select",
+              "value": "id,business_name"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$vars.Supabase_API_Key}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -544,
+        2240
+      ],
+      "id": "d339432e-3b4b-414d-8498-2f0065f94ffd",
+      "name": "List UnAudited US/CA Businesses"
     }
   ],
   "connections": {
@@ -707,7 +723,7 @@
       "main": [
         [
           {
-            "node": "Create a new business",
+            "node": "List UnAudited US/CA Businesses",
             "type": "main",
             "index": 0
           }
@@ -778,17 +794,6 @@
         []
       ]
     },
-    "List UnAudited Businesses": {
-      "main": [
-        [
-          {
-            "node": "Create Audit for User Business",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "List Unscored Audits": {
       "main": [
         [
@@ -839,6 +844,17 @@
         [
           {
             "node": "Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List UnAudited US/CA Businesses": {
+      "main": [
+        [
+          {
+            "node": "Create Audit for User Business",
             "type": "main",
             "index": 0
           }
@@ -906,7 +922,7 @@
       }
     ]
   },
-  "versionId": "ed3c39ce-b592-46cc-8f0f-5b9b933d495f",
+  "versionId": "9f7c30bf-52a1-4ac2-bfad-240c7b529e9b",
   "triggerCount": 1,
   "shared": [
     {
@@ -931,7 +947,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-25T07:00:00.000Z",
+              "updatedAt": "2025-10-26T05:15:48.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -949,7 +965,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-25",
+              "lastActiveAt": "2025-10-26",
               "isPending": false
             }
           }
