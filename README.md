@@ -4,7 +4,7 @@
 
 ## 📊 Backup Summary
 
-- **Last Updated**: 2025-10-25 07:00:33 UTC
+- **Last Updated**: 2025-10-26 07:00:35 UTC
 - **Total Workflows**: 26
 - **Active Workflows**: 26
 - **Repository**: [topratedcoach/n8n-coach-backups](https://github.com/topratedcoach/n8n-coach-backups)
@@ -18,7 +18,7 @@
 
 - **Workflow ID**: `pvwsCL45x2kk2u8Q`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:24 UTC
+- **Last Backup**: 2025-10-26 07:00:27 UTC
 - **File**: [backups/top-rated-coach-ai/pvwsCL45x2kk2u8Q.json](./backups/top-rated-coach-ai/pvwsCL45x2kk2u8Q.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/pvwsCL45x2kk2u8Q.json)
 
@@ -28,7 +28,7 @@
 
 - **Workflow ID**: `splNSU4xwWAKjVCR`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:26 UTC
+- **Last Backup**: 2025-10-26 07:00:28 UTC
 - **File**: [backups/top-rated-coach-ai/splNSU4xwWAKjVCR.json](./backups/top-rated-coach-ai/splNSU4xwWAKjVCR.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/splNSU4xwWAKjVCR.json)
 
@@ -38,7 +38,7 @@
 
 - **Workflow ID**: `vsArFcX3K2atVDxC`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:29 UTC
+- **Last Backup**: 2025-10-26 07:00:32 UTC
 - **File**: [backups/top-rated-coach-ai/vsArFcX3K2atVDxC.json](./backups/top-rated-coach-ai/vsArFcX3K2atVDxC.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/vsArFcX3K2atVDxC.json)
 
@@ -48,7 +48,7 @@
 
 - **Workflow ID**: `FYCdJ9WBDKvj8mWI`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:14 UTC
+- **Last Backup**: 2025-10-26 07:00:15 UTC
 - **File**: [backups/top-rated-coach-ai/FYCdJ9WBDKvj8mWI.json](./backups/top-rated-coach-ai/FYCdJ9WBDKvj8mWI.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/FYCdJ9WBDKvj8mWI.json)
 
@@ -58,7 +58,7 @@
 
 - **Workflow ID**: `Ob3Qmyn6LhCtVaYP`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:17 UTC
+- **Last Backup**: 2025-10-26 07:00:20 UTC
 - **File**: [backups/top-rated-coach-ai/Ob3Qmyn6LhCtVaYP.json](./backups/top-rated-coach-ai/Ob3Qmyn6LhCtVaYP.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/Ob3Qmyn6LhCtVaYP.json)
 
@@ -68,7 +68,7 @@
 
 - **Workflow ID**: `vunHkbizyUk9GJ61`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:30 UTC
+- **Last Backup**: 2025-10-26 07:00:32 UTC
 - **File**: [backups/top-rated-coach-ai/vunHkbizyUk9GJ61.json](./backups/top-rated-coach-ai/vunHkbizyUk9GJ61.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/vunHkbizyUk9GJ61.json)
 
@@ -78,179 +78,179 @@
 
 - **Workflow ID**: `Vlrx3iE4m0GKiVfK`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:21 UTC
+- **Last Backup**: 2025-10-26 07:00:23 UTC
 - **File**: [backups/top-rated-coach-ai/Vlrx3iE4m0GKiVfK.json](./backups/top-rated-coach-ai/Vlrx3iE4m0GKiVfK.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/Vlrx3iE4m0GKiVfK.json)
 
 ---
 
-### 8. 📞 Clean Up Duplicate DB Mess And ReAnalyze existing Calls
+### 8. 🤖 Centralized n8n Error Management System with Automated Email Alerts via Gmail
+
+- **Workflow ID**: `Kmj8SVVcrkzq4g5F`
+- **Status**: ✅ Active
+- **Last Backup**: 2025-10-26 07:00:18 UTC
+- **File**: [backups/top-rated-coach-ai/Kmj8SVVcrkzq4g5F.json](./backups/top-rated-coach-ai/Kmj8SVVcrkzq4g5F.json)
+- **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/Kmj8SVVcrkzq4g5F.json)
+
+---
+
+### 9. 📞 Clean Up Duplicate DB Mess And ReAnalyze existing Calls
 
 - **Workflow ID**: `P9k4XwIGZkAJDbw4`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:18 UTC
+- **Last Backup**: 2025-10-26 07:00:21 UTC
 - **File**: [backups/top-rated-coach-ai/P9k4XwIGZkAJDbw4.json](./backups/top-rated-coach-ai/P9k4XwIGZkAJDbw4.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/P9k4XwIGZkAJDbw4.json)
 
 ---
 
-### 9. 🤖 Clean Up Mess DB Elevenlabs Credits failure
+### 10. 🤖 Clean Up Mess DB Elevenlabs Credits failure
 
 - **Workflow ID**: `vXHgR1FNbEY48KLH`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:27 UTC
+- **Last Backup**: 2025-10-26 07:00:30 UTC
 - **File**: [backups/top-rated-coach-ai/vXHgR1FNbEY48KLH.json](./backups/top-rated-coach-ai/vXHgR1FNbEY48KLH.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/vXHgR1FNbEY48KLH.json)
 
 ---
 
-### 10. ⚠️ Create Chat Message (DELETE LATER)
+### 11. ⚠️ Create Chat Message (DELETE LATER)
 
 - **Workflow ID**: `dzqrhlxZOIgHuw5O`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:23 UTC
+- **Last Backup**: 2025-10-26 07:00:26 UTC
 - **File**: [backups/top-rated-coach-ai/dzqrhlxZOIgHuw5O.json](./backups/top-rated-coach-ai/dzqrhlxZOIgHuw5O.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/dzqrhlxZOIgHuw5O.json)
 
 ---
 
-### 11. 🤖 Create JSON of smartline transcripts - FUZAIL
+### 12. 🤖 Create JSON of smartline transcripts - FUZAIL
 
 - **Workflow ID**: `deQsJBNJbT8BkW0I`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:23 UTC
+- **Last Backup**: 2025-10-26 07:00:25 UTC
 - **File**: [backups/top-rated-coach-ai/deQsJBNJbT8BkW0I.json](./backups/top-rated-coach-ai/deQsJBNJbT8BkW0I.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/deQsJBNJbT8BkW0I.json)
 
 ---
 
-### 12. 🔕 Cron Job To Trigger OutboundCall Workflows (Depreciated-Shifted to Cron job Supabase)
+### 13. 🔕 Cron Job To Trigger OutboundCall Workflows (Depreciated-Shifted to Cron job Supabase)
 
 - **Workflow ID**: `vE8ayrdMSXBZ5Bjx`
 - **Status**: ✅ Active (Deprecated)
-- **Last Backup**: 2025-10-25 07:00:27 UTC
+- **Last Backup**: 2025-10-26 07:00:29 UTC
 - **File**: [backups/top-rated-coach-ai/vE8ayrdMSXBZ5Bjx.json](./backups/top-rated-coach-ai/vE8ayrdMSXBZ5Bjx.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/vE8ayrdMSXBZ5Bjx.json)
 
 ---
 
-### 13. 🔕 Cron Job To update Audit Status (Depreciated-Shifted to Cron job Supabase)
+### 14. 🔕 Cron Job To update Audit Status (Depreciated-Shifted to Cron job Supabase)
 
 - **Workflow ID**: `GdC8MtR5d9Lm9R62`
 - **Status**: ✅ Active (Deprecated)
-- **Last Backup**: 2025-10-25 07:00:15 UTC
+- **Last Backup**: 2025-10-26 07:00:16 UTC
 - **File**: [backups/top-rated-coach-ai/GdC8MtR5d9Lm9R62.json](./backups/top-rated-coach-ai/GdC8MtR5d9Lm9R62.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/GdC8MtR5d9Lm9R62.json)
 
 ---
 
-### 14. ⚠️ Delete Template Business (DANGER)
+### 15. ⚠️ Delete Template Business (DANGER)
 
 - **Workflow ID**: `sT8U3ZSacStxBYdJ`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:25 UTC
+- **Last Backup**: 2025-10-26 07:00:27 UTC
 - **File**: [backups/top-rated-coach-ai/sT8U3ZSacStxBYdJ.json](./backups/top-rated-coach-ai/sT8U3ZSacStxBYdJ.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/sT8U3ZSacStxBYdJ.json)
 
 ---
 
-### 15. ⚠️ Delete USER  - DANGER
+### 16. ⚠️ Delete USER  - DANGER
 
 - **Workflow ID**: `E7kXqgU4iMB7Gzl5`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:11 UTC
+- **Last Backup**: 2025-10-26 07:00:12 UTC
 - **File**: [backups/top-rated-coach-ai/E7kXqgU4iMB7Gzl5.json](./backups/top-rated-coach-ai/E7kXqgU4iMB7Gzl5.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/E7kXqgU4iMB7Gzl5.json)
 
 ---
 
-### 16. 🔕 Fail InboundAnalysis Task after 72 hour deadline (Depreciated-Shifted to Cron job Supabase)
+### 17. 🔕 Fail InboundAnalysis Task after 72 hour deadline (Depreciated-Shifted to Cron job Supabase)
 
 - **Workflow ID**: `cjKTvVQeI0J9xkV4`
 - **Status**: ✅ Active (Deprecated)
-- **Last Backup**: 2025-10-25 07:00:22 UTC
+- **Last Backup**: 2025-10-26 07:00:24 UTC
 - **File**: [backups/top-rated-coach-ai/cjKTvVQeI0J9xkV4.json](./backups/top-rated-coach-ai/cjKTvVQeI0J9xkV4.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/cjKTvVQeI0J9xkV4.json)
 
 ---
 
-### 17. 🔔 Post Call Webhook Trigger
+### 18. 🔔 Post Call Webhook Trigger
 
 - **Workflow ID**: `5q23rjNh39FQdAxa`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:10 UTC
+- **Last Backup**: 2025-10-26 07:00:11 UTC
 - **File**: [backups/top-rated-coach-ai/5q23rjNh39FQdAxa.json](./backups/top-rated-coach-ai/5q23rjNh39FQdAxa.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/5q23rjNh39FQdAxa.json)
 
 ---
 
-### 18. 🤖 PreCall Initia Data For ElevenLabs (Fuzail)
+### 19. 🤖 PreCall Initia Data For ElevenLabs (Fuzail)
 
 - **Workflow ID**: `CcHBrELrSsWhXNYT`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:11 UTC
+- **Last Backup**: 2025-10-26 07:00:12 UTC
 - **File**: [backups/top-rated-coach-ai/CcHBrELrSsWhXNYT.json](./backups/top-rated-coach-ai/CcHBrELrSsWhXNYT.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/CcHBrELrSsWhXNYT.json)
 
 ---
 
-### 19. 🔕 RAG CHATBOT (Depreciated-Shifted to Cron job Supabase)
+### 20. 🔕 RAG CHATBOT (Depreciated-Shifted to Cron job Supabase)
 
 - **Workflow ID**: `U7C7aO94OeFecIsi`
 - **Status**: ✅ Active (Deprecated)
-- **Last Backup**: 2025-10-25 07:00:20 UTC
+- **Last Backup**: 2025-10-26 07:00:22 UTC
 - **File**: [backups/top-rated-coach-ai/U7C7aO94OeFecIsi.json](./backups/top-rated-coach-ai/U7C7aO94OeFecIsi.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/U7C7aO94OeFecIsi.json)
 
 ---
 
-### 20. 🔕 Rag Chatbot Development (Depreciated-Shifted to Cron job Supabase)
+### 21. 🔕 Rag Chatbot Development (Depreciated-Shifted to Cron job Supabase)
 
 - **Workflow ID**: `vpPcWd2Nqogu6whh`
 - **Status**: ✅ Active (Deprecated)
-- **Last Backup**: 2025-10-25 07:00:28 UTC
+- **Last Backup**: 2025-10-26 07:00:31 UTC
 - **File**: [backups/top-rated-coach-ai/vpPcWd2Nqogu6whh.json](./backups/top-rated-coach-ai/vpPcWd2Nqogu6whh.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/vpPcWd2Nqogu6whh.json)
 
 ---
 
-### 21. 💬 RESET USER CHATS AND PERSONALITY AND CHAT SUMMARIES
+### 22. 💬 RESET USER CHATS AND PERSONALITY AND CHAT SUMMARIES
 
 - **Workflow ID**: `KtuBSYNAuSvFOUPy`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:16 UTC
+- **Last Backup**: 2025-10-26 07:00:19 UTC
 - **File**: [backups/top-rated-coach-ai/KtuBSYNAuSvFOUPy.json](./backups/top-rated-coach-ai/KtuBSYNAuSvFOUPy.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/KtuBSYNAuSvFOUPy.json)
 
 ---
 
-### 22. 🤖 Scrape Google Maps Places Data- Fuzail
+### 23. 🤖 Scrape Google Maps Places Data- Fuzail
 
 - **Workflow ID**: `ZTUKsMgbGWeuM19j`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:21 UTC
+- **Last Backup**: 2025-10-26 07:00:24 UTC
 - **File**: [backups/top-rated-coach-ai/ZTUKsMgbGWeuM19j.json](./backups/top-rated-coach-ai/ZTUKsMgbGWeuM19j.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/ZTUKsMgbGWeuM19j.json)
 
 ---
 
-### 23. 👤 Summarize Old User Messages (COMPLETED)
+### 24. 👤 Summarize Old User Messages (COMPLETED)
 
 - **Workflow ID**: `IvMoXyRIEG3DquxY`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:15 UTC
+- **Last Backup**: 2025-10-26 07:00:17 UTC
 - **File**: [backups/top-rated-coach-ai/IvMoXyRIEG3DquxY.json](./backups/top-rated-coach-ai/IvMoXyRIEG3DquxY.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/IvMoXyRIEG3DquxY.json)
-
----
-
-### 24. ⚙️ Supabase APIs Testing
-
-- **Workflow ID**: `wnpkf0KmKpk3Qyrn`
-- **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:31 UTC
-- **File**: [backups/top-rated-coach-ai/wnpkf0KmKpk3Qyrn.json](./backups/top-rated-coach-ai/wnpkf0KmKpk3Qyrn.json)
-- **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/wnpkf0KmKpk3Qyrn.json)
 
 ---
 
@@ -258,7 +258,7 @@
 
 - **Workflow ID**: `Sima7EgNTG03n5qT`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:19 UTC
+- **Last Backup**: 2025-10-26 07:00:21 UTC
 - **File**: [backups/top-rated-coach-ai/Sima7EgNTG03n5qT.json](./backups/top-rated-coach-ai/Sima7EgNTG03n5qT.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/Sima7EgNTG03n5qT.json)
 
@@ -268,7 +268,7 @@
 
 - **Workflow ID**: `EfYDJOTVlmhYLVkb`
 - **Status**: ✅ Active
-- **Last Backup**: 2025-10-25 07:00:13 UTC
+- **Last Backup**: 2025-10-26 07:00:14 UTC
 - **File**: [backups/top-rated-coach-ai/EfYDJOTVlmhYLVkb.json](./backups/top-rated-coach-ai/EfYDJOTVlmhYLVkb.json)
 - **Direct Link**: [View on GitHub](https://github.com/topratedcoach/n8n-coach-backups/blob/main/backups/top-rated-coach-ai/EfYDJOTVlmhYLVkb.json)
 
@@ -397,7 +397,7 @@ This backup system is built using n8n itself:
 
 ### Recent Runs
 
-- **Last Successful Run**: 2025-10-25 07:00:33 UTC
+- **Last Successful Run**: 2025-10-26 07:00:35 UTC
 - **Workflows Backed Up**: 26
 - **Status**: ✅ All workflows backed up successfully
 
@@ -411,11 +411,11 @@ This backup system is built using n8n itself:
 - **Inactive**: 0
 
 ### By Category
-- **AI Agents**: 10
+- **AI Agents**: 11
 - **Deprecated**: 5
 - **Analytics & Audits**: 3
 - **Administrative (Danger)**: 3
-- **Other**: 3
+- **Other**: 2
 - **Phone Call Workflows**: 1
 - **Triggers & Webhooks**: 1
 
@@ -504,5 +504,5 @@ These backups are for internal use of the TopRatedCoachAI n8n instance.
 ---
 
 *This README is auto-generated by the n8n backup workflow.*  
-*Last updated: 2025-10-25 07:00:33 UTC*  
+*Last updated: 2025-10-26 07:00:35 UTC*  
 *Maintained by: n8n Backup Automation*
