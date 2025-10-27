@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-08-20T07:02:36.850Z",
-  "updatedAt": "2025-08-20T15:32:16.000Z",
+  "updatedAt": "2025-10-27T03:55:30.000Z",
   "id": "P9k4XwIGZkAJDbw4",
   "name": "Clean Up Duplicate DB Mess And ReAnalyze existing Calls",
   "active": false,
@@ -533,7 +533,7 @@
     {
       "parameters": {
         "method": "DELETE",
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -843,7 +843,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "0e6ae915-9fe5-4cb9-b9b3-63a090b533dc",
+  "versionId": "a5efd8a3-b8e2-44ad-94a4-c6a0b4aff0ca",
   "triggerCount": 0,
   "shared": [
     {
@@ -868,7 +868,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -886,7 +886,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
