@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-09-25T14:55:53.036Z",
-  "updatedAt": "2025-10-24T22:09:44.000Z",
+  "updatedAt": "2025-10-27T03:56:07.000Z",
   "id": "sT8U3ZSacStxBYdJ",
   "name": "Delete Template Business (DANGER)",
   "active": false,
@@ -358,7 +358,7 @@
     {
       "parameters": {
         "method": "DELETE",
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -624,7 +624,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "c6d0daea-0088-4f04-a97b-eb3804af66df",
+  "versionId": "2f4e4608-5b09-4ef7-863a-4b2f65872f79",
   "triggerCount": 0,
   "shared": [
     {
@@ -649,7 +649,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -667,7 +667,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
