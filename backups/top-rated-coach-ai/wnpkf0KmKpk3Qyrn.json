@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-26T06:36:50.000Z",
+  "updatedAt": "2025-10-27T03:39:32.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -689,7 +689,7 @@
             },
             {
               "name": "select",
-              "value": "id,business_name"
+              "value": "id,business_name,phone_number,country_code"
             }
           ]
         },
@@ -922,7 +922,7 @@
       }
     ]
   },
-  "versionId": "9f7c30bf-52a1-4ac2-bfad-240c7b529e9b",
+  "versionId": "7054018f-b666-4d66-9f13-6c86ea66fca3",
   "triggerCount": 1,
   "shared": [
     {
