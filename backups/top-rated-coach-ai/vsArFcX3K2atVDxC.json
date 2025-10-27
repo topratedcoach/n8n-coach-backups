@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-12T11:29:58.203Z",
-  "updatedAt": "2025-10-27T04:01:16.000Z",
+  "updatedAt": "2025-10-27T06:52:20.000Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
   "active": true,
@@ -103,7 +103,7 @@
       "typeVersion": 2,
       "position": [
         688,
-        352
+        160
       ],
       "id": "084333cc-5197-4b10-a7eb-12e0103d8f0c",
       "name": "Generate a Transcript JSON"
@@ -195,7 +195,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "position": [
         608,
-        144
+        -48
       ],
       "typeVersion": 1,
       "id": "a641a1e3-3699-4eba-8cc6-e49bc6a8b6fd",
@@ -210,8 +210,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        592,
-        -544
+        1712,
+        64
       ],
       "typeVersion": 1,
       "id": "a3de5986-9ea8-4fee-b7cf-e7a1740c1cf4",
@@ -226,8 +226,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1680,
-        368
+        1808,
+        1024
       ],
       "typeVersion": 1,
       "id": "6f3d8332-6023-4bb8-a7bf-ec2c32a7fd04",
@@ -242,8 +242,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1680,
-        -64
+        1808,
+        592
       ],
       "typeVersion": 1,
       "id": "594ea500-85d6-42af-9ab9-22243dbf2cc7",
@@ -319,6 +319,8 @@
       ],
       "id": "d13a3ef1-4b88-4f0f-aa83-a4acff00212c",
       "name": "Fetch Conversation through ConvID",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "onError": "continueRegularOutput"
     },
     {
@@ -756,39 +758,6 @@
       "typeVersion": 1,
       "id": "b913bd42-a092-4ad1-9e85-f17437b9ec71",
       "name": "Workflow Overview10"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "14f09c3a-4929-4dc8-b269-5fc9f0e2ec22",
-              "leftValue": "={{ $json.duration }}",
-              "rightValue": 10,
-              "operator": {
-                "type": "number",
-                "operation": "gt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -688,
-        -48
-      ],
-      "id": "6d719803-5c4e-4a76-890a-6dc18b4cf690",
-      "name": "Call duration >10 Sec"
     },
     {
       "parameters": {
@@ -1836,7 +1805,7 @@
       "typeVersion": 4.2,
       "position": [
         1376,
-        384
+        416
       ],
       "id": "8b680fde-7614-4432-9f00-b0b3a128205e",
       "name": "Success Voicemail Detection Task in DB"
@@ -1879,8 +1848,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1520,
-        -400
+        2640,
+        208
       ],
       "id": "171a843e-15c9-4727-999b-5dd3f50b283e",
       "name": "Start AI Analysis Task in DB"
@@ -1892,8 +1861,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        640,
-        -400
+        1760,
+        208
       ],
       "id": "b7fce71f-f905-4c2e-a06b-478331347825",
       "name": "Create JSON with metadata"
@@ -1927,24 +1896,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        864,
-        -400
+        1984,
+        208
       ],
       "id": "4b85319e-1b85-4fc7-bbb0-16c615dc5cf4",
       "name": "Create Call Entry In DB"
-    },
-    {
-      "parameters": {
-        "content": "## Cost Needs to be added\n"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        304,
-        -480
-      ],
-      "typeVersion": 1,
-      "id": "12616488-0b99-4706-bc89-55af4b4a9b3f",
-      "name": "Sticky Note1"
     },
     {
       "parameters": {
@@ -1975,8 +1931,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1088,
-        -400
+        2208,
+        208
       ],
       "id": "6b9f84bc-60e7-48c6-8728-a9f7c89c35d5",
       "name": "Create Call Transcripts Entry In DB"
@@ -1988,8 +1944,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1312,
-        -400
+        2432,
+        208
       ],
       "id": "4fe08aed-a93a-4748-a318-e335c9b20798",
       "name": "Convert Transcript Object into AI Friendly"
@@ -2032,8 +1988,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2064,
-        -400
+        3184,
+        208
       ],
       "id": "de8bd9d1-79ba-4d2d-8959-221c0f9c3431",
       "name": "AI Analysis Task in DB"
@@ -2067,8 +2023,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1808,
-        112
+        1936,
+        768
       ],
       "id": "ec3b8f7c-2179-49e1-abd4-6f15b6b0fedd",
       "name": "Create Generated Reports Entry In DB"
@@ -2083,8 +2039,8 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 1,
       "position": [
-        2080,
-        576
+        2208,
+        1232
       ],
       "alwaysOutputData": true
     },
@@ -2095,8 +2051,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1744,
-        544
+        1872,
+        1200
       ],
       "id": "1b0b673c-170a-44a8-b218-37e5a480088e",
       "name": "Parse question handling",
@@ -2120,8 +2076,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2272,
-        576
+        2400,
+        1232
       ],
       "id": "982f198f-e191-43fc-ade3-81a031679769",
       "name": "Attach report_id"
@@ -2208,8 +2164,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2992,
-        480
+        3120,
+        1136
       ],
       "id": "85185931-c16b-4db8-a2d6-57db58ee8429",
       "name": "Updating TaskGroups Row To Completed",
@@ -2253,8 +2209,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2752,
-        480
+        2880,
+        1136
       ],
       "id": "f7d1c1f8-77c2-44ea-a0d1-751bf9f7776d",
       "name": "Update Call Table With Report Id"
@@ -2268,8 +2224,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        2640,
-        368
+        2768,
+        1024
       ],
       "typeVersion": 1,
       "id": "e44bff11-9cb2-4411-a247-95393e9dde64",
@@ -2619,8 +2575,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1920,
-        464
+        2048,
+        1120
       ],
       "id": "cae13d67-589c-4922-bb80-1d10d3828f73",
       "name": "If No Questions Exists"
@@ -2681,8 +2637,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        1744,
-        -400
+        2864,
+        208
       ],
       "id": "01db1e99-090e-4701-b71d-7c0299898f53",
       "name": "Call Analysis AI",
@@ -2864,11 +2820,334 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2480,
-        576
+        2608,
+        1232
       ],
       "id": "15baabf8-171c-4510-9035-06c53da67b18",
       "name": "Create Call Questionaire Entry In DB"
+    },
+    {
+      "parameters": {
+        "content": "## Update Price and Token Code\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1536,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "a414c553-ed80-43e1-ac4d-5f8e7548dee8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "14f09c3a-4929-4dc8-b269-5fc9f0e2ec22",
+              "leftValue": "={{ $json.duration }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -656,
+        -48
+      ],
+      "id": "6d719803-5c4e-4a76-890a-6dc18b4cf690",
+      "name": "Call duration >10 Sec"
+    },
+    {
+      "parameters": {
+        "content": "## Update Price and Token Code\n",
+        "height": 256,
+        "width": 368,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -720,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "d9e4589b-30b0-48c9-9f36-a7826cd08f18",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"twilio_add\": {{ $('Twilio Call Status').item.json.price || 0 }},\n  \"elevenlabs_add\": {{ $('Get Conv Price').item.json.metadata.cost || 0 }},\n  \"ai_tokens_add\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -512,
+        -448
+      ],
+      "id": "3d2d8672-987b-4971-a1de-565d11c4dade",
+      "name": "Increment Cost and Token Count1",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Update Price and Token Code\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "1a2dbaf3-be52-469c-8efe-7a22f81e4b57",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"twilio_add\": {{ $('Twilio Call Status').item.json.price || 0 }},\n  \"elevenlabs_add\": {{ $('Fetch Conversation through ConvID').item.json.metadata.cost || 0 }},\n  \"ai_tokens_add\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        -96
+      ],
+      "id": "24fe96f2-4189-4c9e-a327-a6b729a618c0",
+      "name": "Increment Cost and Token Count2",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Update Price and Token Code\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "983f0768-9913-4a8b-bae7-b2f2adbd41cc",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"twilio_add\": {{ $('Twilio Call Status').item.json.price || 0 }},\n  \"elevenlabs_add\": {{ $('Fetch Conversation through ConvID').item.json.metadata.cost || 0 }},\n  \"ai_tokens_add\": {{ $('Voicemail Detector Agent').item.json.usage.total_tokens ||0 }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        -96
+      ],
+      "id": "f1d90d35-ecfa-4fd9-8bdd-ca017787e9b4",
+      "name": "Increment Cost and Token Count3",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Update Price and Token Code\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2848,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "3b267602-26fe-4942-b299-13ada5c9f05e",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"twilio_add\": {{ $('Twilio Call Status').item.json.price || 0 }},\n  \"elevenlabs_add\": {{ $('Fetch Conversation through ConvID').item.json.metadata.cost || 0 }},\n  \"ai_tokens_add\": {{ ($('Voicemail Detector Agent').item.json.usage.total_tokens || 0) + ($('Call Analysis AI').item.json.usage.total_tokens || 0) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2912,
+        -128
+      ],
+      "id": "d0ffeacd-4828-4e52-9dc2-97958237a93a",
+      "name": "Increment Cost and Token Count4",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Recieve Trigger Request form Supabase').item.json.body.data.id }}\",\n  \"twilio_add\": {{ $('Twilio Call Status').item.json.price || 0 }},\n  \"elevenlabs_add\": 0,\n  \"ai_tokens_add\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1456,
+        -16
+      ],
+      "id": "edbfee15-585d-4654-b7fa-4c7a2de0833a",
+      "name": "Increment Cost and Token Count",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.ElevenLabsBaseURL}}conversations/{{ $('Call Business').item.json.conversation_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Xi-Api-Key",
+              "value": "={{$vars.ElevenLabsAPIkey}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        -448
+      ],
+      "id": "22d208b8-1473-4db2-9234-54609a465313",
+      "name": "Get Conv Price",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -2948,6 +3227,11 @@
             "node": "Success Fetch Conversation Task in DB",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count2",
+            "type": "main",
+            "index": 0
           }
         ],
         [
@@ -2999,6 +3283,11 @@
         [
           {
             "node": "Check Status of Call",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count",
             "type": "main",
             "index": 0
           }
@@ -3077,24 +3366,6 @@
         [
           {
             "node": "Check Outbound Success",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call duration >10 Sec": {
-      "main": [
-        [
-          {
-            "node": "Success Twilio Task in DB1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Make Dynamic JSON based on Merge Output",
             "type": "main",
             "index": 0
           }
@@ -3687,6 +3958,11 @@
             "node": "If its Voicemail then Schedule Call Again",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count3",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -3696,6 +3972,11 @@
         [
           {
             "node": "AI Analysis Task in DB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count4",
             "type": "main",
             "index": 0
           }
@@ -3755,6 +4036,40 @@
           }
         ]
       ]
+    },
+    "Call duration >10 Sec": {
+      "main": [
+        [
+          {
+            "node": "Success Twilio Task in DB1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Make Dynamic JSON based on Merge Output",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Conv Price",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conv Price": {
+      "main": [
+        [
+          {
+            "node": "Increment Cost and Token Count1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -3771,7 +4086,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8c740973-a308-47ce-b220-36f21b6a6e34",
+  "versionId": "7c62e746-cab9-4ec1-9c13-34a7705e0f9e",
   "triggerCount": 1,
   "shared": [
     {
