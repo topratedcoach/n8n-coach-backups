@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-20T09:51:03.701Z",
-  "updatedAt": "2025-10-25T18:31:27.000Z",
+  "updatedAt": "2025-10-27T03:52:02.000Z",
   "id": "FYCdJ9WBDKvj8mWI",
   "name": "Agent: Inbound Call Processor (Fuzail)",
   "active": false,
@@ -8,7 +8,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "# Agent Name: Inbound Call Processor\n\nThis workflow processes follow-up inbound calls from businesses. It:\n\n1. Receives POST requests from the calling agent with raw call data and transcript\n2. Identifies the relevant business and task group from Supabase\n3. Marks related audit/task as \"in_progress\"\n4. Retrieves Twilio call status for precise timing and call metadata\n5. Calculates AI interaction metrics (TTFB, latency, RAG usage, token usage, etc.)\n6. Saves:\n   - Call details in `calls`\n   - Transcript in `call_transcripts`\n7. Sends formatted transcript + context from previous outbound call to GPT-4.1 for analysis\n8. Parses the AI's structured JSON report\n9. Stores the AI report in `generated_call_reports`\n10. Splits and saves question/answer evaluations in `call_report_evaluations`\n11. Links the final report back to the original call record\n12. Marks task group and microtask as \"completed\"\n",
+        "content": "# Agent Name: Inbound Call Processor\n\nThis workflow processes follow-up inbound calls from businesses. It:\n\n1. Receives POST requests from the calling agent with raw call data and transcript\n2. Identifies the relevant business and task group from Supabase\n3. Marks related audit/task as \"in_progress\"\n4. Retrieves Twilio call status for precise timing and call metadata\n5. Calculates AI interaction metrics (TTFB, latency, RAG usage, token usage, etc.)\n6. Saves:\n   - Call details in `calls`\n   - Transcript in `call_transcripts`\n7. Sends formatted transcript + context from previous outbound call to GPT-4.1 for analysis\n8. Parses the AI's structured JSON report\n9. Stores the AI report in `generated_call_reports`\n10. Splits and saves question/answer evaluations in `call_questions`\n11. Links the final report back to the original call record\n12. Marks task group and microtask as \"completed\"\n",
         "height": 480,
         "width": 640,
         "color": 5
@@ -24,7 +24,7 @@
     },
     {
       "parameters": {
-        "content": "## Generate Questionaire json and add in Call_Report_Evaluations in DB",
+        "content": "## Generate Questionaire json and add in call_questions in DB",
         "height": 400,
         "width": 880,
         "color": 5
@@ -479,7 +479,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -675,7 +675,7 @@
     },
     {
       "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -1336,7 +1336,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "96a821cd-bc2c-4174-a8d4-cf734d3c5e95",
+  "versionId": "f66bea44-a575-4340-9f9a-1ca17af7f553",
   "triggerCount": 1,
   "shared": [
     {
@@ -1361,7 +1361,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1379,7 +1379,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
