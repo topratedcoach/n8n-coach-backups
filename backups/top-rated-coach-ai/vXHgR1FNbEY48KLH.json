@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-10-12T10:51:31.709Z",
-  "updatedAt": "2025-10-12T13:50:42.000Z",
+  "updatedAt": "2025-10-27T04:02:29.000Z",
   "id": "vXHgR1FNbEY48KLH",
   "name": "Clean Up Mess DB Elevenlabs Credits failure",
   "active": false,
@@ -227,81 +227,6 @@
       ],
       "id": "18ad2cc6-9f1c-4639-8909-bbd359bd88d3",
       "name": "Delete Transcript",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "report_id",
-              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $vars.Supabase_Service_Role }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -880,
-        -1760
-      ],
-      "id": "c3662491-f176-4ba3-a86f-3af2d8bd7488",
-      "name": "Get Call Report Evaluations",
-      "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "method": "DELETE",
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "report_id",
-              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $vars.Supabase_Service_Role }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -432,
-        -1824
-      ],
-      "id": "d87949cf-4f27-4f2b-b8fc-a020893b9e2a",
-      "name": "Delete Call Report Evaluations",
       "disabled": true
     },
     {
@@ -1009,6 +934,81 @@
       ],
       "id": "220a8a66-14b8-4970-98da-ad35490ffa4b",
       "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        -1824
+      ],
+      "id": "d87949cf-4f27-4f2b-b8fc-a020893b9e2a",
+      "name": "Delete Call Questionare",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "report_id",
+              "value": "=eq.{{ $('Loop Over Calls').item.json.report_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        -1760
+      ],
+      "id": "c3662491-f176-4ba3-a86f-3af2d8bd7488",
+      "name": "Get Call Questionaire",
+      "alwaysOutputData": true
     }
   ],
   "connections": {
@@ -1090,29 +1090,7 @@
       "main": [
         [
           {
-            "node": "Get Call Report Evaluations",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Call Report Evaluations": {
-      "main": [
-        [
-          {
-            "node": "If Exists1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Delete Call Report Evaluations": {
-      "main": [
-        [
-          {
-            "node": "Get Generated Call Reports",
+            "node": "Get Call Questionaire",
             "type": "main",
             "index": 0
           }
@@ -1225,7 +1203,7 @@
         ],
         [
           {
-            "node": "Get Call Report Evaluations",
+            "node": "Get Call Questionaire",
             "type": "main",
             "index": 0
           }
@@ -1236,7 +1214,7 @@
       "main": [
         [
           {
-            "node": "Delete Call Report Evaluations",
+            "node": "Delete Call Questionare",
             "type": "main",
             "index": 0
           }
@@ -1356,6 +1334,28 @@
           }
         ]
       ]
+    },
+    "Delete Call Questionare": {
+      "main": [
+        [
+          {
+            "node": "Get Generated Call Reports",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Call Questionaire": {
+      "main": [
+        [
+          {
+            "node": "If Exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1368,7 +1368,7 @@
   },
   "meta": null,
   "pinData": {},
-  "versionId": "35e9f148-ab82-425b-aeb7-1dee9e9a5e42",
+  "versionId": "f20b6310-9dd5-4703-83ad-00921418ca09",
   "triggerCount": 1,
   "shared": [
     {
@@ -1393,7 +1393,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1411,7 +1411,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
