@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-19T10:53:10.108Z",
-  "updatedAt": "2025-10-24T20:59:10.000Z",
+  "updatedAt": "2025-10-27T03:49:13.000Z",
   "id": "CcHBrELrSsWhXNYT",
   "name": "PreCall Initia Data For ElevenLabs (Fuzail)",
   "active": true,
@@ -152,7 +152,7 @@
     },
     {
       "parameters": {
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -588,7 +588,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "14cc5b79-0c43-4147-b8d3-671ff3c29a29",
+  "versionId": "cbf82781-9df5-4e26-bafa-40075cf7e8b0",
   "triggerCount": 1,
   "shared": [
     {
@@ -613,7 +613,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -631,7 +631,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
