@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-12T11:29:58.203Z",
-  "updatedAt": "2025-10-26T06:12:56.000Z",
+  "updatedAt": "2025-10-27T04:01:16.000Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
   "active": true,
@@ -219,7 +219,7 @@
     },
     {
       "parameters": {
-        "content": "## Generate Questionaire json and add in Call_Report_Evaluations in DB",
+        "content": "## Generate Questionaire json and add in call_questions in DB",
         "height": 400,
         "width": 940,
         "color": 5
@@ -2128,41 +2128,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{$vars.SupabaseDBUrl}}/call_report_evaluations",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $vars.Supabase_Service_Role }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
-            },
-            {
-              "name": "Prefer",
-              "value": "=return=representation,resolution=merge-duplicates"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2480,
-        576
-      ],
-      "id": "15baabf8-171c-4510-9035-06c53da67b18",
-      "name": "Create Call Report Evaluations Entry In DB"
-    },
-    {
-      "parameters": {
         "method": "PATCH",
         "url": "={{$vars.SupabaseDBUrl}}/task_groups",
         "sendQuery": true,
@@ -2869,6 +2834,41 @@
         880
       ],
       "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/call_questions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "=return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        576
+      ],
+      "id": "15baabf8-171c-4510-9035-06c53da67b18",
+      "name": "Create Call Questionaire Entry In DB"
     }
   ],
   "connections": {
@@ -3504,18 +3504,7 @@
       "main": [
         [
           {
-            "node": "Create Call Report Evaluations Entry In DB",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Call Report Evaluations Entry In DB": {
-      "main": [
-        [
-          {
-            "node": "Update Call Table With Report Id",
+            "node": "Create Call Questionaire Entry In DB",
             "type": "main",
             "index": 0
           }
@@ -3755,6 +3744,17 @@
           }
         ]
       ]
+    },
+    "Create Call Questionaire Entry In DB": {
+      "main": [
+        [
+          {
+            "node": "Update Call Table With Report Id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -3771,7 +3771,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8e31906b-2e97-4cb6-b505-d31a75209925",
+  "versionId": "8c740973-a308-47ce-b220-36f21b6a6e34",
   "triggerCount": 1,
   "shared": [
     {
@@ -3796,7 +3796,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-26T05:15:48.000Z",
+              "updatedAt": "2025-10-27T04:00:00.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -3814,7 +3814,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-26",
+              "lastActiveAt": "2025-10-27",
               "isPending": false
             }
           }
