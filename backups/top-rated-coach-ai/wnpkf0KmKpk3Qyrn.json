@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-09T09:28:14.851Z",
-  "updatedAt": "2025-10-27T03:39:32.000Z",
+  "updatedAt": "2025-10-27T06:56:43.000Z",
   "id": "wnpkf0KmKpk3Qyrn",
   "name": "Supabase APIs Testing",
   "active": false,
@@ -102,7 +102,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n    \"id\": \"Fuzail Fitness\",\n    \"business_name\": \"Fuzail Fitness\",\n    \"business_category\": [\"gym\"],\n    \"website\": \"https://www.fuzail.com/\",\n    \"phone_number\": \"+19547993801\",\n    \"email\": \"fuzailsohail40@gmail.com\",\n    \"address\": \"801 University Dr\",\n    \"latitude\": 26.243696,\n    \"longitude\": -80.252073,\n    \"formatted_address\": \"801 N University Dr, Coral Springs, FL 33071\",\n    \"street_number\": \"801\",\n    \"street_name\": \"University Dr\",\n    \"city\": \"Coral Springs\",\n    \"state_province\": \"Florida\",\n    \"postal_code\": \"33071\",\n    \"country\": \"USA\",\n    \"country_code\": \"US\",\n    \"timezone\": \"America/New_York\",\n    \"google_maps_url\": \"https://maps.app.goo.gl/ZVjmzEw2DcJQEYVDA\",\n    \"owner_id\": \"{{$('Login').item.json.user.id}}\",\n    \"brand_id\": \"92688997-d44a-44f1-9c35-593664e78d32\"\n}",
+        "jsonBody": "={\n    \"id\": \"Fuzail Fitness\",\n    \"business_name\": \"Fuzail Fitness\",\n    \"business_category\": [\"gym\"],\n    \"website\": \"https://www.fuzail.com/\",\n    \"phone_number\": \"+19547993801\",\n    \"email\": \"fuzailsohail40@gmail.com\",\n    \"address\": \"801 University Dr\",\n    \"latitude\": 26.243696,\n    \"longitude\": -80.252073,\n    \"formatted_address\": \"801 N University Dr, Coral Springs, FL 33071\",\n    \"street_number\": \"801\",\n    \"street_name\": \"University Dr\",\n    \"city\": \"Coral Springs\",\n    \"state_province\": \"Florida\",\n    \"postal_code\": \"33071\",\n    \"country\": \"USA\",\n    \"country_code\": \"US\",\n    \"timezone\": \"America/New_York\",\n    \"google_maps_url\": \"https://maps.app.goo.gl/ZVjmzEw2DcJQEYVDA\",\n    \"owner_id\": \"{{$('Login').item.json.user.id}}\",\n    \"brand_id\": \"ecf6d9cd-ab7d-4c8f-ad8c-e839803171a1\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -536,14 +536,14 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"business_id\": \"{{ $('List UnAudited Businesses').item.json.id }}\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
+        "jsonBody": "={\n  \"business_id\": \"Fuzail Fitness\",\n  \"requested_by\": \"{{ $('Login').item.json.user.id }}\",\n  \"audit_type\": \"lead_conversion\",\n\"status\": \"pending\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -336,
-        2560
+        -992,
+        2048
       ],
       "id": "a724ee70-0245-4b1b-8f04-d07ce7e350db",
       "name": "Create Audit for User Business2"
@@ -723,7 +723,7 @@
       "main": [
         [
           {
-            "node": "List UnAudited US/CA Businesses",
+            "node": "Create Audit for User Business2",
             "type": "main",
             "index": 0
           }
@@ -920,9 +920,67 @@
           "is_anonymous": false
         }
       }
+    ],
+    "Login": [
+      {
+        "json": {
+          "access_token": "eyJhbGciOiJIUzI1NiIsImtpZCI6Im0zTWJxdmUvajA3Q1lxenEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Z2Y2ltdXF3cW1zZ2JyeWJpb2dnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhYzIyMmQzMy04YzM1LTQ0MTEtODY1NS1jNDAyN2JkMzQxOTgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYxNTUxNzEyLCJpYXQiOjE3NjE1NDgxMTIsImVtYWlsIjoiZnV6YWlsc29oYWlsNDBAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjE1NDgxMTJ9XSwic2Vzc2lvbl9pZCI6ImM2MzNkMGYyLWU1NjUtNDlkNC1iYzkzLTUzMTYxNzczNTk0NCIsImlzX2Fub255bW91cyI6ZmFsc2V9.UP17OqqtSeK_T5BENiaJhMkv-L2Oyzu67y9hEg1ihN4",
+          "token_type": "bearer",
+          "expires_in": 3600,
+          "expires_at": 1761551712,
+          "refresh_token": "wp6ve6hz6tpi",
+          "user": {
+            "id": "ac222d33-8c35-4411-8655-c4027bd34198",
+            "aud": "authenticated",
+            "role": "authenticated",
+            "email": "fuzailsohail40@gmail.com",
+            "email_confirmed_at": "2025-07-08T12:26:22.421769Z",
+            "phone": "",
+            "confirmed_at": "2025-07-08T12:26:22.421769Z",
+            "recovery_sent_at": "2025-09-11T20:33:19.209625Z",
+            "last_sign_in_at": "2025-10-27T06:55:12.123384292Z",
+            "app_metadata": {
+              "provider": "email",
+              "providers": [
+                "email"
+              ]
+            },
+            "user_metadata": {
+              "email_verified": true
+            },
+            "identities": [
+              {
+                "identity_id": "b241569f-bc58-4006-a5ad-8635136a97f2",
+                "id": "ac222d33-8c35-4411-8655-c4027bd34198",
+                "user_id": "ac222d33-8c35-4411-8655-c4027bd34198",
+                "identity_data": {
+                  "email": "fuzailsohail40@gmail.com",
+                  "email_verified": false,
+                  "phone_verified": false,
+                  "sub": "ac222d33-8c35-4411-8655-c4027bd34198"
+                },
+                "provider": "email",
+                "last_sign_in_at": "2025-07-08T12:26:22.417828Z",
+                "created_at": "2025-07-08T12:26:22.417882Z",
+                "updated_at": "2025-07-08T12:26:22.417882Z",
+                "email": "fuzailsohail40@gmail.com"
+              }
+            ],
+            "created_at": "2025-07-08T12:26:22.409701Z",
+            "updated_at": "2025-10-27T06:55:12.126907Z",
+            "is_anonymous": false
+          },
+          "weak_password": {
+            "message": "Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};':\"|<>?,./`~.",
+            "reasons": [
+              "characters"
+            ]
+          }
+        }
+      }
     ]
   },
-  "versionId": "7054018f-b666-4d66-9f13-6c86ea66fca3",
+  "versionId": "ffb98e53-cd9a-43b8-a6eb-cbf254a72e54",
   "triggerCount": 1,
   "shared": [
     {
