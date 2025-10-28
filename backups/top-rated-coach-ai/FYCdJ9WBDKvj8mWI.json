@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-20T09:51:03.701Z",
-  "updatedAt": "2025-10-27T03:52:02.000Z",
+  "updatedAt": "2025-10-27T11:15:54.000Z",
   "id": "FYCdJ9WBDKvj8mWI",
   "name": "Agent: Inbound Call Processor (Fuzail)",
   "active": false,
@@ -88,8 +88,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2496,
-        -1600
+        -2576,
+        -1584
       ],
       "id": "df08639a-d681-4057-824d-d252fec91d8d",
       "name": "Get a specific business"
@@ -98,13 +98,13 @@
       "parameters": {
         "content": "## Update  the TaskGroup status to in progress and Audit status to inprogress\n",
         "height": 400,
-        "width": 1320,
+        "width": 1384,
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -2560,
-        -1760
+        -2640,
+        -1744
       ],
       "typeVersion": 1,
       "id": "0b33fc97-bbf1-4b09-a027-0894ebfa1d95",
@@ -553,8 +553,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2288,
-        -1600
+        -2368,
+        -1584
       ],
       "id": "37faff2b-499f-4166-b1f9-af6ab25caf09",
       "name": "Get a Inbound Call Analysis Task Group"
@@ -601,8 +601,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2064,
-        -1600
+        -2144,
+        -1584
       ],
       "id": "2ec8a1e4-df79-4d57-8726-8beb37224814",
       "name": "If Call was Expected from this Business"
@@ -917,8 +917,8 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -3248,
-        -1760
+        -1872,
+        -1328
       ],
       "typeVersion": 1,
       "id": "2bef7d2e-04f3-4837-8612-e863aab1cb33",
@@ -952,8 +952,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2928,
-        -1488
+        -1600,
+        -1072
       ],
       "id": "535f9723-42a8-407c-b283-ce94e341703f",
       "name": "Continue if its not a voicemail"
@@ -965,7 +965,7 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3184,
+        -2752,
         -1600
       ],
       "id": "832f3af7-ba5a-4ce9-bf05-2ea9308fa51a",
@@ -993,8 +993,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.8,
       "position": [
-        -2992,
-        -1696
+        -1664,
+        -1280
       ],
       "id": "fcd810df-c5c9-4abc-87e7-c77dd6f51bfd",
       "name": "Voicemail Detector Agent",
@@ -1038,6 +1038,218 @@
           "name": "OpenAI TOP RATED COACH API KEY"
         }
       }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Get a Inbound Call Analysis Task Group').item.json.id }}\",\n  \"twilio_add\": 0,\n  \"elevenlabs_add\": {{ $('Get Call Details').item.json.body.data.metadata.cost || 0 }},\n  \"ai_tokens_add\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2160,
+        -1232
+      ],
+      "id": "da40e765-1700-437d-acab-c5d37e66107b",
+      "name": "Increment Cost and Token Count2",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Increment ElevenLabs credits",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2224,
+        -1312
+      ],
+      "typeVersion": 1,
+      "id": "42142e96-66a6-4448-b041-d7d3d89f965b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Get a Inbound Call Analysis Task Group').item.json.id }}\",\n  \"twilio_add\": {{ ($('Twilio Call Status').item.json.price || 0) * -1 }},\n  \"elevenlabs_add\": 0,\n  \"ai_tokens_add\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1152,
+        -2128
+      ],
+      "id": "3277691b-a61a-4165-a7de-f1117de453ce",
+      "name": "Increment Cost and Token Count",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Increment Twilio Cost\n\n\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1232,
+        -2208
+      ],
+      "typeVersion": 1,
+      "id": "98bd7983-2cfb-4a8b-acd7-520078bc7619",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Increment AI Tokens\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1744,
+        -880
+      ],
+      "typeVersion": 1,
+      "id": "c3290e07-6b3d-4daa-ad9a-c30a9e630946",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Get a Inbound Call Analysis Task Group').first().json.id }}\",\n  \"twilio_add\": 0,\n  \"elevenlabs_add\": 0,\n  \"ai_tokens_add\": {{ $('Voicemail Detector Agent').item.json.usage.total_tokens ||0 }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1680,
+        -800
+      ],
+      "id": "7412788b-e337-439d-abcf-8b1a422acab6",
+      "name": "Increment Cost and Token Count3",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Increment AI Tokens\n",
+        "height": 256,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1120,
+        -1072
+      ],
+      "typeVersion": 1,
+      "id": "52821c73-126a-4f99-858b-e46e2e04ca73",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$vars.SupabaseDBUrl}}/rpc/increment_task_group_costs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.Supabase_Service_Role }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"task_id\": \"{{ $('Get a Inbound Call Analysis Task Group').first().json.id }}\",\n  \"twilio_add\": 0,\n  \"elevenlabs_add\": 0,\n  \"ai_tokens_add\": {{ ($('Call Analysis AI').item.json.usage.total_tokens || 0) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1056,
+        -992
+      ],
+      "id": "cd4367fa-a1c0-4415-a4c7-e7cb367e867f",
+      "name": "Increment Cost and Token Count4",
+      "executeOnce": false,
+      "alwaysOutputData": true
     }
   ],
   "connections": {
@@ -1199,7 +1411,12 @@
       "main": [
         [
           {
-            "node": "Create AI Agent Micro Tasks",
+            "node": "Increment Cost and Token Count2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Voicemail Detector Agent",
             "type": "main",
             "index": 0
           }
@@ -1211,6 +1428,11 @@
         [
           {
             "node": "Create JSON with metadata",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count",
             "type": "main",
             "index": 0
           }
@@ -1287,7 +1509,7 @@
       "main": [
         [
           {
-            "node": "Get a specific business",
+            "node": "Create AI Agent Micro Tasks",
             "type": "main",
             "index": 0
           }
@@ -1298,7 +1520,7 @@
       "main": [
         [
           {
-            "node": "Voicemail Detector Agent",
+            "node": "Get a specific business",
             "type": "main",
             "index": 0
           }
@@ -1312,6 +1534,11 @@
             "node": "Continue if its not a voicemail",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count3",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1323,8 +1550,18 @@
             "node": "End AI Analysis Task in DB",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Increment Cost and Token Count4",
+            "type": "main",
+            "index": 0
           }
         ]
+      ]
+    },
+    "Increment Cost and Token Count4": {
+      "main": [
+        []
       ]
     }
   },
@@ -1335,8 +1572,52 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "f66bea44-a575-4340-9f9a-1ca17af7f553",
+  "pinData": {
+    "Create Generated Reports Entry In DB": [
+      {
+        "json": {
+          "id": "741a8137-e96c-4047-abdf-ef9347495ee1",
+          "business_id": "Fuzail Fitness",
+          "audit_id": "40117049-501b-4555-b94e-12d119c38d91",
+          "task_group_id": "032732c7-25a9-4846-9462-56c2de3ed9e3",
+          "created_at": "2025-10-27T07:36:55.489755+00:00",
+          "overall_summary": "The representative from Fazel Fitness handled the inbound follow-up professionally, promptly arranging a visit for the customer at a mutually agreed time. The conversation was straightforward, clear, and much more focused than the prior outbound exchange. The representative was polite and accommodating, confirming appointment details and leaving the customer with a positive impression. There were no notable issues or red flags, although opportunities for more personalized engagement or providing additional information about the gym were not taken.",
+          "engagement_level": "The representative showed reasonable interest in assisting the customer and ensuring an appointment was scheduled, but did not build personal rapport or offer further guidance.",
+          "professionalism": "The representative was courteous, professional, and respectful throughout the interaction.",
+          "script_adherence": "There was no indication of a scripted process, but the conversation was clear and followed a logical structure for appointment scheduling.",
+          "issues_detected": [],
+          "positive_highlight": [
+            "Prompt and clear scheduling of an appointment",
+            "Polite and respectful communication",
+            "Flexibility shown by accommodating the customer's preferred timing"
+          ],
+          "improvement_ideas": [
+            "Proactively offer more information about the gym, such as available amenities or new-client specials during scheduling.",
+            "Work on building a more personal rapport and warmly welcoming the customer.",
+            "Consider gentle upsell or cross-sell opportunities, e.g., offering a free trial class or additional services at the time of booking."
+          ],
+          "agent_name": "Fazel",
+          "engagement_and_relationship_building_score": 12,
+          "product_service_knowledge_and_education_score": 10,
+          "answering_questions_score": 18,
+          "ability_to_upsell_and_cross_sell_score": 0,
+          "closing_for_appointment_and_call_to_action_score": 20,
+          "overall_success_rate_out_of_100": 60,
+          "appointment_booked": true,
+          "initial_wait_time": "Answered after 5 seconds (from call initiation to acceptance).",
+          "on_hold_time": "No hold time during the call.",
+          "representative_tone": "Polite, straightforward, and efficient; friendly but not especially warm or enthusiastic.",
+          "tone_consistency": "Yes, the representative's tone was consistent throughout the call.",
+          "clarity": "Responses were clear, concise, and directly addressed the customer's questions and requests.",
+          "accuracy": "Answers matched the customer's questions and facilitated an effective scheduling process.",
+          "helpfulness": "The representative was helpful in confirming availability and setting up the appointment, though did not proactively offer extra information or upsell services.",
+          "call_opening": "The call was opened with a polite greeting, clear identification by the representative, and immediate reference to the purpose of the call.",
+          "updated_at": "2025-10-27T07:36:55.489755+00:00"
+        }
+      }
+    ]
+  },
+  "versionId": "83f34bd7-b956-4426-b15b-48105d1a62f1",
   "triggerCount": 1,
   "shared": [
     {
@@ -1361,7 +1642,7 @@
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-27T04:00:00.000Z",
+              "updatedAt": "2025-10-28T04:00:21.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1379,7 +1660,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-27",
+              "lastActiveAt": "2025-10-28",
               "isPending": false
             }
           }
