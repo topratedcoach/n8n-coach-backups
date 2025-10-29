@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-10-28T17:39:27.000Z",
   "createdAt": "2025-06-20T09:51:03.701Z",
-  "updatedAt": "2025-10-27T11:15:54.000Z",
   "id": "FYCdJ9WBDKvj8mWI",
   "name": "Agent: Inbound Call Processor (Fuzail)",
   "active": false,
@@ -92,7 +92,9 @@
         -1584
       ],
       "id": "df08639a-d681-4057-824d-d252fec91d8d",
-      "name": "Get a specific business"
+      "name": "Get a specific business",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -143,7 +145,9 @@
         -1600
       ],
       "id": "494b0cff-cff0-4747-bb15-8856d949b368",
-      "name": "Create AI Agent Micro Tasks"
+      "name": "Create AI Agent Micro Tasks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -188,7 +192,9 @@
       ],
       "id": "dccfcb74-878e-4bf3-94f2-9b5ba3edde6f",
       "name": "Updating TaskGroups Row To In-Progress",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -233,7 +239,9 @@
       ],
       "id": "19b5f44d-4b01-477b-b798-1280fbc88ff6",
       "name": "Update Audit Status to in_progress and Started AT Time",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -277,7 +285,9 @@
         -1808
       ],
       "id": "38d48ed4-9547-4239-8e3c-2fbb314e0067",
-      "name": "Start AI Analysis Task in DB"
+      "name": "Start AI Analysis Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -325,7 +335,9 @@
         -1808
       ],
       "id": "1f1844d8-a1bc-457f-9f7c-282afb25bfae",
-      "name": "Create Call Entry In DB"
+      "name": "Create Call Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -373,7 +385,9 @@
         -1808
       ],
       "id": "68e673fd-0072-4255-8869-cb5c46393a87",
-      "name": "Create Call Transcripts Entry In DB"
+      "name": "Create Call Transcripts Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -421,7 +435,9 @@
         -1408
       ],
       "id": "b27ff15c-a84b-4f3f-aa4d-96b6ded94bbf",
-      "name": "Create Generated Reports Entry In DB"
+      "name": "Create Generated Reports Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -433,8 +449,8 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 1,
       "position": [
-        -144,
-        -1408
+        -112,
+        -1312
       ],
       "alwaysOutputData": true
     },
@@ -509,7 +525,9 @@
         -1408
       ],
       "id": "73d8ce27-900c-4435-968c-c6f1f673fa9c",
-      "name": "Create Call Report Evaluations Entry In DB"
+      "name": "Create Call Report Evaluations Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -557,7 +575,9 @@
         -1584
       ],
       "id": "37faff2b-499f-4166-b1f9-af6ab25caf09",
-      "name": "Get a Inbound Call Analysis Task Group"
+      "name": "Get a Inbound Call Analysis Task Group",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -622,6 +642,8 @@
       ],
       "id": "f79efeca-c11a-4323-a8ba-7238d8d82357",
       "name": "Twilio Call Status",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "httpBasicAuth": {
           "id": "PdHyrjcfDMihAzEn",
@@ -671,7 +693,9 @@
         -1808
       ],
       "id": "9827c26e-a1db-4e19-b8dd-52f1992b03df",
-      "name": "Get OutboundCall Report done During this Audit"
+      "name": "Get OutboundCall Report done During this Audit",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -711,7 +735,9 @@
         -1808
       ],
       "id": "88a2a87b-fca7-43d7-a5f9-4ce6e23c294d",
-      "name": "Get OutboundCall Questionaire done During this Audit"
+      "name": "Get OutboundCall Questionaire done During this Audit",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -755,7 +781,9 @@
         -1408
       ],
       "id": "1cc14744-836f-4b49-aa57-bb647f8bc5eb",
-      "name": "End AI Analysis Task in DB"
+      "name": "End AI Analysis Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -800,7 +828,9 @@
       ],
       "id": "beb0de0c-3e6e-40ee-af2a-4594445bcd69",
       "name": "Updating TaskGroups Row To Completed",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -840,11 +870,13 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        576,
-        -1392
+        592,
+        -1456
       ],
       "id": "8e6b2596-9c65-4b4c-8556-90a6b2beb99c",
-      "name": "Update Call Table With Report Id"
+      "name": "Update Call Table With Report Id",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -998,6 +1030,8 @@
       ],
       "id": "fcd810df-c5c9-4abc-87e7-c77dd6f51bfd",
       "name": "Voicemail Detector Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "openAiApi": {
           "id": "GwlwzOiOthioGCVV",
@@ -1032,6 +1066,8 @@
       ],
       "id": "ef77c18f-6d65-494f-aaed-fd8cd863da08",
       "name": "Call Analysis AI",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "openAiApi": {
           "id": "GwlwzOiOthioGCVV",
@@ -1074,7 +1110,9 @@
       "id": "da40e765-1700-437d-acab-c5d37e66107b",
       "name": "Increment Cost and Token Count2",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1127,7 +1165,9 @@
       "id": "3277691b-a61a-4165-a7de-f1117de453ce",
       "name": "Increment Cost and Token Count",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1196,7 +1236,9 @@
       "id": "7412788b-e337-439d-abcf-8b1a422acab6",
       "name": "Increment Cost and Token Count3",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1249,7 +1291,44 @@
       "id": "cd4367fa-a1c0-4415-a4c7-e7cb367e867f",
       "name": "Increment Cost and Token Count4",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f30139d6-bbb0-4d3c-a4c6-2bf24245b1cc",
+              "leftValue": "={{ $json.question_handling.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        -1456
+      ],
+      "id": "0244b8a0-d9f0-480f-afe4-7d44de401d49",
+      "name": "If No Questions Exists"
     }
   ],
   "connections": {
@@ -1378,7 +1457,7 @@
       "main": [
         [
           {
-            "node": "Split Question Handling",
+            "node": "If No Questions Exists",
             "type": "main",
             "index": 0
           }
@@ -1563,6 +1642,24 @@
       "main": [
         []
       ]
+    },
+    "If No Questions Exists": {
+      "main": [
+        [
+          {
+            "node": "Update Call Table With Report Id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Question Handling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1572,63 +1669,19 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "Create Generated Reports Entry In DB": [
-      {
-        "json": {
-          "id": "741a8137-e96c-4047-abdf-ef9347495ee1",
-          "business_id": "Fuzail Fitness",
-          "audit_id": "40117049-501b-4555-b94e-12d119c38d91",
-          "task_group_id": "032732c7-25a9-4846-9462-56c2de3ed9e3",
-          "created_at": "2025-10-27T07:36:55.489755+00:00",
-          "overall_summary": "The representative from Fazel Fitness handled the inbound follow-up professionally, promptly arranging a visit for the customer at a mutually agreed time. The conversation was straightforward, clear, and much more focused than the prior outbound exchange. The representative was polite and accommodating, confirming appointment details and leaving the customer with a positive impression. There were no notable issues or red flags, although opportunities for more personalized engagement or providing additional information about the gym were not taken.",
-          "engagement_level": "The representative showed reasonable interest in assisting the customer and ensuring an appointment was scheduled, but did not build personal rapport or offer further guidance.",
-          "professionalism": "The representative was courteous, professional, and respectful throughout the interaction.",
-          "script_adherence": "There was no indication of a scripted process, but the conversation was clear and followed a logical structure for appointment scheduling.",
-          "issues_detected": [],
-          "positive_highlight": [
-            "Prompt and clear scheduling of an appointment",
-            "Polite and respectful communication",
-            "Flexibility shown by accommodating the customer's preferred timing"
-          ],
-          "improvement_ideas": [
-            "Proactively offer more information about the gym, such as available amenities or new-client specials during scheduling.",
-            "Work on building a more personal rapport and warmly welcoming the customer.",
-            "Consider gentle upsell or cross-sell opportunities, e.g., offering a free trial class or additional services at the time of booking."
-          ],
-          "agent_name": "Fazel",
-          "engagement_and_relationship_building_score": 12,
-          "product_service_knowledge_and_education_score": 10,
-          "answering_questions_score": 18,
-          "ability_to_upsell_and_cross_sell_score": 0,
-          "closing_for_appointment_and_call_to_action_score": 20,
-          "overall_success_rate_out_of_100": 60,
-          "appointment_booked": true,
-          "initial_wait_time": "Answered after 5 seconds (from call initiation to acceptance).",
-          "on_hold_time": "No hold time during the call.",
-          "representative_tone": "Polite, straightforward, and efficient; friendly but not especially warm or enthusiastic.",
-          "tone_consistency": "Yes, the representative's tone was consistent throughout the call.",
-          "clarity": "Responses were clear, concise, and directly addressed the customer's questions and requests.",
-          "accuracy": "Answers matched the customer's questions and facilitated an effective scheduling process.",
-          "helpfulness": "The representative was helpful in confirming availability and setting up the appointment, though did not proactively offer extra information or upsell services.",
-          "call_opening": "The call was opened with a polite greeting, clear identification by the representative, and immediate reference to the purpose of the call.",
-          "updated_at": "2025-10-27T07:36:55.489755+00:00"
-        }
-      }
-    ]
-  },
-  "versionId": "83f34bd7-b956-4426-b15b-48105d1a62f1",
+  "pinData": {},
+  "versionId": "a058b7b0-86c5-45cc-a785-02341f7c8f18",
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-06-20T09:51:03.705Z",
       "updatedAt": "2025-06-20T09:51:03.705Z",
+      "createdAt": "2025-06-20T09:51:03.705Z",
       "role": "workflow:owner",
       "workflowId": "FYCdJ9WBDKvj8mWI",
       "projectId": "LuK1n39yspgZn4ID",
       "project": {
-        "createdAt": "2025-06-03T10:24:12.778Z",
         "updatedAt": "2025-06-03T11:30:21.622Z",
+        "createdAt": "2025-06-03T10:24:12.778Z",
         "id": "LuK1n39yspgZn4ID",
         "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
         "type": "personal",
@@ -1636,13 +1689,13 @@
         "description": null,
         "projectRelations": [
           {
-            "createdAt": "2025-06-03T10:24:12.781Z",
             "updatedAt": "2025-06-03T10:24:12.781Z",
+            "createdAt": "2025-06-03T10:24:12.781Z",
             "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
+              "updatedAt": "2025-10-29T04:02:58.000Z",
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-28T04:00:21.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1660,7 +1713,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-28",
+              "lastActiveAt": "2025-10-29",
               "isPending": false
             }
           }
@@ -1670,8 +1723,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-08-14T20:27:52.072Z",
       "updatedAt": "2025-08-14T20:27:52.072Z",
+      "createdAt": "2025-08-14T20:27:52.072Z",
       "id": "CbQQ2nfApBR0i0Ru",
       "name": "TopRatedCoachAI"
     }
