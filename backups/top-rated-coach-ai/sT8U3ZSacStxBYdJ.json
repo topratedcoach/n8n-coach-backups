@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-10-29T04:16:45.000Z",
   "createdAt": "2025-09-25T14:55:53.036Z",
-  "updatedAt": "2025-10-28T05:30:54.000Z",
   "id": "sT8U3ZSacStxBYdJ",
   "name": "Delete Template Business (DANGER)",
   "active": false,
@@ -89,7 +89,8 @@
       ],
       "id": "42c114d5-936c-4ed3-beb0-aec4adbe6ea2",
       "name": "GET Calls",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -127,7 +128,8 @@
       ],
       "id": "b66bbc12-3e50-4184-a850-7f619c52ae72",
       "name": "Delete GeneratedCallReports",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -277,7 +279,8 @@
       ],
       "id": "80b0d188-6dad-4f81-8a59-402d4e277dd1",
       "name": "Delete Calls",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -315,7 +318,8 @@
       ],
       "id": "fab7daa1-4fc5-41f9-abb1-15c3a12e902a",
       "name": "Delete Call Transcripts",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -391,7 +395,8 @@
       ],
       "id": "89ef2726-1b85-45b6-8593-0972ca78a48d",
       "name": "Delete Questionaires",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "disabled": true
     },
     {
       "parameters": {
@@ -981,18 +986,18 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "d5e2c55f-5f3e-4f17-8fa5-3a25184b9fb4",
+  "versionId": "018b4cd4-3fb7-4dee-b8f7-0894724bf719",
   "triggerCount": 0,
   "shared": [
     {
-      "createdAt": "2025-09-25T14:55:53.040Z",
       "updatedAt": "2025-09-25T14:55:53.040Z",
+      "createdAt": "2025-09-25T14:55:53.040Z",
       "role": "workflow:owner",
       "workflowId": "sT8U3ZSacStxBYdJ",
       "projectId": "LuK1n39yspgZn4ID",
       "project": {
-        "createdAt": "2025-06-03T10:24:12.778Z",
         "updatedAt": "2025-06-03T11:30:21.622Z",
+        "createdAt": "2025-06-03T10:24:12.778Z",
         "id": "LuK1n39yspgZn4ID",
         "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
         "type": "personal",
@@ -1000,13 +1005,13 @@
         "description": null,
         "projectRelations": [
           {
-            "createdAt": "2025-06-03T10:24:12.781Z",
             "updatedAt": "2025-06-03T10:24:12.781Z",
+            "createdAt": "2025-06-03T10:24:12.781Z",
             "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
+              "updatedAt": "2025-10-29T04:02:58.000Z",
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-28T04:00:21.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -1024,7 +1029,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-28",
+              "lastActiveAt": "2025-10-29",
               "isPending": false
             }
           }
@@ -1034,8 +1039,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-08-14T20:27:52.072Z",
       "updatedAt": "2025-08-14T20:27:52.072Z",
+      "createdAt": "2025-08-14T20:27:52.072Z",
       "id": "CbQQ2nfApBR0i0Ru",
       "name": "TopRatedCoachAI"
     }
