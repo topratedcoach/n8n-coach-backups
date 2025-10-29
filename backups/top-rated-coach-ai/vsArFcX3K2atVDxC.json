@@ -1,6 +1,6 @@
 {
+  "updatedAt": "2025-10-29T04:33:02.000Z",
   "createdAt": "2025-06-12T11:29:58.203Z",
-  "updatedAt": "2025-10-28T04:47:59.000Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
   "active": true,
@@ -50,6 +50,8 @@
       ],
       "id": "475a904e-0510-454b-9acf-9ca851cbffd2",
       "name": "Call Business",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
     },
     {
@@ -132,7 +134,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        368,
+        672,
         464
       ],
       "id": "3072b63a-fcdb-4c47-b421-e03e1430c28e",
@@ -175,7 +177,7 @@
       "parameters": {
         "content": "## Monitors call status until completion\n",
         "height": 880,
-        "width": 2540
+        "width": 2556
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
@@ -338,6 +340,8 @@
       ],
       "id": "56cbc5fb-71e2-4100-9a50-09af9fd82851",
       "name": "Twilio Call Status",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "httpBasicAuth": {
           "id": "PdHyrjcfDMihAzEn",
@@ -911,7 +915,9 @@
         -96
       ],
       "id": "237bfbd3-1ccf-4cd9-a36f-d41251550bb9",
-      "name": "Get a specific business"
+      "name": "Get a specific business",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -962,7 +968,9 @@
         -96
       ],
       "id": "e96a6943-20f1-4cb9-a9d9-346336ff60d2",
-      "name": "Create AI Agent Micro Tasks"
+      "name": "Create AI Agent Micro Tasks",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1007,7 +1015,9 @@
       ],
       "id": "c74f2468-7f95-445a-bcce-972a9928d0a0",
       "name": "Updating TaskGroups Row To In-Progress",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1052,7 +1062,9 @@
       ],
       "id": "f08be140-3e03-4780-b00b-ed077aaceb75",
       "name": "Update Audit Status to in_progress and Started AT Time",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1096,7 +1108,9 @@
         304
       ],
       "id": "2bf9ae0b-9d2d-4a41-a9c6-b4a5b090ad83",
-      "name": "Start ElevenLabs Task in DB"
+      "name": "Start ElevenLabs Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1146,7 +1160,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"status\": \"failed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"error_type\": \"connection_failed\",\n  \"error_message\": \"{{ $('Call Business').item.json.message || 'Unprocessable Entity' }}\",\n  \"result_data\": {{ JSON.stringify($('Call Business').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"n8n_execution_id\": \"{{ $execution.id }}\",\n  \"error_type\": \"connection_failed\",\n  \"error_message\": {{ JSON.stringify($('Call Business').item.json.message || \"Unprocessable Entity\") }},\n  \"result_data\": {{ JSON.stringify($('Call Business').item.json || {}) }},\n  \"completed_at\": \"{{ new Date().toISOString() }}\",\n\"retry_count\":{{ $('Increment Counter').item.json.counter }}\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1156,7 +1170,9 @@
         880
       ],
       "id": "ee1137da-0964-4b6a-8880-425be0cb7b31",
-      "name": "Fail ElevenLabs Task in DB"
+      "name": "Fail ElevenLabs Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1190,17 +1206,19 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail ElevenLabs Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail ElevenLabs Task in DB').item.json.result_data || {}) }},\n\"error_message\": \"{{ $('Fail ElevenLabs Task in DB').item.json.error_message }}\"\n}",
+        "jsonBody": "={\n  \"status\": \"failed\",\n  \"completed_at\": \"{{ $('Fail ElevenLabs Task in DB').item.json.completed_at }}\",\n\"result_data\": {{ JSON.stringify($('Fail ElevenLabs Task in DB').item.json.result_data || {}) }},\n\"error_message\": {{ JSON.stringify($('Fail ElevenLabs Task in DB').item.json.error_message || '')}}\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1456,
-        864
+        -1472,
+        816
       ],
       "id": "d75a9e07-7f1f-4fab-be94-6cf76d87ae64",
-      "name": "Fail Outbound TaskGroup"
+      "name": "Fail Outbound TaskGroup",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1244,7 +1262,9 @@
         224
       ],
       "id": "006921c2-41e4-4f57-8038-7ac798662390",
-      "name": "Success ElevenLabs Task in DB"
+      "name": "Success ElevenLabs Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1288,7 +1308,9 @@
         368
       ],
       "id": "25e3d482-fbea-4197-834a-bd4c2a7b3a4f",
-      "name": "Start Twilio Task in DB"
+      "name": "Start Twilio Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1332,7 +1354,9 @@
         -16
       ],
       "id": "67ef180b-8e36-47d5-b5eb-42f08f4b21e0",
-      "name": "Fail Twilio Task in DB"
+      "name": "Fail Twilio Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1341,8 +1365,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -704,
-        384
+        -768,
+        240
       ],
       "id": "0724a793-d0d6-4b27-8c18-1f1aff97c2ff",
       "name": "Make Dynamic JSON based on Merge Output"
@@ -1389,7 +1413,9 @@
         864
       ],
       "id": "98344b59-6154-475e-af6b-c5d86ce2ce79",
-      "name": "Fail Twilio Task DB"
+      "name": "Fail Twilio Task DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1433,7 +1459,9 @@
         864
       ],
       "id": "14a7218d-d930-48c5-a617-02a34c83cc01",
-      "name": "Fail Outbound Task Group"
+      "name": "Fail Outbound Task Group",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1477,7 +1505,9 @@
         -208
       ],
       "id": "f0a0a06e-20b4-4e96-a9ec-30820f4e6687",
-      "name": "Success Twilio Task in DB1"
+      "name": "Success Twilio Task in DB1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1521,7 +1551,9 @@
         -208
       ],
       "id": "7c196721-f83b-4a6d-88f5-dedf99040aed",
-      "name": "Start Fetch Conversation Task in DB"
+      "name": "Start Fetch Conversation Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1565,7 +1597,9 @@
         128
       ],
       "id": "a14cdf3b-59d3-4469-a312-165cbc7a2a6e",
-      "name": "Success Fetch Conversation Task in DB"
+      "name": "Success Fetch Conversation Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1639,7 +1673,9 @@
         832
       ],
       "id": "2040d6e3-0ced-4919-8d11-2746c5824396",
-      "name": "Fail Fetch Conversation Task in DB"
+      "name": "Fail Fetch Conversation Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1683,7 +1719,9 @@
         192
       ],
       "id": "aba56ed0-b906-4ebe-9750-216898ced98e",
-      "name": "Start Voicemail Detection Task in DB"
+      "name": "Start Voicemail Detection Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1727,7 +1765,9 @@
         832
       ],
       "id": "165e1186-2dfb-42ac-bdb0-15e52bf68abf",
-      "name": "Fail Voicemail Detection Task in DB"
+      "name": "Fail Voicemail Detection Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1771,7 +1811,9 @@
         416
       ],
       "id": "8b680fde-7614-4432-9f00-b0b3a128205e",
-      "name": "Success Voicemail Detection Task in DB"
+      "name": "Success Voicemail Detection Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1815,7 +1857,9 @@
         208
       ],
       "id": "171a843e-15c9-4727-999b-5dd3f50b283e",
-      "name": "Start AI Analysis Task in DB"
+      "name": "Start AI Analysis Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1863,7 +1907,9 @@
         208
       ],
       "id": "4b85319e-1b85-4fc7-bbb0-16c615dc5cf4",
-      "name": "Create Call Entry In DB"
+      "name": "Create Call Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1898,7 +1944,9 @@
         208
       ],
       "id": "6b9f84bc-60e7-48c6-8728-a9f7c89c35d5",
-      "name": "Create Call Transcripts Entry In DB"
+      "name": "Create Call Transcripts Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1955,7 +2003,9 @@
         208
       ],
       "id": "de8bd9d1-79ba-4d2d-8959-221c0f9c3431",
-      "name": "AI Analysis Task in DB"
+      "name": "AI Analysis Task in DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -1990,7 +2040,9 @@
         768
       ],
       "id": "ec3b8f7c-2179-49e1-abd4-6f15b6b0fedd",
-      "name": "Create Generated Reports Entry In DB"
+      "name": "Create Generated Reports Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2087,7 +2139,9 @@
         832
       ],
       "id": "42acee3d-e706-414f-8851-ad9e576f933a",
-      "name": "Fail Outbound Task"
+      "name": "Fail Outbound Task",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2132,7 +2186,9 @@
       ],
       "id": "85185931-c16b-4db8-a2d6-57db58ee8429",
       "name": "Updating TaskGroups Row To Completed",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2176,7 +2232,9 @@
         1136
       ],
       "id": "f7d1c1f8-77c2-44ea-a0d1-751bf9f7776d",
-      "name": "Update Call Table With Report Id"
+      "name": "Update Call Table With Report Id",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2243,7 +2301,9 @@
       ],
       "id": "b7b1690c-7e00-4f1f-a404-f7f347cfccc3",
       "name": "Updating TaskGroups Row with New Scheduled Time",
-      "executeOnce": true
+      "executeOnce": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2287,7 +2347,9 @@
         1040
       ],
       "id": "f3e96e5c-9ec9-48a5-8e5b-e82448f27546",
-      "name": "Fail Outbound Task1"
+      "name": "Fail Outbound Task1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2357,7 +2419,9 @@
         32
       ],
       "id": "710aa43f-556c-4348-afb4-7fb1008e4ec5",
-      "name": "Fail Outbound Task Group1"
+      "name": "Fail Outbound Task Group1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2429,8 +2493,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -1232,
-        864
+        -1088,
+        992
       ],
       "id": "61a85d35-8943-4e83-9d65-dbb57703344c",
       "name": "No Operation, do nothing"
@@ -2497,6 +2561,8 @@
       ],
       "id": "7b81c0f0-f507-413a-9acf-e8ad7ee3aef6",
       "name": "Voicemail Detector Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "openAiApi": {
           "id": "GwlwzOiOthioGCVV",
@@ -2531,6 +2597,8 @@
       ],
       "id": "01db1e99-090e-4701-b71d-7c0299898f53",
       "name": "Call Analysis AI",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "credentials": {
         "openAiApi": {
           "id": "GwlwzOiOthioGCVV",
@@ -2629,6 +2697,31 @@
               },
               "renameOutput": true,
               "outputKey": "Busy Error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3a260555-5c06-4346-9b5f-ad4b94b3af13",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ElevenLabs Failed"
             }
           ]
         },
@@ -2638,7 +2731,7 @@
       "typeVersion": 3.3,
       "position": [
         -1664,
-        944
+        1040
       ],
       "id": "48de09cd-ce66-4bc6-8a07-14f65c0d8049",
       "name": "Switch"
@@ -2676,7 +2769,9 @@
         1232
       ],
       "id": "15baabf8-171c-4510-9035-06c53da67b18",
-      "name": "Create Call Questionaire Entry In DB"
+      "name": "Create Call Questionaire Entry In DB",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2778,7 +2873,9 @@
       "id": "3d2d8672-987b-4971-a1de-565d11c4dade",
       "name": "Increment Cost and Token Count1",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2884,7 +2981,9 @@
       "id": "f1d90d35-ecfa-4fd9-8bdd-ca017787e9b4",
       "name": "Increment Cost and Token Count3",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2937,7 +3036,9 @@
       "id": "d0ffeacd-4828-4e52-9dc2-97958237a93a",
       "name": "Increment Cost and Token Count4",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -2962,6 +3063,8 @@
       "id": "22d208b8-1473-4db2-9234-54609a465313",
       "name": "Get Conv Price",
       "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
       "onError": "continueRegularOutput"
     },
     {
@@ -2999,7 +3102,9 @@
       "id": "edbfee15-585d-4654-b7fa-4c7a2de0833a",
       "name": "Increment Twilio Cost",
       "executeOnce": false,
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -3148,6 +3253,54 @@
         880
       ],
       "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const call = $('Twilio Call Status').first().json;\nconst endTime = call.end_time ? new Date(call.end_time) : null;\nconst now = new Date();\n\nlet status = 'in_progress';\nlet elapsedMinutes = null;\n\nif (endTime) {\n  elapsedMinutes = (now - endTime) / 60000;\n  status = elapsedMinutes > 10 ? 'timeout' : 'completed';\n}\n\nreturn [{\n  json: {\n    elapsed_minutes: elapsedMinutes,\n    status\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        464
+      ],
+      "id": "c52a04f0-7084-4df6-ba5a-74eb78288721",
+      "name": "Check Time Since Call"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fc184b04-d244-4908-9df5-0cfe5a57324e",
+              "leftValue": "={{ $('Check Time Since Call').item.json.status }}",
+              "rightValue": "timeout",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        512
+      ],
+      "id": "95615053-0b9b-450b-a65c-d05d002500a9",
+      "name": "If 10 mins has passed"
     }
   ],
   "connections": {
@@ -3250,7 +3403,7 @@
         ],
         [
           {
-            "node": "Wait for Conv History",
+            "node": "Check Time Since Call",
             "type": "main",
             "index": 0
           }
@@ -3941,14 +4094,21 @@
         ],
         [
           {
-            "node": "Get  5 mins Ahead of Rescheduling Time",
+            "node": "Update Counter Value",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Get  5 mins Ahead of Rescheduling Time",
+            "node": "Update Counter Value",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Counter Value",
             "type": "main",
             "index": 0
           }
@@ -4071,6 +4231,35 @@
           }
         ]
       ]
+    },
+    "Check Time Since Call": {
+      "main": [
+        [
+          {
+            "node": "If 10 mins has passed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If 10 mins has passed": {
+      "main": [
+        [
+          {
+            "node": "Fail Fetch Conversation Task in DB",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Conv History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -4087,18 +4276,18 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0a1cd491-bfa0-4cec-8f92-1660c48dbcf6",
+  "versionId": "6140a0b2-ab86-457e-97b2-a3e7314c37d7",
   "triggerCount": 1,
   "shared": [
     {
-      "createdAt": "2025-06-12T11:29:58.207Z",
       "updatedAt": "2025-06-12T11:29:58.207Z",
+      "createdAt": "2025-06-12T11:29:58.207Z",
       "role": "workflow:owner",
       "workflowId": "vsArFcX3K2atVDxC",
       "projectId": "LuK1n39yspgZn4ID",
       "project": {
-        "createdAt": "2025-06-03T10:24:12.778Z",
         "updatedAt": "2025-06-03T11:30:21.622Z",
+        "createdAt": "2025-06-03T10:24:12.778Z",
         "id": "LuK1n39yspgZn4ID",
         "name": "Fuzail Sohail <fuzailsohail40@gmail.com>",
         "type": "personal",
@@ -4106,13 +4295,13 @@
         "description": null,
         "projectRelations": [
           {
-            "createdAt": "2025-06-03T10:24:12.781Z",
             "updatedAt": "2025-06-03T10:24:12.781Z",
+            "createdAt": "2025-06-03T10:24:12.781Z",
             "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
+              "updatedAt": "2025-10-29T04:02:58.000Z",
               "createdAt": "2025-06-03T10:24:12.776Z",
-              "updatedAt": "2025-10-28T04:00:21.000Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
               "firstName": "Fuzail",
@@ -4130,7 +4319,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-28",
+              "lastActiveAt": "2025-10-29",
               "isPending": false
             }
           }
@@ -4140,8 +4329,8 @@
   ],
   "tags": [
     {
-      "createdAt": "2025-08-14T20:27:52.072Z",
       "updatedAt": "2025-08-14T20:27:52.072Z",
+      "createdAt": "2025-08-14T20:27:52.072Z",
       "id": "CbQQ2nfApBR0i0Ru",
       "name": "TopRatedCoachAI"
     }
