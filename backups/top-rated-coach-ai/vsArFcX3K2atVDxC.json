@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-29T04:33:02.000Z",
+  "updatedAt": "2025-10-29T13:33:58.000Z",
   "createdAt": "2025-06-12T11:29:58.203Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
@@ -4269,14 +4269,15 @@
     "saveExecutionProgress": true,
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "executionTimeout": 2400
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "6140a0b2-ab86-457e-97b2-a3e7314c37d7",
+  "versionId": "a865ad9e-9af7-493b-8d84-95b1939a620d",
   "triggerCount": 1,
   "shared": [
     {
@@ -4300,7 +4301,7 @@
             "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
-              "updatedAt": "2025-10-29T04:02:58.000Z",
+              "updatedAt": "2025-10-30T07:00:00.000Z",
               "createdAt": "2025-06-03T10:24:12.776Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
@@ -4319,7 +4320,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-29",
+              "lastActiveAt": "2025-10-30",
               "isPending": false
             }
           }
