@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2025-10-29T13:33:58.000Z",
+  "updatedAt": "2025-10-30T16:46:10.000Z",
   "createdAt": "2025-06-12T11:29:58.203Z",
   "id": "vsArFcX3K2atVDxC",
   "name": "Agent Name: Outbound Call Processor (Fuzail)",
@@ -806,7 +806,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2624,
+        -2592,
         272
       ],
       "id": "d416bced-ff5e-4745-a8fb-f6d696943dfc",
@@ -911,7 +911,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2848,
+        -2832,
         -96
       ],
       "id": "237bfbd3-1ccf-4cd9-a36f-d41251550bb9",
@@ -964,13 +964,14 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2624,
+        -2608,
         -96
       ],
       "id": "e96a6943-20f1-4cb9-a9d9-346336ff60d2",
       "name": "Create AI Agent Micro Tasks",
       "retryOnFail": true,
-      "waitBetweenTries": 5000
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1010,7 +1011,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2400,
+        -2384,
         -96
       ],
       "id": "c74f2468-7f95-445a-bcce-972a9928d0a0",
@@ -1057,7 +1058,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2176,
+        -2160,
         -96
       ],
       "id": "f08be140-3e03-4780-b00b-ed077aaceb75",
@@ -1167,7 +1168,7 @@
       "typeVersion": 4.2,
       "position": [
         -2112,
-        880
+        816
       ],
       "id": "ee1137da-0964-4b6a-8880-425be0cb7b31",
       "name": "Fail ElevenLabs Task in DB",
@@ -1212,7 +1213,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1472,
+        -1632,
         816
       ],
       "id": "d75a9e07-7f1f-4fab-be94-6cf76d87ae64",
@@ -2296,7 +2297,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -2608,
+        -2592,
         560
       ],
       "id": "b7b1690c-7e00-4f1f-a404-f7f347cfccc3",
@@ -2430,7 +2431,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -2384,
+        -2368,
         560
       ],
       "id": "780182f6-28d6-44f9-b1ef-3349ca80fef5",
@@ -2493,8 +2494,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -1088,
-        992
+        -1424,
+        816
       ],
       "id": "61a85d35-8943-4e83-9d65-dbb57703344c",
       "name": "No Operation, do nothing"
@@ -3250,7 +3251,7 @@
       "typeVersion": 2.2,
       "position": [
         -1888,
-        880
+        816
       ],
       "alwaysOutputData": false
     },
@@ -3301,6 +3302,17 @@
       ],
       "id": "95615053-0b9b-450b-a65c-d05d002500a9",
       "name": "If 10 mins has passed"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -3056,
+        960
+      ],
+      "id": "1c35f690-aedd-42e3-b614-c69b054083c3",
+      "name": "No Operation, do nothing1"
     }
   ],
   "connections": {
@@ -3389,14 +3401,14 @@
         ],
         [
           {
-            "node": "Wait for Conv History",
+            "node": "Check Time Since Call",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Wait for Conv History",
+            "node": "Check Time Since Call",
             "type": "main",
             "index": 0
           }
@@ -3618,7 +3630,13 @@
             "index": 0
           }
         ],
-        []
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Update Audit Status to in_progress and Started AT Time": {
@@ -4277,7 +4295,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a865ad9e-9af7-493b-8d84-95b1939a620d",
+  "versionId": "ba7df94b-32ec-4b08-b6fc-1ea7c9acad23",
   "triggerCount": 1,
   "shared": [
     {
@@ -4301,7 +4319,7 @@
             "userId": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
             "projectId": "LuK1n39yspgZn4ID",
             "user": {
-              "updatedAt": "2025-10-30T07:00:00.000Z",
+              "updatedAt": "2025-10-31T07:00:00.000Z",
               "createdAt": "2025-06-03T10:24:12.776Z",
               "id": "9ba5b413-59b6-4d30-ad4b-75763cd3a374",
               "email": "fuzailsohail40@gmail.com",
@@ -4320,7 +4338,7 @@
               },
               "disabled": false,
               "mfaEnabled": true,
-              "lastActiveAt": "2025-10-30",
+              "lastActiveAt": "2025-10-31",
               "isPending": false
             }
           }
